@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management - RC WORLD Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary: #e74c3c;
+            --primary-dark: #c0392b;
+            --light-gray: #f8f9fa;
+            --dark: #2c3e50;
+            --text-gray: #6c757d;
+            --bg: #ffffff;
+            --border: #dee2e6;
+            --success: #28a745;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --danger: #dc3545;
+            --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            --shadow-lg: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* Enhanced Sidebar - Same as Dashboard */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, var(--bg) 0%, #f8f9fa 100%);
+            border-right: 1px solid var(--border);
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: -0.025em;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            margin: 0.25rem 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-gray);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(231, 76, 60, 0.08);
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-link.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Enhanced Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Enhanced Top Bar */
+        .topbar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .logout-btn {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+            color: white;
+        }
+
+        /* Enhanced Content Area */
+        .content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-gray);
+            font-size: 0.875rem;
+        }
+
+        /* Enhanced Stats Cards */
+        .stats-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: var(--bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-title {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+        }
+
+        /* Enhanced Controls Section */
+        .controls-section {
+            background: var(--bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .controls-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .search-filter-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-section {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .filter-section {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-input {
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.625rem 0.875rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+            outline: none;
+        }
+
+        /* Enhanced Buttons */
+        .btn {
+            padding: 0.625rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+            color: white;
+        }
+
+        .btn-outline-primary {
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            background: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Table Section */
+        .table-section {
+            background: var(--bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: #f8f9fa;
+            border-bottom: 2px solid var(--border);
+            font-weight: 600;
+            color: var(--dark);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 1rem 0.75rem;
+        }
+
+        .table tbody td {
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(231, 76, 60, 0.02);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .order-id {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .customer-info h6 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .customer-info small {
+            color: var(--text-gray);
+        }
+
+        /* Enhanced Status Badges */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .badge-delivered {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+
+        .badge-shipped {
+            background: rgba(23, 162, 184, 0.1);
+            color: var(--info);
+        }
+
+        .badge-processing {
+            background: rgba(255, 193, 7, 0.1);
+            color: #856404;
+        }
+
+        .badge-pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #856404;
+        }
+
+        .badge-cancelled {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        .badge-paid {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+
+        .badge-payment-pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #856404;
+        }
+
+        .badge-failed {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        .badge-refunded {
+            background: rgba(108, 117, 125, 0.1);
+            color: var(--text-gray);
+        }
+
+        /* Enhanced Action Buttons */
+        .view-btn {
+            background: rgba(23, 162, 184, 0.1);
+            color: var(--info);
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .view-btn:hover {
+            background: rgba(23, 162, 184, 0.2);
+            color: var(--info);
+            transform: translateY(-1px);
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            padding: 0.375rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--primary-dark);
+        }
+
+        /* Enhanced Status Dropdown */
+        .status-update-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .status-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            min-width: 150px;
+            display: none;
+        }
+
+        .status-dropdown.show {
+            display: block;
+        }
+
+        .status-option {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 0.875rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .status-option:hover {
+            background: var(--light-gray);
+        }
+
+        .status-option:last-child {
+            border-bottom: none;
+        }
+
+        /* Enhanced Pagination */
+        .pagination-section {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .pagination-info {
+            color: var(--text-gray);
+            font-size: 0.875rem;
+        }
+
+        .pagination {
+            margin-bottom: 0;
+        }
+
+        .page-link {
+            color: var(--primary);
+            border-color: var(--border);
+            padding: 0.5rem 0.75rem;
+        }
+
+        .page-link:hover {
+            background: rgba(231, 76, 60, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .page-item.active .page-link {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .search-filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-section {
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .topbar {
+                padding: 1rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pagination-section {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats-section, .controls-section, .table-section {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .controls-section {
+            animation-delay: 0.1s;
+        }
+
+        .table-section {
+            animation-delay: 0.2s;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Enhanced Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>RC WORLD</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a href="/dashboard" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/category" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-tags"></i></div>
+                    <span>Category</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/brands" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-trademark"></i></div>
+                    <span>Brands</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/products" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-box"></i></div>
+                    <span>Products</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/usermange" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-users"></i></div>
+                    <span>Customers</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/order" class="nav-link active">
+                    <div class="nav-icon"><i class="fas fa-shopping-cart"></i></div>
+                    <span>Orders</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/saleReport" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
+                    <span>Sales Report</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-cog"></i></div>
+                    <span>Settings</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-image"></i></div>
+                    <span>Banner Manage</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/coupen" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-ticket-alt"></i></div>
+                    <span>Manage Coupons</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/offer" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-percent"></i></div>
+                    <span>Offers Management</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Enhanced Main Content -->
+    <main class="main-content">
+        <!-- Enhanced Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1>Order Management</h1>
+            </div>
+            <div class="topbar-right">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Welcome, Admin</span>
+                </div>
+                <div class="user-info">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <button class="logout-btn" onclick="window.location.href='/logout'">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Enhanced Content -->
+        <div class="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h2 class="page-title">Order Overview</h2>
+                <p class="page-subtitle">Track and manage customer orders efficiently</p>
+            </div>
+
+            <!-- Enhanced Stats Section -->
+            <section class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Total Orders</div>
+                            <div class="stat-icon" style="background: rgba(231, 76, 60, 0.1); color: var(--primary);">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">1,247</div>
+                        <div class="stat-change">+12% from last month</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Total Revenue</div>
+                            <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1); color: var(--success);">
+                                <i class="fas fa-rupee-sign"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">₹15,42,553</div>
+                        <div class="stat-change">+8% from last month</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Delivered</div>
+                            <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1); color: var(--success);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">1,156</div>
+                        <div class="stat-change">Successfully completed</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Pending</div>
+                            <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: var(--warning);">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">91</div>
+                        <div class="stat-change">Awaiting processing</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enhanced Controls Section -->
+            <section class="controls-section">
+                <div class="controls-header">
+                    <div>
+                        <h4 class="controls-title">Order Management</h4>
+                        <p class="text-muted mb-0">Track and manage customer orders</p>
+                    </div>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        New Order
+                    </button>
+                </div>
+
+                <div class="search-filter-section">
+                    <div class="search-section">
+                        <form action="/admin/ordermanagement" method="GET" class="d-flex w-100">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control search-input" name="search"
+                                    placeholder="Search orders, customers..." value="<%= search %>">
+                            </div>
+                        </form>
+                        <button class="btn btn-outline-primary" onclick="document.querySelector('.search-section form').submit();">
+                            <i class="fas fa-search"></i>
+                            Search
+                        </button>
+                    </div>
+
+                    <div class="filter-section">
+                        <form action="/admin/ordermanagement" method="GET">
+                            <input type="hidden" name="search" value="<%= search %>">
+                            <select class="form-select" name="status" onchange="this.form.submit()">
+                                <option value="All Statuses" <%= status === 'All Statuses' ? 'selected' : '' %>>All Statuses</option>
+                                <option value="Delivered" <%= status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                <option value="Shipped" <%= status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                                <option value="Processing" <%= status === 'Processing' ? 'selected' : '' %>>Processing</option>
+                                <option value="Pending" <%= status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                                <option value="Cancelled" <%= status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                            </select>
+                        </form>
+                        <form action="/admin/ordermanagement" method="GET">
+                            <input type="hidden" name="search" value="<%= search %>">
+                            <input type="hidden" name="status" value="<%= status %>">
+                            <select class="form-select" name="sort" onchange="this.form.submit()">
+                                <option value="Newest First" <%= sort === 'Newest First' ? 'selected' : '' %>>Newest First</option>
+                                <option value="Oldest First" <%= sort === 'Oldest First' ? 'selected' : '' %>>Oldest First</option>
+                                <option value="Amount: High to Low" <%= sort === 'Amount: High to Low' ? 'selected' : '' %>>Amount: High to Low</option>
+                                <option value="Amount: Low to High" <%= sort === 'Amount: Low to High' ? 'selected' : '' %>>Amount: Low to High</option>
+                            </select>
+                        </form>
+                        <button class="btn btn-outline-primary">
+                            <i class="fas fa-download"></i>
+                            Export
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enhanced Table Section -->
+            <section class="table-section">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-hashtag me-2"></i>
+                                    Order ID
+                                </th>
+                                <th>
+                                    <i class="fas fa-user me-2"></i>
+                                    Customer
+                                </th>
+                                <th>
+                                    <i class="fas fa-calendar me-2"></i>
+                                    Date
+                                </th>
+                                <th>
+                                    <i class="fas fa-box me-2"></i>
+                                    Items
+                                </th>
+                                <th>
+                                    <i class="fas fa-rupee-sign me-2"></i>
+                                    Total
+                                </th>
+                                <th>
+                                    <i class="fas fa-credit-card me-2"></i>
+                                    Payment
+                                </th>
+                                <th>
+                                    <i class="fas fa-truck me-2"></i>
+                                    Status
+                                </th>
+                                <th>
+                                    <i class="fas fa-eye me-2"></i>
+                                    View
+                                </th>
+                                <th>
+                                    <i class="fas fa-cogs me-2"></i>
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% orders.forEach(order => { %>
+                                <tr>
+                                    <td>
+                                        <span class="order-id">#ORD-<%= order.orderId %></span>
+                                    </td>
+                                    <td>
+                                        <div class="customer-info">
+                                            <h6><%= order.userId?.firstName || 'Unknown' %></h6>
+                                            <small><%= order.userId?.email || '' %></small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <%= new Date(order.createdAt).toLocaleDateString("en-IN", { 
+                                            year: 'numeric', 
+                                            month: 'short', 
+                                            day: 'numeric' 
+                                        }) %>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark">
+                                            <%= order.orderitems.length %> items
+                                        </span>
+                                    </td>
+                                    <td class="fw-bold">
+                                        ₹<%= order.finalAmount.toLocaleString("en-IN") %>
+                                    </td>
+                                    <td>
+                                        <% if (order.paymentStatus === 'paid') { %>
+                                            <span class="status-badge badge-paid">Paid</span>
+                                        <% } else if (order.paymentStatus === 'pending') { %>
+                                            <span class="status-badge badge-payment-pending">Pending</span>
+                                        <% } else if (order.paymentStatus === 'failed') { %>
+                                            <span class="status-badge badge-failed">Failed</span>
+                                        <% } else { %>
+                                            <span class="status-badge badge-refunded">Refunded</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% 
+                                        const statusBadgeMap = {
+                                            'Delivered': 'badge-delivered',
+                                            'Shipped': 'badge-shipped',
+                                            'Pending': 'badge-pending',
+                                            'Cancelled': 'badge-cancelled',
+                                            'Return Request': 'badge-processing',
+                                            'Out For Delivery': 'badge-processing',
+                                            'Ordered': 'badge-processing'
+                                        };
+                                        %>
+                                        <span class="status-badge <%= statusBadgeMap[order.orderStatus] || 'badge-processing' %>">
+                                            <%= order.orderStatus %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <input type="hidden" class="orderId" value="<%= order._id %>">
+                                        <a href="/admin/order-details/<%= order._id %>" class="view-btn">
+                                            <i class="fas fa-eye"></i>
+                                            View
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="status-update-dropdown">
+                                            <button class="action-btn edit-btn">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <div class="status-dropdown">
+                                                <div class="status-option" data-status="Delivered">Delivered</div>
+                                                <div class="status-option" data-status="Shipped">Shipped</div>
+                                                <div class="status-option" data-status="Ordered">Ordered</div>
+                                                <div class="status-option" data-status="Pending">Pending</div>
+                                                <div class="status-option" data-status="Cancelled">Cancelled</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Enhanced Pagination -->
+                <div class="pagination-section">
+                    <div class="pagination-info">
+                        Showing <%= (currentPage - 1) * 10 + 1 %> to <%= Math.min(currentPage * 10, totalOrders) %>
+                        of <%= totalOrders %> results
+                    </div>
+                    <nav>
+                        <ul class="pagination">
+                            <!-- Previous -->
+                            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                <a class="page-link"
+                                    href="/admin/ordermanagement?page=<%= currentPage - 1 %>&search=<%= encodeURIComponent(search) %>&status=<%= encodeURIComponent(status) %>&sort=<%= encodeURIComponent(sort) %>">
+                                    <i class="fas fa-chevron-left"></i> Previous
+                                </a>
+                            </li>
+
+                            <!-- Page Numbers -->
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                    <a class="page-link"
+                                        href="/admin/ordermanagement?page=<%= i %>&search=<%= encodeURIComponent(search) %>&status=<%= encodeURIComponent(status) %>&sort=<%= encodeURIComponent(sort) %>">
+                                        <%= i %>
+                                    </a>
+                                </li>
+                            <% } %>
+
+                            <!-- Next -->
+                            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                <a class="page-link"
+                                    href="/admin/ordermanagement?page=<%= currentPage + 1 %>&search=<%= encodeURIComponent(search) %>&status=<%= encodeURIComponent(status) %>&sort=<%= encodeURIComponent(sort) %>">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // View button functionality
+            const viewButtons = document.querySelectorAll('.view-btn');
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const orderId = this.parentElement.querySelector('.orderId').value;
+                    console.log('Viewing order:', orderId);
+                    window.location.href = `/orderdetails?orderId=${orderId}`;
+                });
+            });
+
+            // Edit button functionality
+            const editButtons = document.querySelectorAll('.edit-btn');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    document.querySelectorAll('.status-dropdown').forEach(dropdown => {
+                        dropdown.classList.remove('show');
+                    });
+                    const dropdown = this.nextElementSibling;
+                    dropdown.classList.toggle('show');
+                });
+            });
+
+            // Status option functionality
+            const statusOptions = document.querySelectorAll('.status-option');
+            statusOptions.forEach(option => {
+                option.addEventListener('click', async function () {
+                    const newStatus = this.dataset.status;
+                    const statusText = this.textContent;
+                    const row = this.closest('tr');
+                    const statusBadge = row.querySelector('td:nth-child(7) .status-badge');
+                    const orderId = row.querySelector('.orderId').value;
+
+                    try {
+                        // Show loading
+                        Swal.fire({
+                            title: 'Updating Status...',
+                            text: 'Please wait while we update the order status.',
+                            icon: 'info',
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        const response = await fetch('/updateStatus', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                orderId: orderId,
+                                status: newStatus
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            // Update UI
+                            const statusBadgeMap = {
+                                'Delivered': 'badge-delivered',
+                                'Shipped': 'badge-shipped',
+                                'Pending': 'badge-pending',
+                                'Cancelled': 'badge-cancelled',
+                                'Ordered': 'badge-processing'
+                            };
+                            
+                            statusBadge.className = `status-badge ${statusBadgeMap[newStatus] || 'badge-processing'}`;
+                            statusBadge.textContent = statusText;
+                            this.closest('.status-dropdown').classList.remove('show');
+
+                            Swal.fire({
+                                title: 'Success!',
+                                text: `Order #ORD-${orderId} status updated to: ${statusText}`,
+                                icon: 'success',
+                                confirmButtonColor: '#e74c3c',
+                                timer: 2000
+                            });
+                        } else {
+                            throw new Error(result.message || 'Failed to update status');
+                        }
+                    } catch (error) {
+                        console.error('Error updating status:', error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: `Error updating order status: ${error.message}`,
+                            icon: 'error',
+                            confirmButtonColor: '#e74c3c'
+                        });
+                    }
+                });
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.status-update-dropdown')) {
+                    document.querySelectorAll('.status-dropdown').forEach(dropdown => {
+                        dropdown.classList.remove('show');
+                    });
+                }
+            });
+
+            // Add loading animation on page load
+            const sections = document.querySelectorAll('.stats-section, .controls-section, .table-section');
+            sections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    section.style.transition = 'all 0.6s ease';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

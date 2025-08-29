@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offers Management - RC WORLD Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary: #e74c3c;
+            --primary-dark: #c0392b;
+            --light-gray: #f8f9fa;
+            --dark: #2c3e50;
+            --text-gray: #6c757d;
+            --bg: #ffffff;
+            --border: #dee2e6;
+            --success: #28a745;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --danger: #dc3545;
+            --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            --shadow-lg: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* Enhanced Sidebar - Same as Dashboard */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, var(--bg) 0%, #f8f9fa 100%);
+            border-right: 1px solid var(--border);
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: -0.025em;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            margin: 0.25rem 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-gray);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(231, 76, 60, 0.08);
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-link.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Enhanced Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Enhanced Top Bar */
+        .topbar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .topbar-left h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .breadcrumb a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: white;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .logout-btn {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+            color: white;
+        }
+
+        /* Enhanced Content Area */
+        .content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-gray);
+            font-size: 0.875rem;
+        }
+
+        /* Enhanced Tab Navigation */
+        .tab-navigation {
+            background: var(--bg);
+            border-radius: 0.75rem;
+            padding: 0.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            color: var(--text-gray);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(231, 76, 60, 0.08);
+            color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Enhanced Offer Section */
+        .offer-section {
+            background: var(--bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .offer-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .product-icon { background: var(--info); }
+        .category-icon { background: var(--success); }
+        .brand-icon { background: var(--warning); }
+
+        /* Enhanced Search Controls */
+        .search-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-section {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+            outline: none;
+        }
+
+        .add-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .add-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .search-btn {
+            background: var(--info);
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .search-btn:hover {
+            background: #138496;
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead th {
+            background: #f8f9fa;
+            border-bottom: 2px solid var(--border);
+            font-weight: 600;
+            color: var(--dark);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 1rem 0.75rem;
+            text-align: left;
+        }
+
+        .table tbody td {
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(231, 76, 60, 0.02);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .offer-id {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Enhanced Status Badges */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .status-active {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+
+        .status-inactive {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        /* Enhanced Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.375rem 0.75rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .update-btn {
+            background: rgba(23, 162, 184, 0.1);
+            color: var(--info);
+        }
+
+        .update-btn:hover {
+            background: var(--info);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .delete-btn {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        .delete-btn:hover {
+            background: var(--danger);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-content {
+            background: var(--bg);
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: var(--shadow-lg);
+            animation: modalSlideIn 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem 0.75rem 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.875rem;
+        }
+
+        .form-control {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+            outline: none;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary {
+            background: var(--light-gray);
+            color: var(--dark);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .topbar {
+                padding: 1rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+
+            .tab-navigation {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .search-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-section {
+                min-width: auto;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-navigation, .offer-section {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .offer-section {
+            animation-delay: 0.1s;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Enhanced Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>RC WORLD</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a href="/dashboard" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/category" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-tags"></i></div>
+                    <span>Category</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/brands" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-trademark"></i></div>
+                    <span>Brands</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/products" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-box"></i></div>
+                    <span>Products</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/usermange" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-users"></i></div>
+                    <span>Customers</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/order" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-shopping-cart"></i></div>
+                    <span>Orders</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/saleReport" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
+                    <span>Sales Report</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-cog"></i></div>
+                    <span>Settings</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-image"></i></div>
+                    <span>Banner Manage</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/coupen" class="nav-link">
+                    <div class="nav-icon"><i class="fas fa-ticket-alt"></i></div>
+                    <span>Manage Coupons</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/offer" class="nav-link active">
+                    <div class="nav-icon"><i class="fas fa-percent"></i></div>
+                    <span>Offers Management</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Enhanced Main Content -->
+    <main class="main-content">
+        <!-- Enhanced Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1>Offers Management</h1>
+               
+            </div>
+            <div class="topbar-right">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Welcome, Admin</span>
+                </div>
+                <div class="user-info">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <button class="logout-btn" onclick="window.location.href='/logout'">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Enhanced Content -->
+        <div class="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h2 class="page-title">Promotional Offers</h2>
+                <p class="page-subtitle">Create and manage special offers for products, categories, and brands</p>
+            </div>
+
+            <!-- Enhanced Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" onclick="switchTab('products')">
+                    <i class="fas fa-box"></i>
+                    Product Offers
+                </button>
+                <button class="tab-btn" onclick="switchTab('categories')">
+                    <i class="fas fa-tags"></i>
+                    Category Offers
+                </button>
+                <button class="tab-btn" onclick="switchTab('brands')">
+                    <i class="fas fa-trademark"></i>
+                    Brand Offers
+                </button>
+            </div>
+
+            <!-- Product Offers Tab -->
+            <div id="products-tab" class="tab-content active">
+                <div class="offer-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <div class="offer-icon product-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            Product Offers
+                        </h3>
+                    </div>
+                    
+                    <div class="search-controls">
+                        <div class="search-section">
+                            <input type="text" class="search-input" placeholder="Search product offers..." id="productOfferSearch">
+                            <button class="search-btn" onclick="searchProductOffers()">
+                                <i class="fas fa-search"></i>
+                                Search
+                            </button>
+                        </div>
+                        <button class="add-btn" onclick="openProductOfferModal()">
+                            <i class="fas fa-plus"></i>
+                            Add Product Offer
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-hashtag me-2"></i>Product ID</th>
+                                    <th><i class="fas fa-tag me-2"></i>Offer Title</th>
+                                    <th><i class="fas fa-box me-2"></i>Product Name</th>
+                                    <th><i class="fas fa-percent me-2"></i>Discount</th>
+                                    <th><i class="fas fa-play-circle me-2"></i>Start Date</th>
+                                    <th><i class="fas fa-stop-circle me-2"></i>End Date</th>
+                                    <th><i class="fas fa-info-circle me-2"></i>Status</th>
+                                    <th><i class="fas fa-cogs me-2"></i>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productOffersTableBody">
+                                <% if (offers && offers.length > 0) { %>
+                                    <% offers.forEach(element => { %>
+                                        <tr data-offer-id="<%=element._id%>">
+                                            <td>
+                                                <span class="offer-id">#<%=element.productId._id || element.productId %></span>
+                                            </td>
+                                            <td><%=element.title %></td>
+                                            <td><%=element.productId.productName %></td>
+                                            <td><strong><%=element.discount %>%</strong></td>
+                                            <td data-date="<%=element.formattedStartDate %>"><%=element.displayStartDate %></td>
+                                            <td data-date="<%=element.formattedEndDate %>"><%=element.displayEndDate %></td>
+                                            <td>
+                                                <span class="status-badge status-<%= element.status %>">
+                                                    <i class="fas fa-<%= element.status === 'active' ? 'check-circle' : 'times-circle' %>"></i>
+                                                    <%= element.status === 'active' ? 'Active' : 'Inactive' %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn update-btn" onclick="openUpdateProductOfferModal('<%=element._id%>')">
+                                                        <i class="fas fa-edit"></i>
+                                                        Update
+                                                    </button>
+                                                    <button class="action-btn delete-btn" onclick="deleteProductOffer('<%=element._id%>')">
+                                                        <i class="fas fa-trash"></i>
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; color: var(--text-gray);">No product offers found</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Offers Tab -->
+            <div id="categories-tab" class="tab-content">
+                <div class="offer-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <div class="offer-icon category-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            Category Offers
+                        </h3>
+                    </div>
+                    
+                    <div class="search-controls">
+                        <div class="search-section">
+                            <input type="text" class="search-input" placeholder="Search category offers..." id="categoryOfferSearch">
+                            <button class="search-btn" onclick="searchCategoryOffers()">
+                                <i class="fas fa-search"></i>
+                                Search
+                            </button>
+                        </div>
+                        <button class="add-btn" onclick="openCategoryOfferModal()">
+                            <i class="fas fa-plus"></i>
+                            Add Category Offer
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-hashtag me-2"></i>Category ID</th>
+                                    <th><i class="fas fa-tag me-2"></i>Offer Title</th>
+                                    <th><i class="fas fa-tags me-2"></i>Category Name</th>
+                                    <th><i class="fas fa-percent me-2"></i>Discount</th>
+                                    <th><i class="fas fa-play-circle me-2"></i>Start Date</th>
+                                    <th><i class="fas fa-stop-circle me-2"></i>End Date</th>
+                                    <th><i class="fas fa-info-circle me-2"></i>Status</th>
+                                    <th><i class="fas fa-cogs me-2"></i>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="categoryOffersTableBody">
+                                <% if (categoryOffers && categoryOffers.length > 0) { %>
+                                    <% categoryOffers.forEach(element => { %>
+                                        <tr data-offer-id="<%=element._id%>">
+                                            <td>
+                                                <span class="offer-id">#<%=element.categoryId._id || element.categoryId %></span>
+                                            </td>
+                                            <td><%=element.title %></td>
+                                            <td><%=element.categoryId.categoryName %></td>
+                                            <td><strong><%=element.discount %>%</strong></td>
+                                            <td data-date="<%=element.formattedStartDate %>"><%=element.displayStartDate %></td>
+                                            <td data-date="<%=element.formattedEndDate %>"><%=element.displayEndDate %></td>
+                                            <td>
+                                                <span class="status-badge status-<%= element.status %>">
+                                                    <i class="fas fa-<%= element.status === 'active' ? 'check-circle' : 'times-circle' %>"></i>
+                                                    <%= element.status === 'active' ? 'Active' : 'Inactive' %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn update-btn" onclick="openUpdateCategoryOfferModal('<%=element._id%>')">
+                                                        <i class="fas fa-edit"></i>
+                                                        Update
+                                                    </button>
+                                                    <button class="action-btn delete-btn" onclick="deleteCategoryOffer('<%=element._id%>')">
+                                                        <i class="fas fa-trash"></i>
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; color: var(--text-gray);">No category offers found</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brand Offers Tab -->
+            <div id="brands-tab" class="tab-content">
+                <div class="offer-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <div class="offer-icon brand-icon">
+                                <i class="fas fa-trademark"></i>
+                            </div>
+                            Brand Offers
+                        </h3>
+                    </div>
+                    
+                    <div class="search-controls">
+                        <div class="search-section">
+                            <input type="text" class="search-input" placeholder="Search brand offers..." id="brandOfferSearch">
+                            <button class="search-btn" onclick="searchBrandOffers()">
+                                <i class="fas fa-search"></i>
+                                Search
+                            </button>
+                        </div>
+                        <button class="add-btn" onclick="openBrandOfferModal()">
+                            <i class="fas fa-plus"></i>
+                            Add Brand Offer
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-hashtag me-2"></i>Brand ID</th>
+                                    <th><i class="fas fa-tag me-2"></i>Offer Title</th>
+                                    <th><i class="fas fa-trademark me-2"></i>Brand Name</th>
+                                    <th><i class="fas fa-percent me-2"></i>Discount</th>
+                                    <th><i class="fas fa-play-circle me-2"></i>Start Date</th>
+                                    <th><i class="fas fa-stop-circle me-2"></i>End Date</th>
+                                    <th><i class="fas fa-info-circle me-2"></i>Status</th>
+                                    <th><i class="fas fa-cogs me-2"></i>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="brandOffersTableBody">
+                                <% if (brandOffers && brandOffers.length > 0) { %>
+                                    <% brandOffers.forEach(element => { %>
+                                        <tr data-offer-id="<%=element._id%>">
+                                            <td>
+                                                <span class="offer-id">#<%=element.brandId._id || element.brandId %></span>
+                                            </td>
+                                            <td><%=element.title %></td>
+                                            <td><%=element.brandId.brandName %></td>
+                                            <td><strong><%=element.discount %>%</strong></td>
+                                            <td data-date="<%=element.formattedStartDate %>"><%=element.displayStartDate %></td>
+                                            <td data-date="<%=element.formattedEndDate %>"><%=element.displayEndDate %></td>
+                                            <td>
+                                                <span class="status-badge status-<%= element.status %>">
+                                                    <i class="fas fa-<%= element.status === 'active' ? 'check-circle' : 'times-circle' %>"></i>
+                                                    <%= element.status === 'active' ? 'Active' : 'Inactive' %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn update-btn" onclick="openUpdateBrandOfferModal('<%=element._id%>')">
+                                                        <i class="fas fa-edit"></i>
+                                                        Update
+                                                    </button>
+                                                    <button class="action-btn delete-btn" onclick="deleteBrandOffer('<%=element._id%>')">
+                                                        <i class="fas fa-trash"></i>
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; color: var(--text-gray);">No brand offers found</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Enhanced Product Offer Modal -->
+    <div id="productOfferModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="productOfferModalTitle">
+                    <i class="fas fa-plus"></i>
+                    Add Product Offer
+                </h3>
+                <button class="close-btn" onclick="closeProductOfferModal()">&times;</button>
+            </div>
+            <form id="productOfferForm">
+                <input type="hidden" id="productOfferId">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Offer Title *</label>
+                            <input type="text" id="productOfferTitle" class="form-control" placeholder="Enter offer title" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Select Product *</label>
+                            <select id="productSelect" class="form-control" required>
+                                <option value="">Select a product</option>
+                                <% if (product) { %>
+                                    <% product.forEach(element => { %>
+                                        <option value="<%=element._id %>"><%=element.productName %></option>
+                                    <% }) %>
+                                <% } %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Discount Percentage *</label>
+                            <input type="number" id="productDiscount" class="form-control" min="1" max="100" placeholder="Enter discount %" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Start Date *</label>
+                            <input type="date" id="productStartDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End Date *</label>
+                            <input type="date" id="productEndDate" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeProductOfferModal()">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="productOfferSaveBtn">
+                        <i class="fas fa-save"></i>
+                        Save Offer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Enhanced Category Offer Modal -->
+    <div id="categoryOfferModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="categoryOfferModalTitle">
+                    <i class="fas fa-plus"></i>
+                    Add Category Offer
+                </h3>
+                <button class="close-btn" onclick="closeCategoryOfferModal()">&times;</button>
+            </div>
+            <form id="categoryOfferForm">
+                <input type="hidden" id="categoryOfferId">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Offer Title *</label>
+                            <input type="text" id="categoryOfferTitle" class="form-control" placeholder="Enter offer title" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Select Category *</label>
+                            <select id="categorySelect" class="form-control" required>
+                                <option value="">Select a category</option>
+                                <% if (catageries) { %>
+                                    <% catageries.forEach(element => { %>
+                                        <option value="<%=element._id %>"><%=element.categoryName %></option>
+                                    <% }) %>
+                                <% } %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Discount Percentage *</label>
+                            <input type="number" id="categoryDiscount" class="form-control" min="1" max="100" placeholder="Enter discount %" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Start Date *</label>
+                            <input type="date" id="categoryStartDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End Date *</label>
+                            <input type="date" id="categoryEndDate" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryOfferModal()">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="categoryOfferSaveBtn">
+                        <i class="fas fa-save"></i>
+                        Save Offer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Enhanced Brand Offer Modal -->
+    <div id="brandOfferModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="brandOfferModalTitle">
+                    <i class="fas fa-plus"></i>
+                    Add Brand Offer
+                </h3>
+                <button class="close-btn" onclick="closeBrandOfferModal()">&times;</button>
+            </div>
+            <form id="brandOfferForm">
+                <input type="hidden" id="brandOfferId">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Offer Title *</label>
+                            <input type="text" id="brandOfferTitle" class="form-control" placeholder="Enter offer title" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Select Brand *</label>
+                            <select id="brandSelect" class="form-control" required>
+                                <option value="">Select a brand</option>
+                                <% if (brands) { %>
+                                    <% brands.forEach(element => { %>
+                                        <option value="<%=element._id %>"><%=element.brandName %></option>
+                                    <% }) %>
+                                <% } %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Discount Percentage *</label>
+                            <input type="number" id="brandDiscount" class="form-control" min="1" max="100" placeholder="Enter discount %" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Start Date *</label>
+                            <input type="date" id="brandStartDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End Date *</label>
+                            <input type="date" id="brandEndDate" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeBrandOfferModal()">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="brandOfferSaveBtn">
+                        <i class="fas fa-save"></i>
+                        Save Offer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loading animation on page load
+            const sections = document.querySelectorAll('.tab-navigation, .offer-section');
+            sections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    section.style.transition = 'all 0.6s ease';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // Global variables
+        let currentTab = 'products';
+        let isEditMode = false;
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+            currentTab = tabName;
+        }
+
+        // Product Offer Functions
+        function openProductOfferModal(id = null) {
+            isEditMode = !!id;
+            document.getElementById('productOfferModalTitle').innerHTML = isEditMode ? 
+                '<i class="fas fa-edit"></i> Edit Product Offer' : 
+                '<i class="fas fa-plus"></i> Add Product Offer';
+            document.getElementById('productOfferSaveBtn').innerHTML = isEditMode ? 
+                '<i class="fas fa-save"></i> Update Offer' : 
+                '<i class="fas fa-save"></i> Save Offer';
+            
+            if (isEditMode) {
+                const row = document.querySelector(`tr[data-offer-id="${id}"]`);
+                if (row) {
+                    document.getElementById('productOfferId').value = id;
+                    document.getElementById('productOfferTitle').value = row.querySelector('td:nth-child(2)').textContent;
+                    document.getElementById('productDiscount').value = row.querySelector('td:nth-child(4)').textContent.replace('%', '');
+                    document.getElementById('productStartDate').value = row.querySelector('td:nth-child(5)').getAttribute('data-date');
+                    document.getElementById('productEndDate').value = row.querySelector('td:nth-child(6)').getAttribute('data-date');
+                    
+                    const productName = row.querySelector('td:nth-child(3)').textContent;
+                    const productSelect = document.getElementById('productSelect');
+                    for (let i = 0; i < productSelect.options.length; i++) {
+                        if (productSelect.options[i].text === productName) {
+                            productSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                document.getElementById('productOfferForm').reset();
+            }
+            
+            document.getElementById('productOfferModal').style.display = 'block';
+        }
+
+        function closeProductOfferModal() {
+            document.getElementById('productOfferModal').style.display = 'none';
+            document.getElementById('productOfferForm').reset();
+        }
+
+        function openUpdateProductOfferModal(id) {
+            openProductOfferModal(id);
+        }
+
+        function deleteProductOffer(id) {
+            Swal.fire({
+                title: 'Delete Product Offer?',
+                text: 'Are you sure you want to delete this product offer? This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Deleting...',
+                        text: 'Please wait while we delete the offer.',
+                        icon: 'info',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch(`/deleteOffer/${id}`, { method: 'DELETE' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: 'Product offer has been deleted successfully.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#e74c3c'
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                throw new Error('Failed to delete product offer');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Something went wrong. Please try again.',
+                                icon: 'error',
+                                confirmButtonColor: '#e74c3c'
+                            });
+                        });
+                }
+            });
+        }
+
+        // Category Offer Functions
+        function openCategoryOfferModal(id = null) {
+            isEditMode = !!id;
+            document.getElementById('categoryOfferModalTitle').innerHTML = isEditMode ? 
+                '<i class="fas fa-edit"></i> Edit Category Offer' : 
+                '<i class="fas fa-plus"></i> Add Category Offer';
+            document.getElementById('categoryOfferSaveBtn').innerHTML = isEditMode ? 
+                '<i class="fas fa-save"></i> Update Offer' : 
+                '<i class="fas fa-save"></i> Save Offer';
+            
+            if (isEditMode) {
+                const row = document.querySelector(`tr[data-offer-id="${id}"]`);
+                if (row) {
+                    document.getElementById('categoryOfferId').value = id;
+                    document.getElementById('categoryOfferTitle').value = row.querySelector('td:nth-child(2)').textContent;
+                    document.getElementById('categoryDiscount').value = row.querySelector('td:nth-child(4)').textContent.replace('%', '');
+                    document.getElementById('categoryStartDate').value = row.querySelector('td:nth-child(5)').getAttribute('data-date');
+                    document.getElementById('categoryEndDate').value = row.querySelector('td:nth-child(6)').getAttribute('data-date');
+                    
+                    const categoryName = row.querySelector('td:nth-child(3)').textContent;
+                    const categorySelect = document.getElementById('categorySelect');
+                    for (let i = 0; i < categorySelect.options.length; i++) {
+                        if (categorySelect.options[i].text === categoryName) {
+                            categorySelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                document.getElementById('categoryOfferForm').reset();
+            }
+            
+            document.getElementById('categoryOfferModal').style.display = 'block';
+        }
+
+        function closeCategoryOfferModal() {
+            document.getElementById('categoryOfferModal').style.display = 'none';
+            document.getElementById('categoryOfferForm').reset();
+        }
+
+        function openUpdateCategoryOfferModal(id) {
+            openCategoryOfferModal(id);
+        }
+
+        function deleteCategoryOffer(id) {
+            Swal.fire({
+                title: 'Delete Category Offer?',
+                text: 'Are you sure you want to delete this category offer? This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Deleting...',
+                        text: 'Please wait while we delete the offer.',
+                        icon: 'info',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch(`/deleteCategoryOffer/${id}`, { method: 'DELETE' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: 'Category offer has been deleted successfully.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#e74c3c'
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                throw new Error('Failed to delete category offer');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Something went wrong. Please try again.',
+                                icon: 'error',
+                                confirmButtonColor: '#e74c3c'
+                            });
+                        });
+                }
+            });
+        }
+
+        // Brand Offer Functions
+        function openBrandOfferModal(id = null) {
+            isEditMode = !!id;
+            document.getElementById('brandOfferModalTitle').innerHTML = isEditMode ? 
+                '<i class="fas fa-edit"></i> Edit Brand Offer' : 
+                '<i class="fas fa-plus"></i> Add Brand Offer';
+            document.getElementById('brandOfferSaveBtn').innerHTML = isEditMode ? 
+                '<i class="fas fa-save"></i> Update Offer' : 
+                '<i class="fas fa-save"></i> Save Offer';
+            
+            if (isEditMode) {
+                const row = document.querySelector(`tr[data-offer-id="${id}"]`);
+                if (row) {
+                    document.getElementById('brandOfferId').value = id;
+                    document.getElementById('brandOfferTitle').value = row.querySelector('td:nth-child(2)').textContent;
+                    document.getElementById('brandDiscount').value = row.querySelector('td:nth-child(4)').textContent.replace('%', '');
+                    document.getElementById('brandStartDate').value = row.querySelector('td:nth-child(5)').getAttribute('data-date');
+                    document.getElementById('brandEndDate').value = row.querySelector('td:nth-child(6)').getAttribute('data-date');
+                    
+                    const brandName = row.querySelector('td:nth-child(3)').textContent;
+                    const brandSelect = document.getElementById('brandSelect');
+                    for (let i = 0; i < brandSelect.options.length; i++) {
+                        if (brandSelect.options[i].text === brandName) {
+                            brandSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                document.getElementById('brandOfferForm').reset();
+            }
+            
+            document.getElementById('brandOfferModal').style.display = 'block';
+        }
+
+        function closeBrandOfferModal() {
+            document.getElementById('brandOfferModal').style.display = 'none';
+            document.getElementById('brandOfferForm').reset();
+        }
+
+        function openUpdateBrandOfferModal(id) {
+            openBrandOfferModal(id);
+        }
+
+        function deleteBrandOffer(id) {
+            Swal.fire({
+                title: 'Delete Brand Offer?',
+                text: 'Are you sure you want to delete this brand offer? This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Deleting...',
+                        text: 'Please wait while we delete the offer.',
+                        icon: 'info',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch(`/deleteBrandOffer/${id}`, { method: 'DELETE' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: 'Brand offer has been deleted successfully.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#e74c3c'
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                throw new Error('Failed to delete brand offer');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Something went wrong. Please try again.',
+                                icon: 'error',
+                                confirmButtonColor: '#e74c3c'
+                            });
+                        });
+                }
+            });
+        }
+
+        // Search Functions
+        function searchProductOffers() {
+            const searchTerm = document.getElementById('productOfferSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#productOffersTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        function searchCategoryOffers() {
+            const searchTerm = document.getElementById('categoryOfferSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#categoryOffersTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        function searchBrandOffers() {
+            const searchTerm = document.getElementById('brandOfferSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#brandOffersTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Form Submissions
+        document.getElementById('productOfferForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading
+            Swal.fire({
+                title: isEditMode ? 'Updating Offer...' : 'Adding Offer...',
+                text: 'Please wait while we save your offer.',
+                icon: 'info',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            const formData = {
+                title: document.getElementById('productOfferTitle').value,
+                productID: document.getElementById('productSelect').value,
+                discount: Number(document.getElementById('productDiscount').value),
+                startDate: document.getElementById('productStartDate').value,
+                endDate: document.getElementById('productEndDate').value
+            };
+
+            const url = isEditMode ? `/updateoffer/${document.getElementById('productOfferId').value}` : '/addoffer';
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeProductOfferModal()
+                    Swal.fire({
+                        title: 'Success!',
+                        text: isEditMode ? 'Product offer updated successfully!' : 'Product offer added successfully!',
+                        icon: 'success',
+                        confirmButtonColor: '#e74c3c'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.message || 'Failed to save product offer');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to save product offer. Please try again.',
+                    icon: 'error',
+                    confirmButtonColor: '#e74c3c'
+                });
+            });
+        });
+
+        document.getElementById('categoryOfferForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading
+            Swal.fire({
+                title: isEditMode ? 'Updating Offer...' : 'Adding Offer...',
+                text: 'Please wait while we save your offer.',
+                icon: 'info',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            const formData = {
+                title: document.getElementById('categoryOfferTitle').value,
+                categoryID: document.getElementById('categorySelect').value,
+                discount: Number(document.getElementById('categoryDiscount').value),
+                startDate: document.getElementById('categoryStartDate').value,
+                endDate: document.getElementById('categoryEndDate').value
+            };
+
+            const url = isEditMode ? `/updateCategoryOffer/${document.getElementById('categoryOfferId').value}` : '/addCategoryOffer';
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeCategoryOfferModal()
+                    Swal.fire({
+                        title: 'Success!',
+                        text: isEditMode ? 'Category offer updated successfully!' : 'Category offer added successfully!',
+                        icon: 'success',
+                        confirmButtonColor: '#e74c3c'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.fail || 'Failed to save category offer');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to save category offer. Please try again.',
+                    icon: 'error',
+                    confirmButtonColor: '#e74c3c'
+                });
+            });
+        });
+
+        document.getElementById('brandOfferForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading
+            Swal.fire({
+                title: isEditMode ? 'Updating Offer...' : 'Adding Offer...',
+                text: 'Please wait while we save your offer.',
+                icon: 'info',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            const formData = {
+                title: document.getElementById('brandOfferTitle').value,
+                brandID: document.getElementById('brandSelect').value,
+                discount: Number(document.getElementById('brandDiscount').value),
+                startDate: document.getElementById('brandStartDate').value,
+                endDate: document.getElementById('brandEndDate').value
+            };
+
+            const url = isEditMode ? `/updateBrandOffer/${document.getElementById('brandOfferId').value}` : '/addBrandOffer';
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeBrandOfferModal()
+                    Swal.fire({
+                        title: 'Success!',
+                        text: isEditMode ? 'Brand offer updated successfully!' : 'Brand offer added successfully!',
+                        icon: 'success',
+                        confirmButtonColor: '#e74c3c'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.message || 'Failed to save brand offer');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to save brand offer. Please try again.',
+                    icon: 'error',
+                    confirmButtonColor: '#e74c3c'
+                });
+            });
+        });
+
+        // Modal click outside to close
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        };
+    </script>
+</body>
+</html>

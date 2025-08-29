@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment Success - RC WORLD</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #000;
+      color: white;
+      padding: 1em 2em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-size: 1em;
+    }
+
+    nav a:hover {
+      color: #f44336;
+    }
+
+    .success-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3em 1em;
+      text-align: center;
+    }
+
+    .success-icon {
+      font-size: 4em;
+      color: #4CAF50;
+      margin-bottom: 0.5em;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 0.5em;
+    }
+
+    .order-details {
+      background: #fff;
+      padding: 1.5em 2em;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      margin: 1em 0;
+      max-width: 600px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .product {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1em;
+    }
+
+    .product img {
+      width: 100px;
+      height: auto;
+      border-radius: 10px;
+      margin-right: 1em;
+    }
+
+    .product-info p {
+      margin: 0.3em 0;
+    }
+
+    .order-details p {
+      margin: 0.5em 0;
+      font-size: 1em;
+    }
+
+    .buttons {
+      margin-top: 1em;
+    }
+
+    .buttons a {
+      display: inline-block;
+      margin: 0.5em;
+      padding: 0.7em 1.5em;
+      background-color: #000;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .buttons a:hover {
+      background-color: #f44336;
+    }
+
+    footer {
+      background-color: #000;
+      color: #fff;
+      padding: 1em;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .product {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .product img {
+        margin-bottom: 1em;
+      }
+
+      .order-details {
+        padding: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">RC WORLD</div>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Shop</a>
+    <a href="#">Cart</a>
+    <a href="#">Profile</a>
+  </nav>
+</header>
+
+<main class="success-container">
+  <div class="success-icon">✅</div>
+  <h1>Payment Successful!</h1>
+  <p>Thank you for your purchase. Your order has been confirmed.</p>
+
+  <div class="order-details">
+    <div class="product">
+      <img src="https://via.placeholder.com/100" alt="Product Image" />
+      <div class="product-info">
+        <p><strong>Product:</strong> RC High-Speed Car</p>
+        <p><strong>Quantity:</strong> 1</p>
+        <p><strong>Price:</strong> $249.99</p>
+      </div>
+    </div>
+    <p><strong>Order ID:</strong> #RC12345678</p>
+    <p><strong>Order Date:</strong> May 2, 2025</p>
+    <p><strong>Estimated Delivery:</strong> May 6 - May 8, 2025</p>
+    <p><strong>Payment Method:</strong> Credit Card</p>
+    <p><strong>Total Amount:</strong> $249.99</p>
+  </div>
+
+  <div class="buttons">
+    <a href="#">Return to Home</a>
+    <a href="#">Continue Shopping</a>
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 RC WORLD. All rights reserved.
+</footer>
+
+</body>
+</html>
+

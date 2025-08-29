@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Report - RC WORLD Admin</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    :root {
+      --primary: #e74c3c;
+      --primary-dark: #c0392b;
+      --light-gray: #f8f9fa;
+      --dark: #2c3e50;
+      --text-gray: #6c757d;
+      --bg: #ffffff;
+      --border: #dee2e6;
+      --success: #28a745;
+      --warning: #ffc107;
+      --info: #17a2b8;
+      --danger: #dc3545;
+      --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      --shadow-lg: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--light-gray);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    /* Enhanced Sidebar - Same as Dashboard */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: linear-gradient(180deg, var(--bg) 0%, #f8f9fa 100%);
+      border-right: 1px solid var(--border);
+      z-index: 1000;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 2rem 1.5rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar h2 {
+      color: var(--primary);
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: -0.025em;
+    }
+
+    .sidebar-nav {
+      padding: 1rem 0;
+    }
+
+    .nav-item {
+      margin: 0.25rem 1rem;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      color: var(--text-gray);
+      text-decoration: none;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.2s ease;
+    }
+
+    .nav-link:hover {
+      background: rgba(231, 76, 60, 0.08);
+      color: var(--primary);
+      transform: translateX(4px);
+    }
+
+    .nav-link.active {
+      background: rgba(231, 76, 60, 0.1);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .nav-link.active::before {
+      transform: scaleY(1);
+    }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Enhanced Main Content */
+    .main-content {
+      margin-left: 280px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Enhanced Top Bar */
+    .topbar {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-lg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .topbar-left h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      opacity: 0.9;
+    }
+
+    .breadcrumb a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      color: white;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .logout-btn {
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+      color: white;
+    }
+
+    /* Enhanced Content Area */
+    .content {
+      flex: 1;
+      padding: 2rem;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: var(--text-gray);
+      font-size: 0.875rem;
+    }
+
+    /* Enhanced Stats Cards */
+    .stats-section {
+      margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background: var(--bg);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .stat-title {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-change {
+      font-size: 0.75rem;
+      color: var(--text-gray);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .stat-change.positive {
+      color: var(--success);
+    }
+
+    .stat-change.negative {
+      color: var(--danger);
+    }
+
+    /* Enhanced Chart Section */
+    .chart-section {
+      background: var(--bg);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .chart-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chart-tab {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: transparent;
+      color: var(--text-gray);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+    }
+
+    .chart-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .chart-container {
+      height: 400px;
+      position: relative;
+    }
+
+    /* Enhanced Controls Section */
+    .controls-section {
+      background: var(--bg);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .controls-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .controls-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .filter-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-label {
+      font-weight: 500;
+      color: var(--dark);
+      font-size: 0.875rem;
+    }
+
+    .filter-input {
+      padding: 0.625rem 0.875rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+    }
+
+    .filter-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+      outline: none;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.625rem 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 0.5rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-outline-primary {
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      background: transparent;
+    }
+
+    .btn-outline-primary:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+      transform: translateY(-1px);
+    }
+
+    /* Enhanced Table Section */
+    .table-section {
+      background: var(--bg);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .table-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table thead th {
+      background: #f8f9fa;
+      border-bottom: 2px solid var(--border);
+      font-weight: 600;
+      color: var(--dark);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      padding: 1rem 0.75rem;
+      text-align: left;
+    }
+
+    .table tbody td {
+      padding: 1rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .table tbody tr:hover {
+      background: rgba(231, 76, 60, 0.02);
+    }
+
+    .table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Enhanced Status Badges */
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .status-completed {
+      background: rgba(40, 167, 69, 0.1);
+      color: var(--success);
+    }
+
+    .status-pending {
+      background: rgba(255, 193, 7, 0.1);
+      color: #856404;
+    }
+
+    /* Enhanced Pagination */
+    .pagination-section {
+      display: flex;
+      justify-content: between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .pagination {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .page-btn {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: white;
+      color: var(--dark);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+    }
+
+    .page-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .page-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .page-btn:disabled {
+      background: var(--light-gray);
+      color: var(--text-gray);
+      cursor: not-allowed;
+      border-color: var(--border);
+    }
+
+    .page-btn:disabled:hover {
+      background: var(--light-gray);
+      color: var(--text-gray);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .topbar {
+        padding: 1rem;
+      }
+
+      .content {
+        padding: 1rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-section {
+        grid-template-columns: 1fr;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .table-responsive {
+        font-size: 0.875rem;
+      }
+    }
+
+    /* Loading Animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .stats-section,
+    .chart-section,
+    .controls-section,
+    .table-section {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .chart-section {
+      animation-delay: 0.1s;
+    }
+
+    .controls-section {
+      animation-delay: 0.2s;
+    }
+
+    .table-section {
+      animation-delay: 0.3s;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Enhanced Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>RC WORLD</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item">
+        <a href="/dashboard" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+          <span>Dashboard</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/category" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-tags"></i></div>
+          <span>Category</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/brands" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-trademark"></i></div>
+          <span>Brands</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/products" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-box"></i></div>
+          <span>Products</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/usermange" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-users"></i></div>
+          <span>Customers</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/order" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-shopping-cart"></i></div>
+          <span>Orders</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/saleReport" class="nav-link active">
+          <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
+          <span>Sales Report</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="#" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-cog"></i></div>
+          <span>Settings</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="#" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-image"></i></div>
+          <span>Banner Manage</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/coupen" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-ticket-alt"></i></div>
+          <span>Manage Coupons</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/offer" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-percent"></i></div>
+          <span>Offers Management</span>
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Enhanced Main Content -->
+  <main class="main-content">
+    <!-- Enhanced Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1>Sales Report</h1>
+
+      </div>
+      <div class="topbar-right">
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span>Welcome, Admin</span>
+        </div>
+        <div class="user-info">
+          <i class="fas fa-cog"></i>
+        </div>
+        <button class="logout-btn" onclick="window.location.href='/logout'">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Enhanced Content -->
+    <div class="content">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h2 class="page-title">Sales Analytics</h2>
+        <p class="page-subtitle">Comprehensive sales performance and revenue analytics</p>
+      </div>
+
+      <!-- Enhanced Stats Section -->
+      <section class="stats-section">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Total Sales</div>
+              <div class="stat-icon" style="background: rgba(231, 76, 60, 0.1); color: var(--primary);">
+                <i class="fas fa-chart-line"></i>
+              </div>
+            </div>
+            <div class="stat-value">₹1,25,000</div>
+            <div class="stat-change positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>+12.5% from last month</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Total Orders</div>
+              <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1); color: var(--success);">
+                <i class="fas fa-shopping-cart"></i>
+              </div>
+            </div>
+            <div class="stat-value">215</div>
+            <div class="stat-change positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>+8.3% from last month</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Total Revenue</div>
+              <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: var(--warning);">
+                <i class="fas fa-rupee-sign"></i>
+              </div>
+            </div>
+            <div class="stat-value">₹2,40,500</div>
+            <div class="stat-change positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>+15.2% from last month</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Average Order</div>
+              <div class="stat-icon" style="background: rgba(23, 162, 184, 0.1); color: var(--info);">
+                <i class="fas fa-calculator"></i>
+              </div>
+            </div>
+            <div class="stat-value">₹1,119</div>
+            <div class="stat-change positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>+6.8% from last month</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Enhanced Chart Section -->
+      <section class="chart-section">
+        <div class="chart-header">
+          <h3 class="chart-title">
+            <i class="fas fa-chart-bar"></i>
+            Sales Analytics
+          </h3>
+          <div class="chart-controls">
+            <button class="chart-tab active" data-period="daily">Daily</button>
+            <button class="chart-tab" data-period="weekly">Weekly</button>
+            <button class="chart-tab" data-period="monthly">Monthly</button>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="salesChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Enhanced Controls Section -->
+      <section class="controls-section">
+        <div class="controls-header">
+          <h3 class="controls-title">
+            <i class="fas fa-filter"></i>
+            Filter & Export Options
+          </h3>
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-group">
+            <label class="filter-label">Date Range</label>
+            <input type="date" class="filter-input" id="startDate">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">To Date</label>
+            <input type="date" class="filter-input" id="endDate">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Category</label>
+            <select class="filter-input">
+              <option value="">All Categories</option>
+              <option value="cars">RC Cars</option>
+              <option value="drones">RC Drones</option>
+              <option value="boats">RC Boats</option>
+              <option value="helicopters">RC Helicopters</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Status</label>
+            <select class="filter-input">
+              <option value="">All Status</option>
+              <option value="completed">Completed</option>
+              <option value="pending">Pending</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Search</label>
+            <input type="text" class="filter-input" placeholder="Product, Customer, Order ID...">
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn btn-primary" onclick="applyFilters()">
+            <i class="fas fa-search"></i>
+            Apply Filters
+          </button>
+          <button class="btn btn-outline-primary" onclick="clearFilters()">
+            <i class="fas fa-times"></i>
+            Clear Filters
+          </button>
+          <button class="btn btn-success" onclick="exportReport()">
+            <i class="fas fa-download"></i>
+            Export Report
+          </button>
+        </div>
+      </section>
+
+      <!-- Enhanced Table Section -->
+      <section class="table-section">
+        <div class="table-header">
+          <h3 class="table-title">
+            <i class="fas fa-table"></i>
+            Sales Transactions
+          </h3>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th><i class="fas fa-box me-2"></i>Product Name</th>
+                <th><i class="fas fa-hashtag me-2"></i>Product ID</th>
+                <th><i class="fas fa-rupee-sign me-2"></i>Price</th>
+                <th><i class="fas fa-tag me-2"></i>Category</th>
+                <th><i class="fas fa-trademark"></i>Brand</th>
+                <th><i class="fas fa-sort-numeric-up me-2"></i>Qty</th>
+                <th><i class="fas fa-receipt me-2"></i>Order ID</th>
+                <th><i class="fas fa-calendar me-2"></i>Date</th>
+                <th><i class="fas fa-map-marker-alt me-2"></i>Location</th>
+                <th><i class="fas fa-user me-2"></i>Customer</th>
+                <th><i class="fas fa-calculator me-2"></i>Total</th>
+                <th><i class="fas fa-info-circle me-2"></i>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% orders.forEach(order=> { %>
+                <% order.orderitems.forEach(item=> { %>
+                  <tr>
+                    <!-- Product Name -->
+                    <td>
+                      <%= item.productId?.productName %>
+                    </td>
+
+                    <!-- Product ID -->
+                    <td>
+                      <span style="font-family: monospace; color: var(--primary);">
+                        #<%= item.productId?._id.toString().slice(-6) %>
+                      </span>
+                    </td>
+
+                    <!-- Price -->
+                    <td class="fw-bold">₹<%= item.price %>
+                    </td>
+
+                    <!-- Category -->
+                    <td>
+                      <%= item.productId?.categoryId?.categoryName %>
+                    </td>
+
+                    <!-- Brand (or GST %) -->
+                    <td>
+                      <%= item.productId?.brandId?.brandName %>
+                    </td>
+
+                    <!-- Quantity -->
+                    <td>
+                      <span class="badge bg-light text-dark">
+                        <%= item.quantity %>
+                      </span>
+                    </td>
+
+                    <!-- Order ID -->
+                    <td>
+                      <span style="font-family: monospace; color: var(--primary);">
+                        #ORD<%= order.orderId %>
+                      </span>
+                    </td>
+
+                    <!-- Date -->
+                    <td>
+                      <%= order.createdOn.toLocaleDateString("en-IN", { day: "2-digit" , month: "short" ,
+                        year: "numeric" }) %>
+                    </td>
+
+                    <!-- Location -->
+                    <td>
+                      <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>
+                    </td>
+
+                    <!-- Customer -->
+                    <td>
+                      <%= order.userId?.firstName %>
+                    </td>
+
+                    <!-- Total Amount -->
+                    <td class="fw-bold">₹<%= order.finalAmount %>
+                    </td>
+
+                    <!-- Status -->
+                    <td>
+                      <% if (item.status==="Delivered" ) { %>
+                        <span class="status-badge status-completed">
+                          <i class="fas fa-check-circle"></i> Completed
+                        </span>
+                        <% } else if (item.status==="Cancelled" ) { %>
+                          <span class="status-badge status-cancelled">
+                            <i class="fas fa-times-circle"></i> Cancelled
+                          </span>
+                          <% } else { %>
+                            <span class="status-badge status-pending">
+                              <i class="fas fa-clock"></i>
+                              <%= item.status %>
+                            </span>
+                            <% } %>
+                    </td>
+                  </tr>
+                  <% }) %>
+                    <% }) %>
+            </tbody>
+
+          </table>
+        </div>
+
+        <div class="pagination-section">
+          <div class="pagination">
+            <button class="page-btn" disabled>
+              <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">
+              Next <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize Chart
+      initializeSalesChart();
+
+      // Add loading animation on page load
+      const sections = document.querySelectorAll('.stats-section, .chart-section, .controls-section, .table-section');
+      sections.forEach((section, index) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          section.style.transition = 'all 0.6s ease';
+          section.style.opacity = '1';
+          section.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
+
+      // Chart tab switching
+      const chartTabs = document.querySelectorAll('.chart-tab');
+      chartTabs.forEach(tab => {
+        tab.addEventListener('click', function () {
+          chartTabs.forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+          updateChart(this.dataset.period);
+        });
+      });
+    });
+
+    let salesChart;
+
+    function initializeSalesChart() {
+      const ctx = document.getElementById('salesChart').getContext('2d');
+
+      salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          datasets: [{
+            label: 'Sales (₹)',
+            data: [45000, 52000, 48000, 61000, 55000, 67000],
+            borderColor: '#e74c3c',
+            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+            tension: 0.4,
+            fill: true
+          }, {
+            label: 'Orders',
+            data: [45, 52, 48, 61, 55, 67],
+            borderColor: '#28a745',
+            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+            tension: 0.4,
+            fill: true,
+            yAxisID: 'y1'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+            }
+          },
+          scales: {
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              grid: {
+                drawOnChartArea: false,
+              },
+            }
+          }
+        }
+      });
+    }
+
+    function updateChart(period) {
+      let newData, newLabels;
+
+      if (period === 'daily') {
+        newLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        newData = [[8000, 12000, 9500, 14000, 11000, 16000, 13000], [8, 12, 9, 14, 11, 16, 13]];
+      } else if (period === 'weekly') {
+        newLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+        newData = [[45000, 52000, 48000, 61000], [45, 52, 48, 61]];
+      } else {
+        newLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        newData = [[45000, 52000, 48000, 61000, 55000, 67000], [45, 52, 48, 61, 55, 67]];
+      }
+
+      salesChart.data.labels = newLabels;
+      salesChart.data.datasets[0].data = newData[0];
+      salesChart.data.datasets[1].data = newData[1];
+      salesChart.update();
+    }
+
+    function applyFilters() {
+      Swal.fire({
+        title: 'Applying Filters...',
+        text: 'Please wait while we filter your data.',
+        icon: 'info',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+          setTimeout(() => {
+            Swal.fire({
+              title: 'Filters Applied!',
+              text: 'Your sales report has been updated.',
+              icon: 'success',
+              confirmButtonColor: '#e74c3c',
+              timer: 2000
+            });
+          }, 1500);
+        }
+      });
+    }
+
+    function clearFilters() {
+      document.querySelectorAll('.filter-input').forEach(input => {
+        input.value = '';
+      });
+
+      Swal.fire({
+        title: 'Filters Cleared!',
+        text: 'All filters have been reset.',
+        icon: 'success',
+        confirmButtonColor: '#e74c3c',
+        timer: 1500,
+        showConfirmButton: false
+      });
+    }
+
+    function exportReport() {
+      Swal.fire({
+        title: 'Export Format',
+        text: 'Choose your preferred export format:',
+        icon: 'question',
+        showCancelButton: true,
+        showDenyButton: true,
+        confirmButtonText: '<i class="fas fa-file-excel"></i> Excel',
+        denyButtonText: '<i class="fas fa-file-pdf"></i> PDF',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#28a745',
+        denyButtonColor: '#dc3545'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: 'Exporting to Excel...',
+            text: 'Your report is being prepared.',
+            icon: 'info',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        } else if (result.isDenied) {
+          Swal.fire({
+            title: 'Exporting to PDF...',
+            text: 'Your report is being prepared.',
+            icon: 'info',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>

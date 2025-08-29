@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reset Password - RC WORLD</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Aldrich&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'rc-red': '#df2f2f',
+            'rc-cyan': '#00cbf8',
+            'rc-gray': '#8b8b8b',
+            'rc-light-gray': '#f1eded',
+            'rc-border-gray': '#d9d9d9',
+            'rc-yellow': '#fbd300',
+            'rc-dark-red': '#8b0000'
+          },
+          fontFamily: {
+            'aldrich': ['Aldrich', 'sans-serif'],
+            'script': ['Georgia', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .error-text {
+      color: #df2f2f;
+      font-size: 0.85em;
+      margin-top: 0.3em;
+      display: block;
+    }
+    .toggle-visibility {
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+      fill: #666;
+      transition: fill 0.3s ease;
+    }
+    .toggle-visibility:hover {
+      fill: #df2f2f;
+    }
+  </style>
+</head>
+<body class="bg-white">
+  <!-- Header -->
+  <header class="bg-rc-red text-white relative z-50">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between py-4">
+        <div class="flex items-center">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+          </svg>
+        </div>
+        <div class="text-center">
+          <h1 class="text-2xl font-bold font-aldrich">RC WORLD</h1>
+          <p class="text-sm font-aldrich">small wheels, big thrills</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+          </svg>
+          <span class="text-sm font-aldrich">MY CART</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="bg-black text-white relative z-50">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-center space-x-8 py-3">
+        <a href="/" class="hover:text-rc-red font-aldrich text-base">HOME</a>
+        <a href="/products" class="hover:text-rc-red font-aldrich text-base">PRODUCTS</a>
+        <a href="/contact" class="hover:text-rc-red font-aldrich text-base">CONTACT US</a>
+        <a href="/about" class="hover:text-rc-red font-aldrich text-base">ABOUT US</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content - Password Reset Section -->
+  <main class="flex justify-center items-start py-20 px-8 min-h-[60vh]">
+    <div class="flex w-full max-w-5xl">
+      <!-- Left Column - Instructions -->
+      <div class="w-1/2 pr-16 text-center flex flex-col items-center justify-center">
+        <h2 class="text-rc-dark-red text-5xl font-light mb-4">Secure Your Account</h2>
+        <p class="text-gray-600 text-2xl font-script mb-8">Create a strong new password</p>
+        <a href="login" class="border border-gray-500 text-gray-700 px-10 py-3 text-sm uppercase tracking-wider hover:bg-gray-100 transition-colors">
+          BACK TO LOGIN
+        </a>
+      </div>
+
+      <!-- Right Column - Password Reset Form -->
+      <div class="w-1/2 pl-16">
+        <h2 class="text-black text-5xl font-light mb-8">Reset Password</h2>
+        <form id="Recovery" class="space-y-6 max-w-sm" novalidate>
+          <span id="fail" class="error-text"></span>
+          
+          <!-- New Password Field -->
+          <div>
+            <label for="new-password" class="block text-gray-700 text-sm font-medium mb-2">New Password</label>
+            <div class="relative">
+              <input 
+                type="password" 
+                id="new-password" 
+                name="new-password" 
+                placeholder="New Password" 
+                class="w-full px-4 py-3 pr-12 border border-gray-300 focus:outline-none focus:border-rc-red" 
+                required 
+              />
+              <svg 
+                class="toggle-visibility absolute right-3 top-1/2 transform -translate-y-1/2" 
+                onclick="toggleVisibility('new-password', this)" 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 4.5c-5.2 0-9.6 3.3-11 7.5 1.4 4.2 5.8 7.5 11 7.5s9.6-3.3 11-7.5c-1.4-4.2-5.8-7.5-11-7.5zm0 13c-3 0-5.5-2.5-5.5-5.5S9 6.5 12 6.5 17.5 9 17.5 12 15 17.5 12 17.5zm0-9a3.5 3.5 0 100 7 3.5 3.5 0 000-7z"/>
+              </svg>
+            </div>
+            <span id="newPasswordError" class="error-text"></span>
+          </div>
+
+          <!-- Confirm Password Field -->
+          <div>
+            <label for="confirm-password" class="block text-gray-700 text-sm font-medium mb-2">Re-enter New Password</label>
+            <div class="relative">
+              <input 
+                type="password" 
+                id="confirm-password" 
+                name="confirm-password" 
+                placeholder="Confirm Password" 
+                class="w-full px-4 py-3 pr-12 border border-gray-300 focus:outline-none focus:border-rc-red" 
+                required 
+              />
+              <svg 
+                class="toggle-visibility absolute right-3 top-1/2 transform -translate-y-1/2" 
+                onclick="toggleVisibility('confirm-password', this)" 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 4.5c-5.2 0-9.6 3.3-11 7.5 1.4 4.2 5.8 7.5 11 7.5s9.6-3.3 11-7.5c-1.4-4.2-5.8-7.5-11-7.5zm0 13c-3 0-5.5-2.5-5.5-5.5S9 6.5 12 6.5 17.5 9 17.5 12 15 17.5 12 17.5zm0-9a3.5 3.5 0 100 7 3.5 3.5 0 000-7z"/>
+              </svg>
+            </div>
+            <span id="confirmPasswordError" class="error-text"></span>
+          </div>
+
+          <button type="submit" class="bg-black text-white px-8 py-3 text-sm uppercase tracking-wider hover:bg-gray-800 transition-colors w-full">
+            RESET PASSWORD
+          </button>
+
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Features -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div class="flex items-center gap-6">
+          <div class="w-20 h-20 bg-rc-light-gray rounded-lg flex items-center justify-center">
+            <svg class="w-10 h-10 text-rc-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-black text-xl">EXPRESS SHIPPING</h3>
+            <p class="text-rc-gray">Shipping in 24 Hours</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-6">
+          <div class="w-20 h-20 bg-rc-light-gray rounded-lg flex items-center justify-center">
+            <svg class="w-10 h-10 text-rc-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-black text-xl">SHIPPING TRACKING</h3>
+            <p class="text-rc-gray">Online Order tracking available</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-6">
+          <div class="w-20 h-20 bg-rc-light-gray rounded-lg flex items-center justify-center">
+            <svg class="w-10 h-10 text-rc-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-black text-xl">BUY SAFELY</h3>
+            <p class="text-rc-gray">Buy safely, any question is here to help!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-rc-light-gray py-16">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 class="font-bold text-black mb-6 text-lg">CUSTOMER SERVICE</h3>
+          <ul class="space-y-3 text-rc-gray">
+            <li><a href="#" class="hover:text-black transition-colors">Contact us</a></li>
+            <li><a href="#" class="hover:text-black transition-colors">Shipping & Returns</a></li>
+            <li><a href="#" class="hover:text-black transition-colors">Terms & Conditions</a></li>
+            <li><a href="#" class="hover:text-black transition-colors">Delivery</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-bold text-black mb-6 text-lg">INFORMATION</h3>
+          <ul class="space-y-3 text-rc-gray">
+            <li><a href="#" class="hover:text-black transition-colors">About</a></li>
+            <li><a href="#" class="hover:text-black transition-colors">Payments</a></li>
+            <li><a href="#" class="hover:text-black transition-colors">Size guide</a></li>
+            <li><a href="#" class="hover:text-black transition-colors">Administrator</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-bold text-black mb-6 text-lg">FOLLOW US</h3>
+          <div class="flex gap-4">
+            <svg class="w-8 h-8 text-rc-gray hover:text-black cursor-pointer transition-colors" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.097.118.112.221.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001.012.001z" />
+            </svg>
+            <svg class="w-8 h-8 text-rc-gray hover:text-black cursor-pointer transition-colors" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+            </svg>
+            <svg class="w-8 h-8 text-rc-gray hover:text-black cursor-pointer transition-colors" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3 class="font-bold text-black mb-6 text-lg">CONTACT US</h3>
+          <div class="space-y-3 text-rc-gray">
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+              </svg>
+              <span>(+91) 95551 76147</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+              </svg>
+              <span>info@email.com</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
+                <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+              </svg>
+              <span>8:00 - 21:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end mt-12 pt-8 border-t border-rc-border-gray">
+        <div class="flex gap-6 items-center">
+          <div class="text-3xl font-bold text-rc-gray">VISA</div>
+          <div class="text-3xl font-bold text-rc-red">mastercard</div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleVisibility(inputId, icon) {
+      const input = document.getElementById(inputId);
+      if (input.type === "password") {
+        input.type = "text";
+        icon.style.fill = "#df2f2f"; // RC red when visible
+      } else {
+        input.type = "password";
+        icon.style.fill = "#666"; // gray when hidden
+      }
+    }
+
+    // Client-side validation
+    function validatePasswords() {
+      const newPassword = document.getElementById("new-password").value;
+      const confirmPassword = document.getElementById("confirm-password").value;
+      const newPasswordError = document.getElementById("newPasswordError");
+      const confirmPasswordError = document.getElementById("confirmPasswordError");
+      const failError = document.getElementById("fail");
+      
+      // Clear previous errors
+      newPasswordError.textContent = "";
+      confirmPasswordError.textContent = "";
+      failError.textContent = "";
+      
+      let isValid = true;
+      
+      // Validate new password strength
+      if (newPassword.length < 8) {
+        newPasswordError.textContent = "Password must be at least 8 characters long";
+        isValid = false;
+      } else if (!/(?=.*[a-z])/.test(newPassword)) {
+        newPasswordError.textContent = "Password must contain at least one lowercase letter";
+        isValid = false;
+      } else if (!/(?=.*[A-Z])/.test(newPassword)) {
+        newPasswordError.textContent = "Password must contain at least one uppercase letter";
+        isValid = false;
+      } else if (!/(?=.*\d)/.test(newPassword)) {
+        newPasswordError.textContent = "Password must contain at least one number";
+        isValid = false;
+      }
+      
+      // Validate password confirmation
+      if (newPassword !== confirmPassword) {
+        confirmPasswordError.textContent = "Passwords do not match";
+        isValid = false;
+      }
+      
+      return isValid;
+    }
+
+    document.getElementById("Recovery").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      // Validate passwords before submission
+      if (!validatePasswords()) {
+        return;
+      }
+      
+      const newpass = document.getElementById("new-password").value;
+      const confmpass = document.getElementById("confirm-password").value;
+
+      try {
+        const response = await fetch("/verifyrecoverypass", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            newpass: newpass,
+            confmpass: confmpass
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.success === true) {
+          Swal.fire({
+            title: "Success!",
+            text: "Password changed successfully.",
+            icon: "success",
+            confirmButtonText: "OK"
+          }).then(() => {
+            window.location.href = "/login";
+          });
+        } else if (data.error) {
+          document.getElementById("fail").textContent = data.error;
+        }
+      } catch (error) {
+        document.getElementById("fail").textContent = "Something went wrong. Please try again.";
+      }
+    });
+
+    // Real-time validation feedback
+    document.getElementById("new-password").addEventListener("input", validatePasswords);
+    document.getElementById("confirm-password").addEventListener("input", validatePasswords);
+  </script>
+</body>
+</html>

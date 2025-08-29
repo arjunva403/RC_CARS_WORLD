@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RC WORLD - My Wallet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Aldrich&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rc-red': '#df2f2f',
+                        'rc-cyan': '#00cbf8',
+                        'rc-gray': '#8b8b8b',
+                        'rc-light-gray': '#f1eded',
+                        'rc-border-gray': '#d9d9d9',
+                        'rc-yellow': '#fbd300',
+                        'rc-success': '#28a745',
+                        'rc-error': '#dc3545'
+                    },
+                    fontFamily: {
+                        'aldrich': ['Aldrich', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar-item.active {
+            background-color: rgb(223 47 47);
+            color: white;
+        }
+
+        .sidebar-item.active::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 100%;
+            background-color: rgb(223 47 47);
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .wallet-balance-card {
+            background: linear-gradient(135deg, #00cbf8 0%, #0ea5e9 100%);
+            transition: all 0.3s ease;
+        }
+
+        .wallet-balance-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .transaction-row {
+            transition: all 0.2s ease;
+        }
+
+        .transaction-row:hover {
+            background-color: #f8fafc;
+        }
+
+        .amount-option {
+            transition: all 0.2s ease;
+        }
+
+        .amount-option:hover {
+            transform: translateY(-1px);
+        }
+
+        .amount-option.selected {
+            background-color: rgb(14, 165, 233, 0.1);
+            border-color: #00cbf8;
+            color: #00cbf8;
+            font-weight: 600;
+        }
+
+        /* Enhanced Animation Modal */
+        .car-animation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .car-animation-modal.show {
+            display: flex;
+        }
+
+        .car-animation-container {
+            text-align: center;
+            color: white;
+            max-width: 90%;
+        }
+
+        /* Enhanced Animation Track */
+        .car-animation-toggle {
+            width: 22em;
+            height: 11em;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            margin: 0 auto 30px;
+        }
+
+        .car-animation-toggle::before,
+        .car-animation-toggle::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+        }
+
+        .car-animation-toggle::before {
+            margin-left: -180px;
+            width: inherit;
+            height: 0.25em;
+            background: linear-gradient(90deg, #f39c12, #e67e22);
+            box-shadow: 0 0 15px rgba(243, 156, 18, 0.6);
+        }
+
+        .car-animation-toggle::after {
+            box-sizing: border-box;
+            width: 50%;
+            height: inherit;
+            border: 0.25em solid #f39c12;
+            border-radius: 50%;
+            left: 25%;
+            box-shadow: 0 0 20px rgba(243, 156, 18, 0.4);
+        }
+
+        .car-animation-span {
+            position: absolute;
+            width: 15%;
+            height: 25%;
+            border-radius: 50%;
+            bottom: 0.1em;
+            left: -15%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: carRun 6s linear infinite, carRotating 6s linear infinite;
+            transform-origin: 50% -2.7em;
+        }
+
+        .car-animation-span img {
+            width: 100px;
+            max-width: none;
+        }
+
+
+        /* Success/Error/Warning Indicators */
+        .car-result-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 5em;
+            height: 5em;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .car-result-indicator.success {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            box-shadow: 0 0 30px rgba(46, 204, 113, 0.7);
+        }
+
+        .car-result-indicator.error {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            box-shadow: 0 0 30px rgba(231, 76, 60, 0.7);
+        }
+
+        .car-result-indicator.warning {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            box-shadow: 0 0 30px rgba(243, 156, 18, 0.7);
+        }
+
+        .car-result-indicator.info {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            box-shadow: 0 0 30px rgba(52, 152, 219, 0.7);
+        }
+
+        .car-result-indicator.show {
+            display: flex;
+            animation: carIndicatorAppear 0.8s ease-out;
+        }
+
+        .car-icon {
+            width: 2.5em;
+            height: 2.5em;
+            color: white;
+            animation: carIconScale 0.6s ease-out 0.2s both;
+        }
+
+        /* Enhanced Status Message */
+        .car-status-message {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin-bottom: 30px;
+            max-width: 500px;
+        }
+
+        .car-status-message h3 {
+            margin: 0 0 15px 0;
+            font-size: 24px;
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .car-status-message.success h3 {
+            color: #27ae60;
+        }
+
+        .car-status-message.error h3 {
+            color: #e74c3c;
+        }
+
+        .car-status-message.warning h3 {
+            color: #f39c12;
+        }
+
+        .car-status-message.info h3 {
+            color: #3498db;
+        }
+
+        .car-status-message p {
+            margin: 0;
+            color: #7f8c8d;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        /* Action Buttons */
+        .car-action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .car-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .car-btn.primary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .car-btn.success {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .car-btn.danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .car-btn.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .car-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Close Button */
+        .car-close-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 28px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .car-close-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        /* Loading Spinner */
+        .car-loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4em;
+            height: 4em;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        .car-loading-spinner.show {
+            display: block;
+        }
+
+        .car-svg {
+            width: 5.5em;
+            height: 5.5em;
+            color: white;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+        }
+
+        /* Animations */
+        @keyframes carRun {
+            0% {
+                left: -15%;
+            }
+
+            10%,
+            60% {
+                left: calc((100% - 15%) / 2);
+            }
+
+            70%,
+            100% {
+                left: 100%;
+            }
+        }
+
+        @keyframes carRotating {
+
+            0%,
+            10% {
+                transform: rotate(0deg);
+            }
+
+            60%,
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+
+        @keyframes carIndicatorAppear {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes carIconScale {
+            0% {
+                transform: scale(0) rotate(0deg);
+            }
+
+            50% {
+                transform: scale(1.3) rotate(180deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(360deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Input Field for Prompt */
+        .car-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 15px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .car-input:focus {
+            border-color: #3498db;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .car-animation-toggle {
+                width: 18em;
+                height: 9em;
+            }
+
+            .car-svg {
+                width: 4.5em;
+                height: 4.5em;
+            }
+
+            .car-action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .demo-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-white font-aldrich text-black">
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-[9999]"></div>
+    <!-- Enhanced Car Animation Modal -->
+    <div id="carAnimationModal" class="car-animation-modal">
+        <button class="car-close-button" onclick="closeCarAnimation()">&times;</button>
+
+        <div class="car-animation-container">
+            <div id="carStatusMessage" class="car-status-message">
+                <h3>🏁 Processing...</h3>
+                <p>Please wait while we process your request</p>
+            </div>
+
+            <div class="car-animation-toggle">
+                <!-- Loading Spinner -->
+                <div id="carLoadingSpinner" class="car-loading-spinner"></div>
+
+                <!-- Result Indicators -->
+                <div id="carResultIndicator" class="car-result-indicator">
+                    <svg class="car-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Dynamic icon will be inserted here -->
+                    </svg>
+                </div>
+
+                <div class="car-animation-span">
+                    <img src="/images/image-from-rawpixel-id-6338436-png.png" alt="Car Icon">
+                </div>
+            </div>
+
+            <!-- Action Buttons Container -->
+            <div id="carActionButtons" class="car-action-buttons" style="display: none;">
+                <!-- Buttons will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+    <!-- Header -->
+    <header class="bg-rc-red text-white relative z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center">
+                    <a href="/logout" class="ml-2 text-base font-aldrich flex items-center space-x-2">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+
+                        <span>LOGOUT</span>
+                    </a>
+                </div>
+                <div class="text-center">
+                    <h1 class="text-2xl font-bold font-aldrich">RC WORLD</h1>
+                    <p class="text-sm">small wheels, big thrills</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="/cart" class="relative text-white hover:text-rc-light-gray transition-colors"
+                        aria-label="Cart">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                        </svg>
+                        <span
+                            class="absolute -top-2 -right-2 bg-white text-rc-red text-xs font-semibold w-5 h-5 rounded-full flex items-center justify-center cart-badge">
+
+                        </span>
+                    </a>
+                    <span class="text-sm">MY CART</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-black text-white relative z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-center space-x-8 py-3">
+                <a href="/" class="hover:text-rc-red font-aldrich text-base transition-colors">HOME</a>
+                <a href="/product" class="hover:text-rc-red font-aldrich text-base transition-colors">PRODUCTS</a>
+                <a href="/contact" class="hover:text-rc-red font-aldrich text-base transition-colors">CONTACT US</a>
+                <a href="/about" class="hover:text-rc-red font-aldrich text-base transition-colors">ABOUT US</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumbs -->
+    <nav class="bg-rc-light-gray py-3 px-4 md:px-8 text-sm text-rc-gray">
+        <a href="/" class="hover:underline">Home</a> &gt;
+        <a href="/profile" class="hover:underline">Account</a> &gt;
+        <span class="text-black">Wallet</span>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto p-4 md:p-8 flex flex-col lg:flex-row gap-6">
+        <!-- Left Sidebar -->
+        <aside class="w-full lg:w-1/4 bg-white shadow-md rounded-lg p-6">
+            <div class="flex items-center p-4 mb-6 bg-rc-light-gray rounded-lg">
+                <div
+                    class="w-16 h-16 bg-rc-red rounded-full flex items-center justify-center text-white text-xl font-bold mr-4">
+                    A
+                </div>
+                <div>
+                    <p class="text-rc-gray">Hello,</p>
+                    <p class="font-semibold text-lg font-aldrich">Arjun</p>
+                </div>
+            </div>
+
+            <nav>
+                <ul class="space-y-2">
+                    <li class="py-3 px-4 hover:bg-rc-light-gray rounded-md cursor-pointer transition-colors">
+                        <a href="/profile"
+                            class="flex items-center space-x-3 text-base font-medium text-rc-gray hover:text-black">
+                            <i class="fas fa-user w-5"></i>
+                            <span>Account Overview</span>
+                        </a>
+                    </li>
+                    <li class="py-3 px-4 hover:bg-rc-light-gray rounded-md cursor-pointer transition-colors">
+                        <a href="/myorders"
+                            class="flex items-center space-x-3 text-base font-medium text-rc-gray hover:text-black">
+                            <i class="fas fa-box w-5"></i>
+                            <span>My Orders</span>
+                        </a>
+                    </li>
+                    <li class="py-3 px-4 hover:bg-rc-light-gray rounded-md cursor-pointer transition-colors">
+                        <a href="/manageadd"
+                            class="flex items-center space-x-3 text-base font-medium text-rc-gray hover:text-black">
+                            <i class="fas fa-map-marker-alt w-5"></i>
+                            <span>Manage Addresses</span>
+                        </a>
+                    </li>
+                    <li class="py-3 px-4 hover:bg-rc-light-gray rounded-md cursor-pointer transition-colors">
+                        <a href="/wish"
+                            class="flex items-center space-x-3 text-base font-medium text-rc-gray hover:text-black">
+                            <i class="fas fa-heart w-5"></i>
+                            <span>My Wishlist</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item active relative py-3 px-4 rounded-md cursor-pointer">
+                        <a href="/wallet" class="flex items-center space-x-3 text-base font-medium">
+                            <i class="fas fa-wallet w-5"></i>
+                            <span>Wallet</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Right Content - Wallet Section -->
+        <section class="flex-grow bg-white shadow-md rounded-lg p-6 md:p-8">
+            <!-- Wallet Header -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                <h2 class="text-2xl font-bold font-aldrich mb-4 md:mb-0">My Wallet</h2>
+                <div class="flex items-center space-x-4 text-sm text-rc-gray">
+                    <span><i class="fas fa-history mr-1"></i>Transaction History</span>
+                </div>
+            </div>
+
+            <!-- Wallet Balance Card -->
+            <div class="wallet-balance-card text-white rounded-xl p-6 md:p-8 mb-8 relative overflow-hidden">
+                <!-- Background Pattern -->
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-12 -mb-12"></div>
+
+                <div class="relative z-10">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div class="mb-4 md:mb-0">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <i class="fas fa-wallet text-2xl"></i>
+                                <h3 class="text-lg font-semibold">Wallet Balance</h3>
+                            </div>
+                            <div class="text-3xl md:text-4xl font-bold font-aldrich">
+                                ₹<%= wallet?.totalBalance || 0 %>
+                            </div>
+                            <p class="text-blue-100 text-sm mt-2">Available for purchases</p>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <button
+                                class="bg-white text-rc-cyan px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg"
+                                id="addMoneyBtn">
+                                <i class="fas fa-plus mr-2"></i>Add Money
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <% let totalCredits=0; let totalDebits=0; let transactionCount=0; if (wallet?.transactions) {
+                    transactionCount=wallet.transactions.length; wallet.transactions.forEach(transaction=> {
+                    if (transaction.type === 'credit') {
+                    totalCredits += transaction.amount;
+                    } else {
+                    totalDebits += transaction.amount;
+                    }
+                    });
+                    }
+                    %>
+
+                    <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <i class="fas fa-arrow-up text-green-500 text-xl mr-3"></i>
+                            <div>
+                                <p class="text-green-600 text-sm font-medium">Total Credits</p>
+                                <p class="text-2xl font-bold text-green-700">₹<%= totalCredits.toLocaleString() %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <i class="fas fa-arrow-down text-red-500 text-xl mr-3"></i>
+                            <div>
+                                <p class="text-red-600 text-sm font-medium">Total Debits</p>
+                                <p class="text-2xl font-bold text-red-700">₹<%= totalDebits.toLocaleString() %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <i class="fas fa-exchange-alt text-blue-500 text-xl mr-3"></i>
+                            <div>
+                                <p class="text-blue-600 text-sm font-medium">Total Transactions</p>
+                                <p class="text-2xl font-bold text-blue-700">
+                                    <%= transactionCount %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+            <!-- Transaction History -->
+            <div class="bg-white border border-rc-border-gray rounded-lg overflow-hidden">
+                <div class="bg-rc-light-gray px-6 py-4 border-b border-rc-border-gray">
+                    <h3 class="text-lg font-semibold font-aldrich">Recent Transactions</h3>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-rc-gray uppercase tracking-wider">
+                                    Date & Time</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-rc-gray uppercase tracking-wider">
+                                    Transaction Details</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-rc-gray uppercase tracking-wider">
+                                    Type</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-rc-gray uppercase tracking-wider">
+                                    Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <% if (wallet?.transactions && wallet.transactions.length> 0) { %>
+                                <% wallet.transactions.slice().reverse().forEach((element, index)=> { %>
+                                    <tr class="transaction-row">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                <%= new Date(element.date).toLocaleDateString('en-IN', { day: '2-digit'
+                                                    , month: 'short' , year: 'numeric' }) %>
+                                            </div>
+                                            <div class="text-sm text-rc-gray">
+                                                <%= new Date(element.date).toLocaleTimeString('en-IN', { hour: '2-digit'
+                                                    , minute: '2-digit' }) %>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                <i class="fas fa-hashtag mr-1 text-rc-gray"></i>
+                                                <%= element.transactionId %>
+                                            </div>
+                                            <div class="text-sm text-rc-gray">
+                                                <%= element.remark || 'No remark available' %>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= element.type === 'credit' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                                                <i
+                                                    class="fas fa-<%= element.type === 'credit' ? 'plus' : 'minus' %> mr-1"></i>
+                                                <%= element.type.toUpperCase() %>
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div
+                                                class="text-sm font-bold <%= element.type === 'credit' ? 'text-green-600' : 'text-red-600' %>">
+                                                <%= element.type==='credit' ? '+' : '-' %> ₹<%=
+                                                        element.amount.toLocaleString() %>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="4" class="px-6 py-12 text-center">
+                                                    <div class="flex flex-col items-center">
+                                                        <i class="fas fa-receipt text-4xl text-rc-gray mb-4"></i>
+                                                        <h3 class="text-lg font-semibold text-rc-gray mb-2">No
+                                                            Transactions Yet</h3>
+                                                        <p class="text-rc-gray mb-4">Your transaction history will
+                                                            appear here once you start using your wallet.</p>
+                                                        <button
+                                                            class="bg-rc-red text-white py-2 px-4 rounded-md font-semibold hover:bg-rc-red/90 transition-colors"
+                                                            onclick="document.getElementById('addMoneyBtn').click()">
+                                                            <i class="fas fa-plus mr-1"></i>Add Money to Get Started
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Add Money Modal -->
+    <div class="modal fixed inset-0 bg-black/50 flex justify-center items-center z-50 hidden backdrop-blur-sm"
+        id="addMoneyModal">
+        <div
+            class="modal-content bg-white p-6 rounded-xl max-w-md w-full mx-4 shadow-2xl transform transition-all duration-300">
+            <div class="modal-header flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold font-aldrich text-gray-900">Add Money to Wallet</h3>
+                <button class="text-rc-gray text-2xl hover:text-red-500 transition-colors p-1" id="closeModal"
+                    aria-label="Close modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="addMoneyForm">
+                <!-- Amount Section -->
+                <div class="form-group mb-6">
+                    <label for="amount" class="block mb-3 font-semibold text-gray-700">
+                        <i class="fas fa-rupee-sign mr-2 text-rc-cyan"></i>Enter Amount
+                    </label>
+                    <input type="number" id="amount" name="amount" min="10" max="50000"
+                        placeholder="Enter amount (₹10 - ₹50,000)" required
+                        class="w-full p-4 border border-rc-border-gray rounded-lg focus:outline-none focus:ring-2 focus:ring-rc-cyan focus:border-transparent text-lg">
+
+                    <!-- Quick Amount Options -->
+                    <div class="amount-options grid grid-cols-3 gap-3 mt-4">
+                        <div class="amount-option border-2 border-rc-border-gray rounded-lg p-3 text-center cursor-pointer hover:shadow-md"
+                            data-amount="100">
+                            <div class="text-lg font-semibold">₹100</div>
+                        </div>
+                        <div class="amount-option border-2 border-rc-border-gray rounded-lg p-3 text-center cursor-pointer hover:shadow-md"
+                            data-amount="500">
+                            <div class="text-lg font-semibold">₹500</div>
+                        </div>
+                        <div class="amount-option border-2 border-rc-border-gray rounded-lg p-3 text-center cursor-pointer hover:shadow-md"
+                            data-amount="1000">
+                            <div class="text-lg font-semibold">₹1000</div>
+                        </div>
+                        <div class="amount-option border-2 border-rc-border-gray rounded-lg p-3 text-center cursor-pointer hover:shadow-md"
+                            data-amount="2000">
+                            <div class="text-lg font-semibold">₹2000</div>
+                        </div>
+                        <div class="amount-option border-2 border-rc-border-gray rounded-lg p-3 text-center cursor-pointer hover:shadow-md"
+                            data-amount="5000">
+                            <div class="text-lg font-semibold">₹5000</div>
+                        </div>
+                        <div class="amount-option border-2 border-rc-border-gray rounded-lg p-3 text-center cursor-pointer hover:shadow-md"
+                            data-amount="10000">
+                            <div class="text-lg font-semibold">₹10000</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method Section -->
+                <div class="form-group mb-6">
+                    <label for="paymentMethod" class="block mb-3 font-semibold text-gray-700">
+                        <i class="fas fa-credit-card mr-2 text-rc-cyan"></i>Payment Method
+                    </label>
+                    <select id="paymentMethod" name="paymentMethod" required
+                        class="w-full p-4 border border-rc-border-gray rounded-lg focus:outline-none focus:ring-2 focus:ring-rc-cyan focus:border-transparent text-lg">
+                        <option value="">Select payment method</option>
+                        <option value="razorpay">💳 Razorpay (Cards, UPI, Net Banking)</option>
+                    </select>
+                </div>
+
+                <!-- Terms and Security -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-shield-alt text-blue-500 mt-0.5"></i>
+                        <div class="text-sm text-blue-700">
+                            <p class="font-medium">Secure Payment</p>
+                            <p>Your payment information is encrypted and secure. Wallet money is non-refundable but can
+                                be used for purchases.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submitBtn"
+                    class="w-full bg-rc-cyan text-white p-4 rounded-lg font-semibold hover:bg-rc-cyan/90 transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-lock mr-2"></i>
+                    <span id="submitText">Proceed to Secure Payment</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-rc-light-gray py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="font-bold text-black mb-6 text-lg">CUSTOMER SERVICE</h3>
+                    <ul class="space-y-3 text-rc-gray">
+                        <li><a href="/contact" class="hover:text-black transition-colors">Contact us</a></li>
+                        <li><a href="/return" class="hover:text-black transition-colors">Shipping & Returns</a></li>
+                        <li><a href="/terms" class="hover:text-black transition-colors">Terms & Conditions</a></li>
+                        <li><a href="/order" class="hover:text-black transition-colors">Delivery</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-black mb-6 text-lg">INFORMATION</h3>
+                    <ul class="space-y-3 text-rc-gray">
+                        <li><a href="/about" class="hover:text-black transition-colors">About</a></li>
+                        <li><a href="/payment" class="hover:text-black transition-colors">Payments</a></li>
+                        <li><a href="/size-guide" class="hover:text-black transition-colors">Size guide</a></li>
+                        <li><a href="/admin" class="hover:text-black transition-colors">Administrator</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-black mb-6 text-lg">FOLLOW US</h3>
+                    <div class="flex gap-4">
+                        <a href="#" aria-label="Pinterest">
+                            <svg class="w-8 h-8 text-rc-gray hover:text-black cursor-pointer transition-colors"
+                                fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.097.118.112.221.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001.012.001z" />
+                            </svg>
+                        </a>
+                        <a href="#" aria-label="Twitter">
+                            <svg class="w-8 h-8 text-rc-gray hover:text-black cursor-pointer transition-colors"
+                                fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+                            </svg>
+                        </a>
+                        <a href="#" aria-label="LinkedIn">
+                            <svg class="w-8 h-8 text-rc-gray hover:text-black cursor-pointer transition-colors"
+                                fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-black mb-6 text-lg">CONTACT US</h3>
+                    <div class="space-y-3 text-rc-gray">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                            </svg>
+                            <span>(+91) 95551 76147</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                            </svg>
+                            <span>info@email.com</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
+                                <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+                            </svg>
+                            <span>8:00 - 21:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end mt-12 pt-8 border-t border-rc-border-gray">
+                <div class="flex gap-6 items-center">
+                    <div class="text-3xl font-bold text-rc-gray">VISA</div>
+                    <div class="text-3xl font-bold text-rc-red">mastercard</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toast Notification Function
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `flex items-center gap-2 px-5 py-3 mb-3 rounded-lg text-white font-medium shadow-lg opacity-0 transform -translate-y-5 transition-all duration-300 ${type === 'success' ? 'bg-rc-success' : 'bg-rc-error'}`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                ${message}
+                <button class="ml-auto text-white text-lg" onclick="this.parentElement.remove()">×</button>
+            `;
+            toastContainer.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.add('opacity-100', 'translate-y-0'));
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Car Animation Class - Complete SweetAlert Replacement
+        class CarAlert {
+            constructor() {
+                this.modal = document.getElementById('carAnimationModal');
+                this.statusMessage = document.getElementById('carStatusMessage');
+                this.resultIndicator = document.getElementById('carResultIndicator');
+                this.actionButtons = document.getElementById('carActionButtons');
+                this.loadingSpinner = document.getElementById('carLoadingSpinner');
+                this.currentCallback = null;
+                this.autoCloseTimer = null;
+            }
+
+            // Main alert function (replaces Swal.fire())
+            show(options = {}) {
+                const {
+                    type = 'info',
+                    title = 'Alert',
+                    text = '',
+                    showConfirmButton = true,
+                    showCancelButton = false,
+                    confirmButtonText = 'OK',
+                    cancelButtonText = 'Cancel',
+                    timer = null,
+                    showCloseButton = true,
+                    allowOutsideClick = true,
+                    input = null,
+                    inputPlaceholder = '',
+                    callback = null
+                } = options;
+
+                this.currentCallback = callback;
+                this.clearTimers();
+
+                // Reset states
+                this.resultIndicator.classList.remove('show', 'success', 'error', 'warning', 'info');
+                this.statusMessage.classList.remove('success', 'error', 'warning', 'info');
+                this.loadingSpinner.classList.remove('show');
+
+                // Set message content
+                this.statusMessage.innerHTML = `
+          <h3>${this.getIcon(type)} ${title}</h3>
+          <p>${text}</p>
+          ${input ? `<input type="text" class="car-input" id="carInput" placeholder="${inputPlaceholder}">` : ''}
+        `;
+                this.statusMessage.className = `car-status-message ${type}`;
+
+                // Show modal
+                this.modal.classList.add('show');
+
+                // Setup buttons
+                this.setupButtons(showConfirmButton, showCancelButton, confirmButtonText, cancelButtonText, type);
+
+                // Show result indicator when car reaches destination
+                setTimeout(() => {
+                    this.resultIndicator.className = `car-result-indicator ${type} show`;
+                    this.resultIndicator.innerHTML = this.getIconSVG(type);
+                }, 3600);
+
+                // Auto-close with timer
+                if (timer) {
+                    this.autoCloseTimer = setTimeout(() => {
+                        this.close();
+                    }, timer);
+                }
+
+                // Handle outside click
+                if (!allowOutsideClick) {
+                    this.modal.removeEventListener('click', this.outsideClickHandler);
+                } else {
+                    this.modal.addEventListener('click', this.outsideClickHandler.bind(this));
+                }
+            }
+
+            // Setup action buttons
+            setupButtons(showConfirm, showCancel, confirmText, cancelText, type) {
+                this.actionButtons.innerHTML = '';
+
+                if (showConfirm || showCancel) {
+                    this.actionButtons.style.display = 'flex';
+
+                    if (showCancel) {
+                        const cancelBtn = document.createElement('button');
+                        cancelBtn.className = 'car-btn secondary';
+                        cancelBtn.textContent = cancelText;
+                        cancelBtn.onclick = () => this.handleButtonClick(false);
+                        this.actionButtons.appendChild(cancelBtn);
+                    }
+
+                    if (showConfirm) {
+                        const confirmBtn = document.createElement('button');
+                        confirmBtn.className = `car-btn ${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'primary'}`;
+                        confirmBtn.textContent = confirmText;
+                        confirmBtn.onclick = () => this.handleButtonClick(true);
+                        this.actionButtons.appendChild(confirmBtn);
+                    }
+                } else {
+                    this.actionButtons.style.display = 'none';
+                }
+            }
+
+            // Handle button clicks
+            handleButtonClick(isConfirm) {
+                let result = { isConfirmed: isConfirm };
+
+                const input = document.getElementById('carInput');
+                if (input) {
+                    result.value = input.value;
+                }
+
+                if (this.currentCallback) {
+                    this.currentCallback(result);
+                }
+
+                if (isConfirm && !input) {
+                    // Auto-close after confirmation for simple alerts
+                    setTimeout(() => this.close(), 1000);
+                } else {
+                    this.close();
+                }
+            }
+
+            // Get emoji icon for type
+            getIcon(type) {
+                const icons = {
+                    success: '✅',
+                    error: '❌',
+                    warning: '⚠️',
+                    info: 'ℹ️',
+                    question: '❓'
+                };
+                return icons[type] || icons.info;
+            }
+
+            // Get SVG icon for type
+            getIconSVG(type) {
+                const icons = {
+                    success: '<path stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M20 6L9 17l-5-5"/>',
+                    error: '<path stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12"/>',
+                    warning: '<path stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+                    info: '<path stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+                    question: '<path stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+                };
+
+                return `<svg class="car-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          ${icons[type] || icons.info}
+        </svg>`;
+            }
+
+            // Show loading state
+            showLoading(title = '🏁 Loading...', text = 'Please wait while we process your request') {
+                this.statusMessage.innerHTML = `<h3>${title}</h3><p>${text}</p>`;
+                this.statusMessage.className = 'car-status-message info';
+                this.actionButtons.style.display = 'none';
+                this.resultIndicator.classList.remove('show');
+                this.loadingSpinner.classList.add('show');
+                this.modal.classList.add('show');
+            }
+
+            // Hide loading and show result
+            hideLoading(type = 'success', title = 'Complete!', text = 'Operation completed successfully') {
+                this.loadingSpinner.classList.remove('show');
+                this.show({ type, title, text, timer: 3000 });
+            }
+
+            // Close animation
+            close() {
+                this.modal.classList.remove('show');
+                this.clearTimers();
+                this.currentCallback = null;
+            }
+
+            // Clear all timers
+            clearTimers() {
+                if (this.autoCloseTimer) {
+                    clearTimeout(this.autoCloseTimer);
+                    this.autoCloseTimer = null;
+                }
+            }
+
+            // Outside click handler
+            outsideClickHandler(e) {
+                if (e.target === this.modal) {
+                    this.close();
+                }
+            }
+        }
+
+        // Initialize CarAlert
+        const CarSwal = new CarAlert();
+
+        // Global functions to replace SweetAlert
+        function showCarAlert(type, title, text, options = {}) {
+            CarSwal.show({ type, title, text, ...options });
+        }
+
+        // Modal functionality
+        const addMoneyBtn = document.getElementById('addMoneyBtn');
+        const closeModal = document.getElementById('closeModal');
+        const addMoneyModal = document.getElementById('addMoneyModal');
+        const amountInput = document.getElementById('amount');
+        const amountOptions = document.querySelectorAll('.amount-option');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
+
+        // Open modal with animation
+        addMoneyBtn.addEventListener('click', () => {
+            addMoneyModal.classList.remove('hidden');
+            setTimeout(() => {
+                document.querySelector('.modal-content').style.transform = 'scale(1)';
+                document.querySelector('.modal-content').style.opacity = '1';
+            }, 10);
+        });
+
+        // Close modal with animation
+        function closeModalWithAnimation() {
+            document.querySelector('.modal-content').style.transform = 'scale(0.95)';
+            document.querySelector('.modal-content').style.opacity = '0';
+            setTimeout(() => {
+                addMoneyModal.classList.add('hidden');
+            }, 200);
+        }
+
+        closeModal.addEventListener('click', closeModalWithAnimation);
+
+        // Close modal when clicking outside
+        addMoneyModal.addEventListener('click', (e) => {
+            if (e.target === addMoneyModal) {
+                closeModalWithAnimation();
+            }
+        });
+
+        // Amount option selection with improved UX
+        amountOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Remove previous selection
+                amountOptions.forEach(opt => opt.classList.remove('selected'));
+
+                // Add selection to clicked option
+                option.classList.add('selected');
+                amountInput.value = option.getAttribute('data-amount');
+
+                // Focus on input for any manual changes
+                amountInput.focus();
+            });
+        });
+
+        // Clear selection when input changes manually
+        amountInput.addEventListener('input', () => {
+            amountOptions.forEach(opt => opt.classList.remove('selected'));
+        });
+
+        // Enhanced form submission with better UX
+        document.getElementById('addMoneyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const amount = parseInt(amountInput.value);
+            const paymentMethod = document.getElementById('paymentMethod').value;
+
+            // Validation
+            if (!amount || amount < 10 || amount > 50000) {
+                showToast('Please enter amount between ₹10 and ₹50,000', 'error');
+                return;
+            }
+
+            if (!paymentMethod) {
+                showToast('Please select a payment method', 'error');
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitText.textContent = 'Processing...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing Payment...';
+
+            try {
+                const response = await fetch('/addMoney', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paymentMethod, amount }),
+                });
+
+                const data = await response.json();
+
+                if (paymentMethod === "razorpay" && data.orderId) {
+                    const options = {
+                        key: data.key,
+                        amount: data.amount,
+                        currency: data.currency,
+                        name: "RC WORLD",
+                        description: "Wallet Top-up",
+                        order_id: data.orderId,
+                        handler: async function (response) {
+                            try {
+                                const verifyResponse = await fetch('/verifyWalletPayment', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        razorpay_payment_id: response.razorpay_payment_id,
+                                        razorpay_order_id: response.razorpay_order_id,
+                                        razorpay_signature: response.razorpay_signature,
+                                        amount: amount
+                                    })
+                                });
+
+                                const result = await verifyResponse.json();
+
+                                if (result.success) {
+                                    // Use your custom CarSwal alert
+                                    CarSwal.show({
+                                        type: 'success',
+                                        title: 'Success!',
+                                        text: `Successfully added ₹${amount} to your wallet!`,
+                                        showConfirmButton: true, 
+                                        confirmButtonText: 'OK',
+                                        callback: (result) => {
+                                            if (result.isConfirmed) {
+                                          
+                                                setTimeout(() => {
+                                                    window.location.reload();
+                                                }, 500); 
+                                            }
+                                        }
+                                    });
+
+                                    // You can keep the toast notification as it's a separate, non-blocking element.
+                                    showToast(`Successfully added ₹${amount} to your wallet!`, 'success');
+
+                                } else {
+                                    // It's good practice to use your custom alert for errors too, for consistency.
+                                    CarSwal.show({
+                                        type: 'error',
+                                        title: 'Verification Failed',
+                                        text: 'Payment verification failed: ' + (result.message || 'Unknown error'),
+                                    });
+                                    showToast('Payment verification failed: ' + (result.message || 'Unknown error'), 'error');
+                                }
+
+                            } catch (error) {
+                                console.error('Verification error:', error);
+                                showToast('Payment verification failed. Please contact support.', 'error');
+                            }
+                        },
+                        prefill: {
+                            name: "RC World Customer",
+                            email: "customer@rcworld.com",
+                            contact: "9999999999"
+                        },
+                        theme: {
+                            color: "#00cbf8"
+                        },
+                        modal: {
+                            ondismiss: function () {
+                                // Reset button state when payment modal is closed
+                                submitBtn.disabled = false;
+                                submitText.textContent = 'Proceed to Secure Payment';
+                                submitBtn.innerHTML = '<i class="fas fa-lock mr-2"></i>Proceed to Secure Payment';
+                            }
+                        }
+                    };
+
+                    const rzp = new Razorpay(options);
+
+                    rzp.on('payment.failed', function (response) {
+                        console.error('Payment failed:', response.error);
+                        showToast('Payment failed: ' + (response.error.description || 'Unknown error'), 'error');
+
+                        // Reset button state
+                        submitBtn.disabled = false;
+                        submitText.textContent = 'Proceed to Secure Payment';
+                        submitBtn.innerHTML = '<i class="fas fa-lock mr-2"></i>Proceed to Secure Payment';
+                    });
+
+                    rzp.open();
+                } else {
+                    showToast('Error creating payment order. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                showToast('Payment processing failed. Please try again.', 'error');
+            } finally {
+                // Reset button state if not handled by Razorpay
+                setTimeout(() => {
+                    if (submitBtn.disabled) {
+                        submitBtn.disabled = false;
+                        submitText.textContent = 'Proceed to Secure Payment';
+                        submitBtn.innerHTML = '<i class="fas fa-lock mr-2"></i>Proceed to Secure Payment';
+                    }
+                }, 3000);
+            }
+
+            // Close modal and reset form
+            closeModalWithAnimation();
+            setTimeout(() => {
+                e.target.reset();
+                amountOptions.forEach(opt => opt.classList.remove('selected'));
+            }, 300);
+        });
+
+        // Add smooth animations on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Animate wallet balance card
+            const balanceCard = document.querySelector('.wallet-balance-card');
+            if (balanceCard) {
+                setTimeout(() => {
+                    balanceCard.style.transform = 'translateY(0)';
+                    balanceCard.style.opacity = '1';
+                }, 200);
+            }
+
+            // Animate transaction rows
+            const transactionRows = document.querySelectorAll('.transaction-row');
+            transactionRows.forEach((row, index) => {
+                setTimeout(() => {
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateX(0)';
+                }, 300 + (index * 50));
+            });
+        });
+
+        // Close animation function
+        function closeCarAnimation() {
+            CarSwal.close();
+        }
+
+        // Legacy function for backward compatibility
+        function Submit() {
+            showCarAlert('success', '🏁 Race Complete!', 'The car has successfully reached its destination!');
+        }
+
+        // Keyboard event handler
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeCarAnimation();
+            }
+        });
+    </script>
+</body>
+
+</html>

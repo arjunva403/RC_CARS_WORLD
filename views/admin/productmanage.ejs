@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Management - RC WORLD Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root {
+      --primary: #e74c3c;
+      --primary-dark: #c0392b;
+      --light-gray: #f8f9fa;
+      --dark: #2c3e50;
+      --text-gray: #6c757d;
+      --bg: #ffffff;
+      --border: #dee2e6;
+      --success: #28a745;
+      --warning: #ffc107;
+      --info: #17a2b8;
+      --danger: #dc3545;
+      --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      --shadow-lg: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--light-gray);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    /* Enhanced Sidebar - Same as Dashboard */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: linear-gradient(180deg, var(--bg) 0%, #f8f9fa 100%);
+      border-right: 1px solid var(--border);
+      z-index: 1000;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 2rem 1.5rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar h2 {
+      color: var(--primary);
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: -0.025em;
+    }
+
+    .sidebar-nav {
+      padding: 1rem 0;
+    }
+
+    .nav-item {
+      margin: 0.25rem 1rem;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      color: var(--text-gray);
+      text-decoration: none;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.2s ease;
+    }
+
+    .nav-link:hover {
+      background: rgba(231, 76, 60, 0.08);
+      color: var(--primary);
+      transform: translateX(4px);
+    }
+
+    .nav-link.active {
+      background: rgba(231, 76, 60, 0.1);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .nav-link.active::before {
+      transform: scaleY(1);
+    }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Enhanced Main Content */
+    .main-content {
+      margin-left: 280px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Enhanced Top Bar */
+    .topbar {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-lg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-left h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .logout-btn {
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+      color: white;
+    }
+
+    /* Enhanced Content Area */
+    .content {
+      flex: 1;
+      padding: 2rem;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: var(--text-gray);
+      font-size: 0.875rem;
+    }
+
+    /* Enhanced Stats Cards */
+    .stats-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background: var(--bg);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-title {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    /* Enhanced Controls Section */
+    .controls-section {
+      background: var(--bg);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    .top-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-section {
+      display: flex;
+      gap: 0.5rem;
+      flex: 1;
+      max-width: 400px;
+    }
+
+    .search-input {
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+    }
+
+    /* Enhanced Buttons */
+    .btn {
+      padding: 0.625rem 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: var(--text-gray);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-1px);
+    }
+
+    .btn-edit {
+      background: var(--info);
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #138496;
+      transform: translateY(-1px);
+      color: white;
+    }
+
+    .btn-list {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-list:hover {
+      background: #218838;
+      transform: translateY(-1px);
+    }
+
+    .btn-unlist {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-unlist:hover {
+      background: #5a6268;
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+      transform: translateY(-1px);
+    }
+
+    .btn-sm {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.75rem;
+    }
+
+    /* Enhanced Table Section */
+    .table-section {
+      background: var(--bg);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead th {
+      background: #f8f9fa;
+      border-bottom: 2px solid var(--border);
+      font-weight: 600;
+      color: var(--dark);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      padding: 1rem 0.75rem;
+    }
+
+    .table tbody td {
+      padding: 1rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .table tbody tr:hover {
+      background: rgba(231, 76, 60, 0.02);
+    }
+
+    .table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .product-name {
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .price-display {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .stock-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .stock-high {
+      background: rgba(40, 167, 69, 0.1);
+      color: var(--success);
+    }
+
+    .stock-medium {
+      background: rgba(255, 193, 7, 0.1);
+      color: #856404;
+    }
+
+    .stock-low {
+      background: rgba(220, 53, 69, 0.1);
+      color: var(--danger);
+    }
+
+    .stock-out {
+      background: rgba(108, 117, 125, 0.1);
+      color: var(--text-gray);
+    }
+
+    /* Product Images */
+    .product-images {
+      display: flex;
+      gap: 0.25rem;
+      flex-wrap: wrap;
+    }
+
+    .product-img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 0.375rem;
+      border: 2px solid var(--border);
+      transition: all 0.2s ease;
+    }
+
+    .product-img:hover {
+      transform: scale(1.1);
+      border-color: var(--primary);
+      box-shadow: var(--shadow);
+    }
+
+    /* Enhanced Pagination */
+    .pagination {
+      margin-top: 1.5rem;
+      justify-content: center;
+    }
+
+    .page-link {
+      color: var(--primary);
+      border-color: var(--border);
+      padding: 0.5rem 0.75rem;
+    }
+
+    .page-link:hover {
+      background: rgba(231, 76, 60, 0.1);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .page-item.active .page-link {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-gray);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    /* Action Buttons Group */
+    .action-buttons {
+      display: flex;
+      gap: 0.25rem;
+      flex-wrap: wrap;
+    }
+
+    .action-buttons .btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .top-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .search-section {
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      
+      .main-content {
+        margin-left: 0;
+      }
+      
+      .topbar {
+        padding: 1rem;
+      }
+      
+      .content {
+        padding: 1rem;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .table-responsive {
+        font-size: 0.875rem;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+
+    /* Loading Animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .stats-section, .controls-section, .table-section {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .controls-section {
+      animation-delay: 0.1s;
+    }
+
+    .table-section {
+      animation-delay: 0.2s;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Enhanced Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>RC WORLD</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item">
+        <a href="/dashboard" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+          <span>Dashboard</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/category" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-tags"></i></div>
+          <span>Category</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/brands" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-trademark"></i></div>
+          <span>Brands</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/products" class="nav-link active">
+          <div class="nav-icon"><i class="fas fa-box"></i></div>
+          <span>Products</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/usermange" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-users"></i></div>
+          <span>Customers</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/order" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-shopping-cart"></i></div>
+          <span>Orders</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/saleReport" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
+          <span>Sales Report</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="#" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-cog"></i></div>
+          <span>Settings</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="#" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-image"></i></div>
+          <span>Banner Manage</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/coupen" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-ticket-alt"></i></div>
+          <span>Manage Coupons</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/offer" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-percent"></i></div>
+          <span>Offers Management</span>
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Enhanced Main Content -->
+  <main class="main-content">
+    <!-- Enhanced Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1>Product Management</h1>
+      </div>
+      <div class="topbar-right">
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span>Welcome, Admin</span>
+        </div>
+        <div class="user-info">
+          <i class="fas fa-cog"></i>
+        </div>
+        <a href="/logout" class="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Enhanced Content -->
+    <div class="content">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h2 class="page-title">Manage Products</h2>
+        <p class="page-subtitle">Create, edit, and manage all products in your RC World inventory</p>
+      </div>
+
+      <!-- Stats Section -->
+      <section class="stats-section">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Total Products</div>
+              <div class="stat-icon" style="background: rgba(231, 76, 60, 0.1); color: var(--primary);">
+                <i class="fas fa-box"></i>
+              </div>
+            </div>
+            <div class="stat-value"><%= products ? products.length : 0 %></div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Listed Products</div>
+              <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1); color: var(--success);">
+                <i class="fas fa-eye"></i>
+              </div>
+            </div>
+            <div class="stat-value"><%= products ? products.filter(p => p.isListed).length : 0 %></div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Low Stock</div>
+              <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: var(--warning);">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+            </div>
+            <div class="stat-value"><%= products ? products.filter(p => p.stock <= 10 && p.stock > 0).length : 0 %></div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Out of Stock</div>
+              <div class="stat-icon" style="background: rgba(220, 53, 69, 0.1); color: var(--danger);">
+                <i class="fas fa-times-circle"></i>
+              </div>
+            </div>
+            <div class="stat-value"><%= products ? products.filter(p => p.stock === 0).length : 0 %></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Enhanced Controls Section -->
+      <section class="controls-section">
+        <div class="top-controls">
+          <div class="search-section">
+            <form action="/products" method="get" class="d-flex gap-2 w-100">
+              <input type="text" name="searchQuery" class="form-control search-input" 
+                     placeholder="Search products..." value="<%= searchQuery %>" />
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i>
+                Search
+              </button>
+              <a href="/products" class="btn btn-secondary">
+                <i class="fas fa-times"></i>
+                Clear
+              </a>
+            </form>
+          </div>
+          <a href="/addproduct" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Add New Product
+          </a>
+        </div>
+      </section>
+
+      <!-- Enhanced Table Section -->
+      <section class="table-section">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">
+                  <i class="fas fa-cube me-2"></i>
+                  Product
+                </th>
+                <th scope="col">
+                  <i class="fas fa-trademark me-2"></i>
+                  Brand
+                </th>
+                <th scope="col">
+                  <i class="fas fa-tag me-2"></i>
+                  Category
+                </th>
+                <th scope="col">
+                  <i class="fas fa-rupee-sign me-2"></i>
+                  Base Price
+                </th>
+                <th scope="col">
+                  <i class="fas fa-percent me-2"></i>
+                  Sale Price
+                </th>
+                <th scope="col">
+                  <i class="fas fa-warehouse me-2"></i>
+                  Stock
+                </th>
+                <th scope="col">
+                  <i class="fas fa-images me-2"></i>
+                  Images
+                </th>
+                <th scope="col">
+                  <i class="fas fa-cogs me-2"></i>
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (products && products.length > 0) { %>
+                <% products.forEach(product => { %>
+                  <tr>
+                    <td class="product-name">
+                      <%= product.productName %>
+                    </td>
+                    <td>
+                      <%= product.brandId.brandName %>
+                    </td>
+                    <td>
+                      <%= product.categoryId.categoryName %>
+                    </td>
+                    <td class="price-display">
+                      ₹<%= product.baseprice.toLocaleString() %>
+                    </td>
+                    <td class="price-display">
+                      ₹<%= product.discountPrice.toLocaleString() %>
+                    </td>
+                    <td>
+                      <span class="stock-badge <%= 
+                        product.stock === 0 ? 'stock-out' : 
+                        product.stock <= 5 ? 'stock-low' : 
+                        product.stock <= 10 ? 'stock-medium' : 'stock-high' 
+                      %>">
+                        <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
+                        <%= product.stock %> units
+                      </span>
+                    </td>
+                    <td>
+                      <div class="product-images">
+                        <% product.images.slice(0, 3).forEach(image => { %>
+                          <img src="<%= image %>" alt="Product Image" class="product-img">
+                        <% }) %>
+                        <% if (product.images.length > 3) { %>
+                          <div class="product-img d-flex align-items-center justify-content-center bg-light">
+                            <small>+<%= product.images.length - 3 %></small>
+                          </div>
+                        <% } %>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="action-buttons">
+                        <a href="/editproduct/<%= product._id %>" class="btn btn-edit btn-sm">
+                          <i class="fas fa-edit"></i>
+                          Edit
+                        </a>
+                        <form action="/islist/<%= product._id %>" method="post" class="d-inline">
+                          <button type="submit" class="btn <%= product.isListed ? 'btn-unlist' : 'btn-list' %> btn-sm">
+                            <i class="fas fa-<%= product.isListed ? 'eye-slash' : 'eye' %>"></i>
+                            <%= product.isListed ? 'Unlist' : 'List' %>
+                          </button>
+                        </form>
+                        <form action="/deleteproduct/<%= product._id %>" method="post" class="d-inline" 
+                              onsubmit="return confirmDelete('<%= product.productName %>')">
+                          <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                            Delete
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="8" class="empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <h5>No products found</h5>
+                    <p class="mb-0">Start by adding your first product</p>
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Enhanced Pagination -->
+        <% if (totalpage > 1) { %>
+          <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+              <% for (let i = 1; i <= totalpage; i++) { %>
+                <li class="page-item <%= page === i ? 'active' : '' %>">
+                  <a class="page-link" href="/products?page=<%= i %>&searchQuery=<%= encodeURIComponent(searchQuery) %>">
+                    <%= i %>
+                  </a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        <% } %>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script>
+    function confirmDelete(productName) {
+      return confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`);
+    }
+
+    // Add loading animation on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const sections = document.querySelectorAll('.stats-section, .controls-section, .table-section');
+      sections.forEach((section, index) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          section.style.transition = 'all 0.6s ease';
+          section.style.opacity = '1';
+          section.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
+    });
+
+    // Image hover preview
+    document.querySelectorAll('.product-img').forEach(img => {
+      img.addEventListener('click', function() {
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.innerHTML = `
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Product Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body text-center">
+                <img src="${this.src}" class="img-fluid" alt="Product Image">
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+        modal.addEventListener('hidden.bs.modal', () => {
+          document.body.removeChild(modal);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

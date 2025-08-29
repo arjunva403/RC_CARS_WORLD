@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RC WORLD - Product Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Aldrich&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rc-red': '#df2f2f',
+                        'rc-dark-red': '#C62828',
+                        'rc-cyan': '#00cbf8',
+                        'rc-gray': '#8b8b8b',
+                        'rc-light-gray': '#f1eded',
+                        'rc-border-gray': '#d9d9d9',
+                        'rc-yellow': '#fbd300',
+                        'rc-star-filled': '#FFC107',
+                        'rc-star-empty': '#E0E0E0',
+                        'rc-success': '#28a745',
+                        'rc-error': '#dc3545'
+                    },
+                    fontFamily: {
+                        'aldrich': ['Aldrich', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .image-container:hover .product-image {
+            cursor: zoom-in;
+        }
+        .product-image {
+            transition: transform 0.3s ease;
+        }
+        .thumbnail {
+            transition: all 0.3s ease;
+        }
+        .thumbnail:hover {
+            transform: scale(1.05);
+        }
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .toast-animation {
+            animation: slideIn 0.3s ease forwards;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-rc-light-gray font-aldrich text-gray-900">
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-[10000] space-y-2"></div>
+
+    <!-- Header -->
+    <header class="bg-rc-red text-white relative z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center">
+                    <% if (user) { %>
+                        <a href="/profile" class="flex items-center space-x-2 text-base font-aldrich hover:text-rc-light-gray transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                            <span>PROFILE</span>
+                        </a>
+                    <% } else { %>
+                        <a href="/login" class="text-base font-aldrich hover:text-rc-light-gray transition-colors">
+                            LOGIN
+                        </a>
+                    <% } %>
+                </div>
+                <div class="text-center">
+                    <a href="/" class="block">
+                        <h1 class="text-2xl font-bold font-aldrich">RC WORLD</h1>
+                        <p class="text-sm font-aldrich">small wheels, big thrills</p>
+                    </a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="/cart" class="relative text-white hover:text-rc-light-gray transition-colors group" aria-label="Cart">
+                        <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                        </svg>
+                        <span class="absolute -top-2 -right-2 bg-white text-rc-red text-xs font-semibold w-5 h-5 rounded-full flex items-center justify-center cart-badge animate-pulse">
+                            <%= cart && cart > 0 ? cart : 0 %>
+                        </span>
+                    </a>
+                    <span class="text-sm font-aldrich">MY CART</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-black text-white relative z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-center space-x-8 py-3">
+                <a href="/" class="hover:text-rc-red font-aldrich text-base transition-colors">HOME</a>
+                <a href="/product" class="text-rc-red font-aldrich text-base transition-colors">PRODUCTS</a>
+                <a href="/contact" class="hover:text-rc-red font-aldrich text-base transition-colors">CONTACT US</a>
+                <a href="/about" class="hover:text-rc-red font-aldrich text-base transition-colors">ABOUT US</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumbs -->
+    <div class="container mx-auto px-4 py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="flex items-center text-sm bg-white p-3 rounded-lg shadow-sm">
+                <li class="mr-2">
+                    <a href="/" class="text-rc-gray hover:text-rc-red transition-colors">
+                        <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                        </svg>
+                        Home
+                    </a>
+                </li>
+                <li class="mr-2 text-rc-gray">/</li>
+                <li class="mr-2">
+                    <a href="/products" class="text-rc-gray hover:text-rc-red transition-colors">Products</a>
+                </li>
+                <li class="mr-2 text-rc-gray">/</li>
+                <li class="text-rc-red font-medium"><%= product ? product.productName : 'Super RC Off-Road' %></li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Product Details Section -->
+    <main class="container mx-auto px-4 py-8">
+    <% if (product) { %>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white rounded-lg shadow-lg p-8">
+        <!-- Product Images -->
+        <div class="image-container space-y-4">
+            <div class="relative overflow-hidden rounded-lg bg-white border-2 border-rc-border-gray">
+                <img src="<%= product.images[0] %>" alt="<%= product.productName %>" 
+                     class="product-image w-full h-96 object-contain" id="productImage">
+                <div class="absolute top-4 right-4">
+                    <button class="bg-white/80 hover:bg-white p-2 rounded-full shadow-md transition-colors">
+                        <svg class="w-5 h-5 text-rc-gray hover:text-rc-red" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Best Offer Badge -->
+                <% if (product.applyOffer && product.offerTitle) { %>
+                <div class="absolute top-4 left-4">
+                    <div class="bg-gradient-to-r from-rc-red to-red-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                        <i class="fas fa-fire mr-1"></i><%= product.offerTitle %>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+            <div class="thumbnail-container flex gap-3 overflow-x-auto hide-scrollbar justify-center">
+                <% product.images.forEach((img, index) => { %>
+                <img src="<%= img %>" alt="Product thumbnail <%= index + 1 %>" 
+                     class="thumbnail w-20 h-20 object-contain border-2 border-transparent rounded-lg cursor-pointer 
+                            hover:border-rc-red hover:shadow-md <%= index === 0 ? 'border-rc-red shadow-md' : '' %>" 
+                     onclick="changeImage(this.src)">
+                <% }) %>
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="space-y-6">
+            <div>
+                <h1 class="text-3xl font-bold font-aldrich text-gray-900 mb-2"><%= product.productName %></h1>
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="flex items-center gap-2">
+                        <div class="star-rating flex gap-1">
+                            <% for(let i = 0; i < 5; i++) { %>
+                                <span class="text-<%= i < Math.floor(product.rating || 4) ? 'rc-star-filled' : 'rc-star-empty' %> text-xl">★</span>
+                            <% } %>
+                        </div>
+                        <span class="text-sm text-rc-gray font-medium">(<%= product.rating || 4.2 %>/5)</span>
+                    </div>
+                    <span class="text-sm text-rc-gray">(120 Reviews)</span>
+                </div>
+            </div>
+
+            <!-- Enhanced Pricing with Best Offer -->
+            <div class="bg-rc-light-gray p-4 rounded-lg">
+                <!-- Best Offer Alert -->
+                <% if (product.applyOffer && product.offerTitle) { %>
+                <div class="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 p-3 rounded-lg mb-4">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-tag text-green-600"></i>
+                        <span class="text-green-800 font-semibold text-sm">Best Offer Applied: <%= product.offerTitle %></span>
+                        <% if (product.offerSource) { %>
+                        <span class="text-xs text-green-600 bg-green-200 px-2 py-1 rounded-full">
+                            <%= product.offerSource %>
+                        </span>
+                        <% } %>
+                    </div>
+                    <p class="text-green-700 text-xs mt-1">You save an additional ₹<%= product.discountAmount.toLocaleString() %></p>
+                </div>
+                <% } %>
+                
+                <div class="flex items-center gap-4 mb-2">
+                    <!-- Display Final Price (after best offer) -->
+                    <div class="text-3xl font-bold text-gray-900">₹<%= product.finalPrice.toLocaleString() %></div>
+                    
+                    <!-- Show original discount price if different from final price -->
+                    <% if (product.applyOffer && product.finalPrice !== product.discountPrice) { %>
+                    <span class="text-lg text-gray-500 line-through">₹<%= product.discountPrice.toLocaleString() %></span>
+                    <% } %>
+                    
+                    <!-- Original base price -->
+                    <span class="text-lg text-rc-gray line-through">₹<%= product.baseprice.toLocaleString() %></span>
+                    
+                    <!-- Total discount percentage -->
+                    <span class="text-sm bg-rc-success text-white px-3 py-1 rounded-full font-semibold">
+                        <%= Math.round(((product.baseprice - product.finalPrice) / product.baseprice) * 100) %>% Off
+                    </span>
+                </div>
+                
+                <!-- Breakdown of savings -->
+                <div class="text-sm text-rc-gray space-y-1">
+                    <p>(Inclusive of all taxes)</p>
+                    <% if (product.applyOffer) { %>
+                    <div class="flex justify-between items-center pt-2 border-t border-gray-200">
+                        <span>Regular Price:</span>
+                        <span>₹<%= product.baseprice.toLocaleString() %></span>
+                    </div>
+                    <% if (product.discountPrice !== product.baseprice) { %>
+                    <div class="flex justify-between items-center">
+                        <span>Store Discount:</span>
+                        <span class="text-green-600">-₹<%= (product.baseprice - product.discountPrice).toLocaleString() %></span>
+                    </div>
+                    <% } %>
+                    <div class="flex justify-between items-center">
+                        <span><%= product.offerTitle %> Discount:</span>
+                        <span class="text-green-600">-₹<%= product.discountAmount.toLocaleString() %></span>
+                    </div>
+                    <div class="flex justify-between items-center font-semibold pt-1 border-t border-gray-200">
+                        <span>Final Price:</span>
+                        <span class="text-rc-red">₹<%= product.finalPrice.toLocaleString() %></span>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Stock Status -->
+            <div class="flex items-center gap-3">
+                <div class="stock-status flex items-center gap-2 text-sm font-medium 
+                            <%= product.stock > 10 ? 'text-rc-success' : product.stock > 0 ? 'text-rc-yellow' : 'text-rc-error' %>">
+                    <i class="fas <%= product.stock > 10 ? 'fa-check-circle' : product.stock > 0 ? 'fa-exclamation-circle' : 'fa-times-circle' %>"></i>
+                    <%= product.stock > 10 ? 'In Stock' : product.stock > 0 ? `Only ${product.stock} left!` : 'Out of Stock' %>
+                </div>
+                <% if (product.stock > 0) { %>
+                <span class="text-xs bg-rc-light-gray text-rc-gray px-2 py-1 rounded">
+                    <%= product.stock %> available
+                </span>
+                <% } %>
+            </div>
+
+            <!-- Quantity & Coupon -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Quantity -->
+                <div>
+                    <label for="quantity" class="block text-lg font-medium mb-3">Quantity</label>
+                    <div class="relative">
+                        <select id="quantity" class="block appearance-none w-full bg-white border-2 border-rc-border-gray 
+                                                   text-gray-700 py-3 px-4 pr-8 rounded-lg leading-tight 
+                                                   focus:outline-none focus:border-rc-red focus:ring-2 focus:ring-rc-red/20" 
+                                aria-label="Quantity">
+                            <% for(let i = 1; i <= Math.min(15, product.stock); i++) { %>
+                            <option <%= i === 1 ? 'selected' : '' %>><%= i %></option>
+                            <% } %>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-rc-gray">
+                            <svg class="fill-current h-4 w-4" viewBox="0 0 20 20">
+                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+        
+            </div>
+
+            <!-- Delivery Options -->
+            <div class="bg-white border border-rc-border-gray p-4 rounded-lg">
+                <h3 class="font-semibold text-lg mb-3">Delivery & Services</h3>
+                <ul class="space-y-3 text-sm text-rc-gray">
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-rc-success" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                        </svg>
+                        <span><strong>Free Shipping</strong> - All India Delivery</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-rc-success" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span><strong>7 Days Returns*</strong> 
+                            <a href="/return" class="text-rc-red underline hover:no-underline ml-1">View Policy</a>
+                        </span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-rc-success" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                        </svg>
+                        <span><strong>1 Year Warranty</strong> - Manufacturing Defects</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-4 mt-8 flex-wrap">
+                <% if (product.stock > 0) { %>
+                <form class="add-to-cart-form flex-1">
+                    <button type="submit" 
+                            class="w-full bg-white border-2 border-rc-red text-rc-red py-4 rounded-lg 
+                                   font-semibold hover:bg-rc-red hover:text-white transition-all btn 
+                                   text-lg flex items-center justify-center gap-2" 
+                            data-id="<%= product._id %>" 
+                            data-price="<%= product.finalPrice %>"
+                            aria-label="Add to cart">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                        </svg>
+                        ADD TO CART
+                    </button>
+                </form>
+                <button class="flex-1 bg-rc-red text-white py-4 rounded-lg font-semibold 
+                               hover:bg-rc-dark-red transition-all btn text-lg 
+                               flex items-center justify-center gap-2" 
+                        onclick="buyNow('<%= product._id %>', '<%= product.finalPrice %>')" 
+                        aria-label="Buy now">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M13 7.5h2.5l-3.5-3.5-3.5 3.5H11v6h2V7.5zm-6.09 4.09L4 14.5 9.5 20 17 20v-2H9.5l-2.59-2.59zM17 4h-7l-1.41 1.41L16.17 13H20l-3-9z"/>
+                    </svg>
+                    BUY NOW
+                </button>
+                <% } else { %>
+                <button class="w-full bg-rc-gray text-white py-4 rounded-lg font-semibold 
+                               text-lg cursor-not-allowed" disabled>
+                    OUT OF STOCK
+                </button>
+                <% } %>
+            </div>
+
+            <!-- Wishlist Button -->
+            <button class="w-full bg-rc-light-gray border border-rc-border-gray text-rc-gray py-3 rounded-lg 
+                           font-semibold hover:bg-rc-border-gray transition-colors flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                ADD TO WISHLIST
+            </button>
+        </div>
+    </div>
+
+    <!-- Product Description -->
+    <div class="mt-12 bg-white rounded-lg shadow-lg p-8">
+        <h2 class="text-2xl font-bold font-aldrich mb-6 border-b-2 border-rc-border-gray pb-3">
+            About This Product
+        </h2>
+        <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Description & Key Features</h3>
+                <p class="text-rc-gray leading-relaxed mb-4"><%= product.description %></p>
+                <a href="#specifications" class="text-rc-red font-medium hover:underline inline-flex items-center gap-1">
+                    View Full Specifications
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+    <% } %>
+</main>
+
+
+    <!-- Customer Reviews Section -->
+    <section class="container mx-auto px-4 py-12">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h2 class="text-2xl font-bold font-aldrich mb-8 border-b-2 border-rc-border-gray pb-3">
+                Customer Reviews (120)
+            </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Rating Summary -->
+                <div class="lg:col-span-1">
+                    <div class="bg-rc-light-gray p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-4">Overall Rating</h3>
+                        <div class="text-center mb-6">
+                            <div class="text-4xl font-bold text-rc-red mb-2">4.2</div>
+                            <div class="star-rating flex justify-center gap-1 mb-2">
+                                <% for(let i = 0; i < 5; i++) { %>
+                                <span class="text-<%= i < 4 ? 'rc-star-filled' : 'rc-star-empty' %> text-2xl">★</span>
+                                <% } %>
+                            </div>
+                            <p class="text-sm text-rc-gray">Based on 120 reviews</p>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <% for(let i = 5; i >= 1; i--) { %>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm w-8"><%= i %>★</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-rc-star-filled h-2 rounded-full" ></div>
+                                </div>
+                                <span class="text-sm text-rc-gray w-8"></span>
+                            </div>
+                            <% } %>
+                        </div>
+                        
+                        <button class="w-full bg-rc-red text-white py-3 rounded-lg font-semibold 
+                                       hover:bg-rc-dark-red transition-colors mt-6 btn" 
+                                onclick="toggleCommentForm()" aria-label="Write a review">
+                            Write a Review
+                        </button>
+                        
+                        <div class="comment-form hidden mt-6 bg-white p-4 rounded-lg border border-rc-border-gray" id="commentForm">
+                            <h4 class="text-lg font-semibold mb-3">Leave a Review</h4>
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium mb-2">Rating</label>
+                                <div class="flex gap-1">
+                                    <% for(let i = 1; i <= 5; i++) { %>
+                                    <button class="star-btn text-2xl text-rc-star-empty hover:text-rc-star-filled" 
+                                            data-rating="<%= i %>">★</button>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <textarea placeholder="Share your thoughts about this product..." 
+                                      class="w-full p-3 border border-rc-border-gray rounded-lg 
+                                             focus:outline-none focus:border-rc-red focus:ring-2 focus:ring-rc-red/20" 
+                                      aria-label="Review text" rows="4"></textarea>
+                            <div class="flex gap-2 mt-3">
+                                <button class="bg-rc-red text-white py-2 px-4 rounded-lg font-semibold 
+                                               hover:bg-rc-dark-red transition-colors btn" 
+                                        onclick="submitReview()" aria-label="Submit review">
+                                    Submit Review
+                                </button>
+                                <button class="bg-rc-gray text-white py-2 px-4 rounded-lg font-semibold 
+                                               hover:bg-gray-600 transition-colors" 
+                                        onclick="toggleCommentForm()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Individual Reviews -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="border border-rc-border-gray p-6 rounded-lg hover:shadow-md transition-shadow">
+                        <div class="flex items-start gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-full bg-rc-red text-white flex items-center justify-center font-bold">
+                                AJ
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-semibold text-lg">Alex Johnson</h4>
+                                    <span class="text-sm text-rc-gray">2 days ago</span>
+                                </div>
+                                <div class="star-rating flex gap-1 mb-2">
+                                    <% for(let i = 0; i < 5; i++) { %>
+                                    <span class="text-rc-star-filled text-lg">★</span>
+                                    <% } %>
+                                </div>
+                                <h5 class="font-semibold mb-2">Amazing Product!</h5>
+                                <p class="text-rc-gray mb-4">
+                                    This RC car exceeded my expectations! The speed and handling are incredible, 
+                                    and it handles rough terrain like a champion. Great build quality and fun for all ages.
+                                </p>
+                                <div class="flex items-center gap-4 text-sm">
+                                    <button class="flex items-center gap-1 text-rc-gray hover:text-rc-red transition-colors"
+                                            onclick="likeReview('review1')">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z"/>
+                                        </svg>
+                                        <span id="like-count-review1">5</span>
+                                    </button>
+                                    <button class="flex items-center gap-1 text-rc-gray hover:text-rc-red transition-colors"
+                                            onclick="dislikeReview('review1')">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14-.73v-1.91l.01.01L1 14c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/>
+                                        </svg>
+                                        <span id="dislike-count-review1">0</span>
+                                    </button>
+                                    <span class="text-rc-gray">Verified Purchase</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border border-rc-border-gray p-6 rounded-lg hover:shadow-md transition-shadow">
+                        <div class="flex items-start gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-full bg-rc-cyan text-white flex items-center justify-center font-bold">
+                                ML
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-semibold text-lg">Maria Lopez</h4>
+                                    <span class="text-sm text-rc-gray">1 week ago</span>
+                                </div>
+                                <div class="star-rating flex gap-1 mb-2">
+                                    <% for(let i = 0; i < 4; i++) { %>
+                                    <span class="text-rc-star-filled text-lg">★</span>
+                                    <% } %>
+                                    <span class="text-rc-star-empty text-lg">★</span>
+                                </div>
+                                <h5 class="font-semibold mb-2">Great Product</h5>
+                                <p class="text-rc-gray mb-4">
+                                    Solid RC car with good performance. The battery life could be longer, 
+                                    but overall it's a fun toy that provides hours of entertainment.
+                                </p>
+                                <div class="flex items-center gap-4 text-sm">
+                                    <button class="flex items-center gap-1 text-rc-gray hover:text-rc-red transition-colors"
+                                            onclick="likeReview('review2')">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z"/>
+                                        </svg>
+                                        <span id="like-count-review2">2</span>
+                                    </button>
+                                    <button class="flex items-center gap-1 text-rc-gray hover:text-rc-red transition-colors"
+                                            onclick="dislikeReview('review2')">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14-.73v-1.91l.01.01L1 14c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/>
+                                        </svg>
+                                        <span id="dislike-count-review2">1</span>
+                                    </button>
+                                    <span class="text-rc-gray">Verified Purchase</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Load More Reviews Button -->
+                    <div class="text-center">
+                        <button class="bg-rc-light-gray border border-rc-border-gray text-rc-gray py-3 px-6 rounded-lg 
+                                       font-semibold hover:bg-rc-border-gray transition-colors">
+                            Load More Reviews
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Similar Products Section -->
+    <section class="container mx-auto px-4 py-12">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h2 class="text-2xl font-bold font-aldrich mb-8 border-b-2 border-rc-border-gray pb-3">
+                Similar Products
+            </h2>
+            <div class="relative">
+                <div class="flex overflow-x-auto gap-6 pb-4 hide-scrollbar" id="relatedCarousel">
+                    <% if(suggestion){ %>
+                    <% suggestion.forEach((Products) => { %>
+                    <% if(Products.isListed !== false) { %>
+                    <div class="flex-shrink-0 w-72 bg-white border border-rc-border-gray rounded-lg shadow-sm p-6 
+                                text-center related-item hover:-translate-y-2 hover:shadow-lg transition-all">
+                        <a href="/details/<%= Products._id %>" class="block">
+                            <div class="relative mb-4">
+                                <img src="<%= Products.images[0] %>" alt="<%= Products.productName %>" 
+                                     class="w-full h-48 object-contain rounded-lg">
+                                <div class="absolute top-2 right-2">
+                                    <button class="bg-white/80 hover:bg-white p-2 rounded-full shadow-md transition-colors">
+                                        <svg class="w-4 h-4 text-rc-gray hover:text-rc-red" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </a>
+                        <h3 class="font-semibold text-sm mb-3 font-aldrich line-clamp-2"><%= Products.productName %></h3>
+                        <div class="star-rating flex justify-center gap-1 mb-3">
+                            <% for(let i = 0; i < 5; i++) { %>
+                            <span class="text-<%= i < Math.floor(Products.rating || 4) ? 'rc-star-filled' : 'rc-star-empty' %> text-lg">★</span>
+                            <% } %>
+                        </div>
+                        <div class="mb-4">
+                            <div class="text-lg font-bold text-gray-900">₹<%= Products.discountPrice.toLocaleString() %></div>
+                            <div class="text-sm text-rc-gray line-through">₹<%= Products.baseprice.toLocaleString() %></div>
+                        </div>
+                        <button class="w-full bg-rc-cyan text-white py-2 rounded-lg text-sm font-semibold 
+                                       hover:bg-rc-cyan/90 transition-colors btn" 
+                                onclick="addToCart('<%= Products._id %>')" aria-label="Add to cart">
+                            ADD TO CART
+                        </button>
+                    </div>
+                    <% } %>
+                    <% }) %>
+                    <% } %>
+                </div>
+                
+                <!-- Carousel Controls -->
+                <button class="carousel-control absolute left-[-20px] top-1/2 -translate-y-1/2 
+                               bg-rc-red/80 hover:bg-rc-red text-white w-10 h-10 rounded-full 
+                               flex items-center justify-center hover:scale-110 transition-all z-30 prev" 
+                        onclick="scrollCarousel('relatedCarousel', -300)" aria-label="Previous product">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <button class="carousel-control absolute right-[-20px] top-1/2 -translate-y-1/2 
+                               bg-rc-red/80 hover:bg-rc-red text-white w-10 h-10 rounded-full 
+                               flex items-center justify-center hover:scale-110 transition-all z-30 next" 
+                        onclick="scrollCarousel('relatedCarousel', 300)" aria-label="Next product">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold font-aldrich text-center mb-12">Why Choose RC World?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="flex items-center gap-6 p-6 bg-rc-light-gray rounded-lg hover:shadow-md transition-shadow">
+                    <div class="w-20 h-20 bg-white rounded-lg flex items-center justify-center shadow-md">
+                        <svg class="w-10 h-10 text-rc-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-black text-xl mb-2">EXPRESS SHIPPING</h3>
+                        <p class="text-rc-gray">Free shipping in 24 hours across India</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 p-6 bg-rc-light-gray rounded-lg hover:shadow-md transition-shadow">
+                    <div class="w-20 h-20 bg-white rounded-lg flex items-center justify-center shadow-md">
+                        <svg class="w-10 h-10 text-rc-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-black text-xl mb-2">ORDER TRACKING</h3>
+                        <p class="text-rc-gray">Real-time tracking for all orders</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 p-6 bg-rc-light-gray rounded-lg hover:shadow-md transition-shadow">
+                    <div class="w-20 h-20 bg-white rounded-lg flex items-center justify-center shadow-md">
+                        <svg class="w-10 h-10 text-rc-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-black text-xl mb-2">SECURE PAYMENT</h3>
+                        <p class="text-rc-gray">100% secure payment gateway</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-rc-light-gray py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="font-bold text-black mb-6 text-lg">CUSTOMER SERVICE</h3>
+                    <ul class="space-y-3 text-rc-gray">
+                        <li><a href="/contact" class="hover:text-black transition-colors">Contact Us</a></li>
+                        <li><a href="/return" class="hover:text-black transition-colors">Shipping & Returns</a></li>
+                        <li><a href="/terms" class="hover:text-black transition-colors">Terms & Conditions</a></li>
+                        <li><a href="/order" class="hover:text-black transition-colors">Track Your Order</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-black mb-6 text-lg">INFORMATION</h3>
+                    <ul class="space-y-3 text-rc-gray">
+                        <li><a href="/about" class="hover:text-black transition-colors">About Us</a></li>
+                        <li><a href="/privacy" class="hover:text-black transition-colors">Privacy Policy</a></li>
+                        <li><a href="/warranty" class="hover:text-black transition-colors">Warranty Info</a></li>
+                        <li><a href="/admin" class="hover:text-black transition-colors">Administrator</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-black mb-6 text-lg">FOLLOW US</h3>
+                    <div class="flex gap-4">
+                        <a href="#" class="text-rc-gray hover:text-black transition-colors" aria-label="Pinterest">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.097.118.112.221.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001.012.001z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-rc-gray hover:text-black transition-colors" aria-label="Twitter">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-rc-gray hover:text-black transition-colors" aria-label="LinkedIn">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-black mb-6 text-lg">CONTACT US</h3>
+                    <div class="space-y-3 text-rc-gray">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                            </svg>
+                            <span>(+91) 95551 76147</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                            <span>info@rcworld.com</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+                                <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                            </svg>
+                            <span>Mon-Sat: 9:00 - 18:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center mt-12 pt-8 border-t border-rc-border-gray">
+                <div class="text-rc-gray text-sm">
+                    © 2025 RC World. All rights reserved.
+                </div>
+                <div class="flex gap-6 items-center">
+                    <div class="text-2xl font-bold text-rc-gray">VISA</div>
+                    <div class="text-2xl font-bold text-rc-red">mastercard</div>
+                    <div class="text-2xl font-bold text-rc-gray">PAYPAL</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Enhanced Toast Notification System
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const iconSvg = type === 'success' 
+                ? '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+                : '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>';
+            
+            toast.className = `flex items-center gap-3 px-6 py-4 mb-3 rounded-lg text-white font-medium shadow-lg 
+                              transform translate-x-full transition-all duration-300 toast-animation
+                              ${type === 'success' ? 'bg-rc-success' : 'bg-rc-error'}`;
+            toast.innerHTML = `
+                ${iconSvg}
+                <span class="flex-1">${message}</span>
+                <button class="ml-3 text-white hover:text-gray-200 text-xl font-bold" onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+                toast.classList.add('translate-x-0');
+            }, 100);
+            
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Enhanced Image Management
+        function changeImage(src) {
+            const image = document.getElementById('productImage');
+            image.style.opacity = '0.5';
+            
+            setTimeout(() => {
+                image.src = src;
+                image.style.opacity = '1';
+            }, 150);
+            
+            // Update thumbnails
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+                thumb.classList.remove('border-rc-red', 'shadow-md');
+                if (thumb.src === src) {
+                    thumb.classList.add('border-rc-red', 'shadow-md');
+                }
+            });
+        }
+
+        // Enhanced Image Zoom with Mobile Support
+        document.addEventListener('DOMContentLoaded', () => {
+            const imageContainer = document.querySelector('.image-container');
+            const productImage = document.getElementById('productImage');
+            let isZoomed = false;
+
+            if (imageContainer && productImage) {
+                // Desktop hover zoom
+                imageContainer.addEventListener('mousemove', (e) => {
+                    if (window.innerWidth >= 768) {
+                        const rect = imageContainer.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const xPercent = (x / rect.width) * 100;
+                        const yPercent = (y / rect.height) * 100;
+                        
+                        productImage.style.transform = 'scale(1.8)';
+                        productImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+                        isZoomed = true;
+                    }
+                });
+
+                imageContainer.addEventListener('mouseleave', () => {
+                    if (window.innerWidth >= 768) {
+                        productImage.style.transform = 'scale(1)';
+                        productImage.style.transformOrigin = 'center center';
+                        isZoomed = false;
+                    }
+                });
+
+                // Mobile tap to zoom
+                imageContainer.addEventListener('click', (e) => {
+                    if (window.innerWidth < 768) {
+                        e.preventDefault();
+                        if (!isZoomed) {
+                            productImage.style.transform = 'scale(1.5)';
+                            isZoomed = true;
+                        } else {
+                            productImage.style.transform = 'scale(1)';
+                            productImage.style.transformOrigin = 'center center';
+                            isZoomed = false;
+                        }
+                    }
+                });
+            }
+        });
+
+        // Enhanced Coupon System
+        function applyCoupon() {
+            const code = document.getElementById('couponCode').value.trim().toUpperCase();
+            const message = document.getElementById('couponMessage');
+            
+            const validCoupons = {
+                'SAVE10': { discount: 10, message: 'Coupon applied! 10% off your order' },
+                'WELCOME20': { discount: 20, message: 'Welcome! 20% off for new customers' },
+                'RCWORLD15': { discount: 15, message: 'RC World Special! 15% off' }
+            };
+
+            if (validCoupons[code]) {
+                message.textContent = validCoupons[code].message;
+                message.className = 'text-rc-success mt-2 block font-semibold';
+                showToast(`Coupon applied! ${validCoupons[code].discount}% discount added`, 'success');
+            } else if (code === '') {
+                message.textContent = 'Please enter a coupon code';
+                message.className = 'text-rc-error mt-2 block';
+            } else {
+                message.textContent = 'Invalid coupon code. Try SAVE10, WELCOME20, or RCWORLD15';
+                message.className = 'text-rc-error mt-2 block';
+                showToast('Invalid coupon code', 'error');
+            }
+        }
+
+        // Enhanced Add to Cart with Loading State
+        document.querySelectorAll("form.add-to-cart-form").forEach(form => {
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const button = e.submitter;
+                const productId = button.dataset.id;
+                const qty = parseInt(document.getElementById("quantity").value);
+                const originalText = button.innerHTML;
+
+                if (qty < 1 || qty > 15) {
+                    showToast('Please select a valid quantity (1-15).', 'error');
+                    return;
+                }
+
+                // Show loading state
+                button.disabled = true;
+                button.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Adding...
+                `;
+
+                try {
+                    const res = await fetch("/postcart", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ productId, qty })
+                    });
+
+                    const result = await res.json();
+                    
+                    if (res.ok && result.success) {
+                        showToast(`${qty} item(s) added to cart successfully!`, 'success');
+                        
+                        // Update cart badge with animation
+                        const cartBadge = document.querySelector('.cart-badge');
+                        const currentCount = parseInt(cartBadge.textContent || 0);
+                        cartBadge.textContent = currentCount + qty;
+                        cartBadge.classList.add('animate-bounce');
+                        setTimeout(() => cartBadge.classList.remove('animate-bounce'), 500);
+                    } else {
+                        showToast(result.message || "Failed to add to cart", 'error');
+                    }
+                } catch (err) {
+                    console.error("Add to cart failed:", err);
+                    showToast("Something went wrong. Please try again.", 'error');
+                } finally {
+                    // Restore button state
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                }
+            });
+        });
+
+        // Enhanced Buy Now
+        function buyNow(productId) {
+            const quantity = parseInt(document.getElementById('quantity').value);
+            if (quantity < 1 || quantity > 15) {
+                showToast('Please select a valid quantity (1-15).', 'error');
+                return;
+            }
+            
+            showToast(`Proceeding to checkout with ${quantity} item(s)!`, 'success');
+            
+            // Simulate redirect to checkout
+            setTimeout(() => {
+                window.location.href = `/checkout?product=${productId}&qty=${quantity}`;
+            }, 1000);
+        }
+
+        // Enhanced Review System
+        function toggleCommentForm() {
+            const form = document.getElementById('commentForm');
+            form.classList.toggle('hidden');
+            
+            if (!form.classList.contains('hidden')) {
+                form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Star Rating for Reviews
+        document.addEventListener('DOMContentLoaded', () => {
+            const starButtons = document.querySelectorAll('.star-btn');
+            let selectedRating = 0;
+            
+            starButtons.forEach((star, index) => {
+                star.addEventListener('click', () => {
+                    selectedRating = index + 1;
+                    updateStarDisplay();
+                });
+                
+                star.addEventListener('mouseover', () => {
+                    highlightStars(index + 1);
+                });
+            });
+            
+            function updateStarDisplay() {
+                starButtons.forEach((star, index) => {
+                    star.classList.toggle('text-rc-star-filled', index < selectedRating);
+                    star.classList.toggle('text-rc-star-empty', index >= selectedRating);
+                });
+            }
+            
+            function highlightStars(rating) {
+                starButtons.forEach((star, index) => {
+                    star.classList.toggle('text-rc-star-filled', index < rating);
+                    star.classList.toggle('text-rc-star-empty', index >= rating);
+                });
+            }
+        });
+
+        function submitReview() {
+            const textarea = document.querySelector('.comment-form textarea');
+            const selectedRating = document.querySelectorAll('.star-btn.text-rc-star-filled').length;
+            
+            if (!selectedRating) {
+                showToast('Please select a rating before submitting.', 'error');
+                return;
+            }
+            
+            if (textarea.value.trim()) {
+                showToast('Review submitted successfully! Thank you for your feedback.', 'success');
+                textarea.value = '';
+                document.getElementById('commentForm').classList.add('hidden');
+                
+                // Reset stars
+                document.querySelectorAll('.star-btn').forEach(star => {
+                    star.classList.remove('text-rc-star-filled');
+                    star.classList.add('text-rc-star-empty');
+                });
+            } else {
+                showToast('Please enter a review before submitting.', 'error');
+            }
+        }
+
+        // Enhanced Like/Dislike with Animation
+        function likeReview(reviewId) {
+            const countElement = document.getElementById(`like-count-${reviewId}`);
+            const currentCount = parseInt(countElement.textContent);
+            countElement.textContent = currentCount + 1;
+            
+            // Add animation
+            countElement.classList.add('text-rc-success', 'font-bold');
+            setTimeout(() => {
+                countElement.classList.remove('text-rc-success', 'font-bold');
+            }, 1000);
+        }
+
+        function dislikeReview(reviewId) {
+            const countElement = document.getElementById(`dislike-count-${reviewId}`);
+            const currentCount = parseInt(countElement.textContent);
+            countElement.textContent = currentCount + 1;
+            
+            // Add animation
+            countElement.classList.add('text-rc-error', 'font-bold');
+            setTimeout(() => {
+                countElement.classList.remove('text-rc-error', 'font-bold');
+            }, 1000);
+        }
+
+        // Enhanced Carousel with Touch Support
+        function scrollCarousel(carouselId, scrollAmount) {
+            const carousel = document.getElementById(carouselId);
+            carousel.scrollBy({ 
+                left: scrollAmount, 
+                behavior: 'smooth' 
+            });
+        }
+
+        // Touch/Drag Support for Carousel
+        document.addEventListener('DOMContentLoaded', () => {
+            const carousel = document.getElementById('relatedCarousel');
+            if (!carousel) return;
+            
+            let isDragging = false;
+            let startX, scrollLeft;
+            let startTime, endTime;
+
+            // Mouse events
+            carousel.addEventListener('mousedown', startDrag);
+            carousel.addEventListener('mousemove', drag);
+            carousel.addEventListener('mouseup', endDrag);
+            carousel.addEventListener('mouseleave', endDrag);
+
+            // Touch events
+            carousel.addEventListener('touchstart', startDrag);
+            carousel.addEventListener('touchmove', drag);
+            carousel.addEventListener('touchend', endDrag);
+
+            function startDrag(e) {
+                isDragging = true;
+                startTime = Date.now();
+                carousel.style.cursor = 'grabbing';
+                carousel.style.userSelect = 'none';
+                
+                const touch = e.touches ? e.touches[0] : e;
+                startX = touch.pageX - carousel.offsetLeft;
+                scrollLeft = carousel.scrollLeft;
+            }
+
+            function drag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                const touch = e.touches ? e.touches[0] : e;
+                const x = touch.pageX - carousel.offsetLeft;
+                const walk = (x - startX) * 2; // Multiply for faster scroll
+                carousel.scrollLeft = scrollLeft - walk;
+            }
+
+            function endDrag() {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                endTime = Date.now();
+                carousel.style.cursor = 'grab';
+                carousel.style.userSelect = '';
+                
+                // Add momentum scrolling for quick swipes
+                const timeDiff = endTime - startTime;
+                if (timeDiff < 200) { // Quick swipe
+                    const momentum = (scrollLeft - carousel.scrollLeft) * 2;
+                    carousel.scrollBy({ left: momentum, behavior: 'smooth' });
+                }
+            }
+
+            // Prevent clicks during drag
+            carousel.addEventListener('click', (e) => {
+                if (Math.abs(scrollLeft - carousel.scrollLeft) > 5) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        });
+
+        // Auto-scroll carousel on mobile
+        document.addEventListener('DOMContentLoaded', () => {
+            const carousel = document.getElementById('relatedCarousel');
+            if (carousel && window.innerWidth < 768) {
+                setInterval(() => {
+                    if (carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth) {
+                        carousel.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else {
+                        carousel.scrollBy({ left: 300, behavior: 'smooth' });
+                    }
+                }, 5000);
+            }
+        });
+
+        // Quick add to cart for similar products
+        function addToCart(productId) {
+            fetch("/postcart", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ productId, qty: 1 })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    showToast("Product added to cart!", 'success');
+                    const cartBadge = document.querySelector('.cart-badge');
+                    cartBadge.textContent = parseInt(cartBadge.textContent || 0) + 1;
+                } else {
+                    showToast(result.message || "Failed to add to cart", 'error');
+                }
+            })
+            .catch(err => {
+                showToast("Please login to add items to cart", 'error');
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const carousel = document.getElementById('relatedCarousel');
+            if (carousel && document.activeElement === carousel) {
+                if (e.key === 'ArrowLeft') {
+                    scrollCarousel('relatedCarousel', -300);
+                } else if (e.key === 'ArrowRight') {
+                    scrollCarousel('relatedCarousel', 300);
+                }
+            }
+        });
+
+        // Lazy loading for images
+        document.addEventListener('DOMContentLoaded', () => {
+            const images = document.querySelectorAll('img[data-src]');
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.remove('opacity-50');
+                        imageObserver.unobserve(img);
+                    }
+                });
+            });
+
+            images.forEach(img => imageObserver.observe(img));
+        });
+    </script>
+</body>
+</html>

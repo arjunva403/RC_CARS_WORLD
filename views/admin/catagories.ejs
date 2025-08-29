@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Categories - RC WORLD Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root {
+      --primary: #e74c3c;
+      --primary-dark: #c0392b;
+      --light-gray: #f8f9fa;
+      --dark: #2c3e50;
+      --text-gray: #6c757d;
+      --bg: #ffffff;
+      --border: #dee2e6;
+      --success: #28a745;
+      --warning: #ffc107;
+      --info: #17a2b8;
+      --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      --shadow-lg: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--light-gray);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    /* Enhanced Sidebar - Same as Dashboard */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: linear-gradient(180deg, var(--bg) 0%, #f8f9fa 100%);
+      border-right: 1px solid var(--border);
+      z-index: 1000;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 2rem 1.5rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar h2 {
+      color: var(--primary);
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: -0.025em;
+    }
+
+    .sidebar-nav {
+      padding: 1rem 0;
+    }
+
+    .nav-item {
+      margin: 0.25rem 1rem;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      color: var(--text-gray);
+      text-decoration: none;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.2s ease;
+    }
+
+    .nav-link:hover {
+      background: rgba(231, 76, 60, 0.08);
+      color: var(--primary);
+      transform: translateX(4px);
+    }
+
+    .nav-link.active {
+      background: rgba(231, 76, 60, 0.1);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .nav-link.active::before {
+      transform: scaleY(1);
+    }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Enhanced Main Content */
+    .main-content {
+      margin-left: 280px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Enhanced Top Bar */
+    .topbar {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-lg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-left h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .logout-btn {
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+      color: white;
+    }
+
+    /* Enhanced Content Area */
+    .content {
+      flex: 1;
+      padding: 2rem;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: var(--text-gray);
+      font-size: 0.875rem;
+    }
+
+    /* Enhanced Controls Section */
+    .controls-section {
+      background: var(--bg);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    .top-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-section {
+      display: flex;
+      gap: 0.5rem;
+      flex: 1;
+      max-width: 400px;
+    }
+
+    .search-input {
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+    }
+
+    /* Enhanced Buttons */
+    .btn {
+      padding: 0.625rem 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-secondary {
+      background: var(--text-gray);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-1px);
+    }
+
+    .btn-edit {
+      background: var(--warning);
+      color: var(--dark);
+    }
+
+    .btn-edit:hover {
+      background: #e0a800;
+      transform: translateY(-1px);
+    }
+
+    .btn-list {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-list:hover {
+      background: #218838;
+      transform: translateY(-1px);
+    }
+
+    .btn-unlist {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-unlist:hover {
+      background: #5a6268;
+      transform: translateY(-1px);
+    }
+
+    .btn-sm {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.75rem;
+    }
+
+    /* Enhanced Table Section */
+    .table-section {
+      background: var(--bg);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead th {
+      background: #f8f9fa;
+      border-bottom: 2px solid var(--border);
+      font-weight: 600;
+      color: var(--dark);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      padding: 1rem 0.75rem;
+    }
+
+    .table tbody td {
+      padding: 1rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .table tbody tr:hover {
+      background: rgba(231, 76, 60, 0.02);
+    }
+
+    .table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .status-active {
+      background: rgba(40, 167, 69, 0.1);
+      color: var(--success);
+    }
+
+    .status-inactive {
+      background: rgba(108, 117, 125, 0.1);
+      color: var(--text-gray);
+    }
+
+    /* Enhanced Pagination */
+    .pagination {
+      margin-top: 1.5rem;
+      justify-content: center;
+    }
+
+    .page-link {
+      color: var(--primary);
+      border-color: var(--border);
+      padding: 0.5rem 0.75rem;
+    }
+
+    .page-link:hover {
+      background: rgba(231, 76, 60, 0.1);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .page-item.active .page-link {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* Enhanced Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-content {
+      background: var(--bg);
+      padding: 2rem;
+      border-radius: 0.75rem;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+      box-shadow: var(--shadow-lg);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-gray);
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .close:hover {
+      background: rgba(108, 117, 125, 0.1);
+      color: var(--dark);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--dark);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+      outline: none;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-gray);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .top-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .search-section {
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      
+      .main-content {
+        margin-left: 0;
+      }
+      
+      .topbar {
+        padding: 1rem;
+      }
+      
+      .content {
+        padding: 1rem;
+      }
+      
+      .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+      }
+    }
+
+    /* Loading Animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .controls-section, .table-section {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .table-section {
+      animation-delay: 0.1s;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Enhanced Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>RC WORLD</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item">
+        <a href="/dashboard" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+          <span>Dashboard</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/category" class="nav-link active">
+          <div class="nav-icon"><i class="fas fa-tags"></i></div>
+          <span>Category</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/brands" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-trademark"></i></div>
+          <span>Brands</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/products" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-box"></i></div>
+          <span>Products</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/usermange" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-users"></i></div>
+          <span>Customers</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/order" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-shopping-cart"></i></div>
+          <span>Orders</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/saleReport" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
+          <span>Sales Report</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="#" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-cog"></i></div>
+          <span>Settings</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="#" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-image"></i></div>
+          <span>Banner Manage</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/coupen" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-ticket-alt"></i></div>
+          <span>Manage Coupons</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/offer" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-percent"></i></div>
+          <span>Offers Management</span>
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Enhanced Main Content -->
+  <main class="main-content">
+    <!-- Enhanced Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1>Categories Management</h1>
+      </div>
+      <div class="topbar-right">
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span>Welcome, Admin</span>
+        </div>
+        <div class="user-info">
+          <i class="fas fa-cog"></i>
+        </div>
+        <a href="/logout" class="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Enhanced Content -->
+    <div class="content">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h2 class="page-title">Manage Categories</h2>
+        <p class="page-subtitle">Create, edit, and manage product categories for your RC World store</p>
+      </div>
+
+      <!-- Enhanced Controls Section -->
+      <section class="controls-section">
+        <div class="top-controls">
+          <div class="search-section">
+            <form action="/category" method="get" class="d-flex gap-2 w-100">
+              <input id="searchval" type="text" name="searchQuery" class="form-control search-input" 
+                     placeholder="Search categories..." value="<%= searchQuery %>" />
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i>
+                Search
+              </button>
+              <a href="/category" class="btn btn-secondary">
+                <i class="fas fa-times"></i>
+                Clear
+              </a>
+            </form>
+          </div>
+          <button class="btn btn-primary" onclick="showModal('addModal')">
+            <i class="fas fa-plus"></i>
+            Add Category
+          </button>
+        </div>
+      </section>
+
+      <!-- Enhanced Table Section -->
+      <section class="table-section">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">
+                  <i class="fas fa-tag me-2"></i>
+                  Category Name
+                </th>
+                <th scope="col">
+                  <i class="fas fa-eye me-2"></i>
+                  Status
+                </th>
+                <th scope="col">
+                  <i class="fas fa-cogs me-2"></i>
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (categories && categories.length > 0) { %>
+                <% categories.forEach(category => { %>
+                  <tr>
+                    <td class="fw-medium">
+                      <%= category.categoryName %>
+                    </td>
+                    <td>
+                      <span class="status-badge <%= category.visibility === 'active' ? 'status-active' : 'status-inactive' %>">
+                        <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
+                        <%= category.visibility %>
+                      </span>
+                    </td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <button class="btn btn-edit btn-sm"
+                          onclick="showModal('editModal', '<%= category._id %>', '<%= category.categoryName %>')">
+                          <i class="fas fa-edit"></i>
+                          Edit
+                        </button>
+                        <button class="btn <%= category.visibility === 'active' ? 'btn-unlist' : 'btn-list' %> btn-sm"
+                          onclick="categorylist('<%= category._id %>')">
+                          <i class="fas fa-<%= category.visibility === 'active' ? 'eye-slash' : 'eye' %>"></i>
+                          <%= category.visibility === 'active' ? 'Unlist' : 'List' %>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="3" class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <h5>No categories found</h5>
+                    <p class="mb-0">Start by adding your first category</p>
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Enhanced Pagination -->
+        <% if (totalpage > 1) { %>
+          <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+              <% for (let i = 1; i <= totalpage; i++) { %>
+                <li class="page-item <%= page === i ? 'active' : '' %>">
+                  <a class="page-link" href="/category?page=<%= i %>&searchQuery=<%= encodeURIComponent(searchQuery) %>">
+                    <%= i %>
+                  </a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        <% } %>
+      </section>
+    </div>
+  </main>
+
+  <!-- Enhanced Add Category Modal -->
+  <div id="addModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="fas fa-plus-circle me-2"></i>
+          Add New Category
+        </h3>
+        <button class="close" onclick="closeModal('addModal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form id="addcategory">
+        <div class="form-group">
+          <label for="addname" class="form-label">Category Name</label>
+          <input type="text" id="addname" class="form-control" placeholder="Enter category name" required />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">
+            <i class="fas fa-times me-1"></i>
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>
+            Add Category
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Enhanced Edit Category Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="fas fa-edit me-2"></i>
+          Edit Category
+        </h3>
+        <button class="close" onclick="closeModal('editModal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="form-group">
+        <label for="edit" class="form-label">Category Name</label>
+        <input type="text" id="edit" class="form-control" required />
+        <input type="hidden" id="catId" />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">
+          <i class="fas fa-times me-1"></i>
+          Cancel
+        </button>
+        <button onclick="cateedit()" class="btn btn-primary">
+          <i class="fas fa-save me-1"></i>
+          Update Category
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script>
+    function showModal(id, categoryId, categoryName) {
+      const modal = document.getElementById(id);
+      modal.style.display = 'flex';
+      if (id === 'editModal') {
+        document.getElementById('edit').value = categoryName;
+        document.getElementById('catId').value = categoryId;
+      }
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    window.onclick = function (event) {
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+        if (event.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+    };
+
+    document.getElementById('addcategory').addEventListener('submit', async e => {
+      e.preventDefault();
+      const addname = document.getElementById('addname').value;
+      try {
+        const response = await fetch('/postcategory', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ addname }),
+        });
+        const data = await response.json();
+        if (data.success) {
+          Swal.fire({
+            title: 'Success!',
+            text: 'Added New Category.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#e74c3c'
+          }).then(() => {
+            window.location.href = '/category';
+          });
+        } else {
+          Swal.fire({
+            title: 'Error!',
+            text: data.message || 'Failed to add category.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#e74c3c'
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Server error.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#e74c3c'
+        });
+      }
+    });
+
+    async function categorylist(id) {
+      try {
+        const response = await fetch(`/list/${id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        const data = await response.json();
+        if (data.success) {
+          window.location.reload();
+        } else {
+          Swal.fire({
+            title: 'Error!',
+            text: data.message || 'Failed to update category status.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#e74c3c'
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Server error.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#e74c3c'
+        });
+      }
+    }
+
+    async function cateedit() {
+      const edit = document.getElementById('edit').value;
+      const catId = document.getElementById('catId').value;
+      try {
+        const response = await fetch('/edit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ edit, cateid: catId }),
+        });
+        const data = await response.json();
+        if (data.message) {
+          Swal.fire({
+            title: 'Success!',
+            text: 'Category updated.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#e74c3c'
+          }).then(() => {
+            window.location.href = '/category';
+          });
+        } else {
+          Swal.fire({
+            title: 'Error!',
+            text: data.message || 'Failed to update category.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#e74c3c'
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Server error.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#e74c3c'
+        });
+      }
+    }
+
+    // Add loading animation on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const sections = document.querySelectorAll('.controls-section, .table-section');
+      sections.forEach((section, index) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          section.style.transition = 'all 0.6s ease';
+          section.style.opacity = '1';
+          section.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Product - RC WORLD Admin</title>
+
+  <!-- Cropper.js CDN -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    :root {
+      --primary: #e74c3c;
+      --primary-dark: #c0392b;
+      --light-gray: #f8f9fa;
+      --dark: #2c3e50;
+      --text-gray: #6c757d;
+      --bg: #ffffff;
+      --border: #dee2e6;
+      --success: #28a745;
+      --warning: #ffc107;
+      --info: #17a2b8;
+      --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      --shadow-lg: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--light-gray);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    /* Enhanced Sidebar - Same as Dashboard */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: linear-gradient(180deg, var(--bg) 0%, #f8f9fa 100%);
+      border-right: 1px solid var(--border);
+      z-index: 1000;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 2rem 1.5rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar h2 {
+      color: var(--primary);
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: -0.025em;
+    }
+
+    .sidebar-nav {
+      padding: 1rem 0;
+    }
+
+    .nav-item {
+      margin: 0.25rem 1rem;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      color: var(--text-gray);
+      text-decoration: none;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.2s ease;
+    }
+
+    .nav-link:hover {
+      background: rgba(231, 76, 60, 0.08);
+      color: var(--primary);
+      transform: translateX(4px);
+    }
+
+    .nav-link.active {
+      background: rgba(231, 76, 60, 0.1);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .nav-link.active::before {
+      transform: scaleY(1);
+    }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Enhanced Main Content */
+    .main-content {
+      margin-left: 280px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Enhanced Top Bar */
+    .topbar {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-lg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .topbar-left h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      opacity: 0.9;
+    }
+
+    .breadcrumb a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      color: white;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .logout-btn {
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+      color: white;
+    }
+
+    /* Enhanced Content Area */
+    .content {
+      flex: 1;
+      padding: 2rem;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: var(--text-gray);
+      font-size: 0.875rem;
+    }
+
+    /* Enhanced Back Button */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg);
+      color: var(--dark);
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .back-btn:hover {
+      background: var(--light-gray);
+      transform: translateY(-1px);
+      color: var(--dark);
+    }
+
+    /* Product Info Card */
+    .product-info-card {
+      background: var(--bg);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    .product-summary {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .product-thumbnail {
+      width: 80px;
+      height: 80px;
+      border-radius: 0.5rem;
+      object-fit: cover;
+      border: 2px solid var(--border);
+    }
+
+    .product-details h3 {
+      color: var(--dark);
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .product-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-gray);
+    }
+
+    .product-status {
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-listed {
+      background: rgba(40, 167, 69, 0.1);
+      color: var(--success);
+    }
+
+    .status-unlisted {
+      background: rgba(108, 117, 125, 0.1);
+      color: var(--text-gray);
+    }
+
+    /* Enhanced Form Section */
+    .form-section {
+      background: var(--bg);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .form-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .form-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .product-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-label {
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-control {
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      background: var(--bg);
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+      outline: none;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    /* Enhanced Image Management Section */
+    .image-management-section {
+      grid-column: 1 / -1;
+      background: rgba(231, 76, 60, 0.02);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      border: 1px dashed var(--primary);
+    }
+
+    .image-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-weight: 600;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .image-info {
+      font-size: 0.75rem;
+      color: var(--text-gray);
+    }
+
+    /* Enhanced Image Grid */
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      max-width: 400px;
+    }
+
+    .image-slot {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .image-slot:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .image-slot.filled {
+      border: 2px solid var(--success);
+    }
+
+    .image-slot.empty {
+      border: 2px dashed var(--border);
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-slot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .upload-placeholder {
+      color: var(--text-gray);
+      font-size: 2rem;
+      transition: all 0.2s ease;
+    }
+
+    .upload-placeholder:hover {
+      color: var(--primary);
+      transform: scale(1.1);
+    }
+
+    .image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      opacity: 0;
+      transition: all 0.2s ease;
+    }
+
+    .image-slot:hover .image-overlay {
+      opacity: 1;
+    }
+
+    .overlay-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-edit-image {
+      background: var(--primary);
+    }
+
+    .btn-edit-image:hover {
+      background: var(--primary-dark);
+      transform: scale(1.1);
+    }
+
+    .btn-remove-image {
+      background: #dc3545;
+    }
+
+    .btn-remove-image:hover {
+      background: #c82333;
+      transform: scale(1.1);
+    }
+
+    /* Enhanced Form Actions */
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      padding-top: 2rem;
+      border-top: 2px solid var(--border);
+      margin-top: 2rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 0.5rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-secondary {
+      background: var(--text-gray);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-1px);
+    }
+
+    /* Enhanced Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-content {
+      background: var(--bg);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow: auto;
+      box-shadow: var(--shadow-lg);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-gray);
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(108, 117, 125, 0.1);
+      color: var(--dark);
+    }
+
+    .crop-container {
+      max-width: 500px;
+      max-height: 400px;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    /* Changes Indicator */
+    .changes-indicator {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--warning);
+      color: var(--dark);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      box-shadow: var(--shadow-lg);
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 1001;
+    }
+
+    .changes-indicator.show {
+      display: flex;
+      animation: slideInUp 0.3s ease;
+    }
+
+    @keyframes slideInUp {
+      from {
+        transform: translateY(100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .product-form {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      
+      .main-content {
+        margin-left: 0;
+      }
+      
+      .topbar {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .breadcrumb {
+        order: -1;
+      }
+      
+      .content {
+        padding: 1rem;
+      }
+      
+      .form-section {
+        padding: 1.5rem;
+      }
+      
+      .product-summary {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .image-grid {
+        justify-content: center;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+    }
+
+    /* Loading Animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .product-info-card, .form-section {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .form-section {
+      animation-delay: 0.1s;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Enhanced Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>RC WORLD</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item">
+        <a href="/dashboard" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+          <span>Dashboard</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/category" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-tags"></i></div>
+          <span>Category</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/brands" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-trademark"></i></div>
+          <span>Brands</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/products" class="nav-link active">
+          <div class="nav-icon"><i class="fas fa-box"></i></div>
+          <span>Products</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/usermange" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-users"></i></div>
+          <span>Customers</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/order" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-shopping-cart"></i></div>
+          <span>Orders</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/saleReport" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
+          <span>Sales Report</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="#" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-cog"></i></div>
+          <span>Settings</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="#" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-image"></i></div>
+          <span>Banner Manage</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/coupen" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-ticket-alt"></i></div>
+          <span>Manage Coupons</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/offer" class="nav-link">
+          <div class="nav-icon"><i class="fas fa-percent"></i></div>
+          <span>Offers Management</span>
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Enhanced Main Content -->
+  <main class="main-content">
+    <!-- Enhanced Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1>Edit Product</h1>
+        <div class="breadcrumb">
+          <a href="/products"><i class="fas fa-box"></i> Products</a>
+          <i class="fas fa-chevron-right"></i>
+          <span>Edit Product</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span>Welcome, Admin</span>
+        </div>
+        <div class="user-info">
+          <i class="fas fa-cog"></i>
+        </div>
+        <a href="/logout" class="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Enhanced Content -->
+    <div class="content">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h2 class="page-title">Edit Product Details</h2>
+        <p class="page-subtitle">Update product information and manage inventory</p>
+      </div>
+
+      <a href="/products" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to Products</span>
+      </a>
+
+      <!-- Product Info Card -->
+      <section class="product-info-card">
+        <div class="product-summary">
+          <img src="<%= product.images[0] %>" alt="<%= product.productName %>" class="product-thumbnail">
+          <div class="product-details">
+            <h3><%= product.productName %></h3>
+            <div class="product-meta">
+              <span><i class="fas fa-tag"></i> <%= product.categoryId.categoryName %></span>
+              <span><i class="fas fa-trademark"></i> <%= product.brandId.brandName %></span>
+              <span class="product-status <%= product.isListed ? 'status-listed' : 'status-unlisted' %>">
+                <i class="fas fa-<%= product.isListed ? 'eye' : 'eye-slash' %>"></i>
+                <%= product.isListed ? 'Listed' : 'Unlisted' %>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Enhanced Form Section -->
+      <section class="form-section">
+        <div class="form-header">
+          <h3 class="form-title">
+            <i class="fas fa-edit"></i>
+            Product Information
+          </h3>
+        </div>
+
+        <form id="productForm" method="post" action="/editproduct/<%= product._id %>" enctype="multipart/form-data" class="product-form">
+          <!-- Basic Information -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-tag"></i>
+              Product Name *
+            </label>
+            <input type="text" name="name" class="form-control" value="<%= product.productName %>" 
+                   placeholder="Enter product name" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-trademark"></i>
+              Brand *
+            </label>
+            <select name="brand" class="form-control" required>
+              <option value="">Select Brand</option>
+              <% brands.forEach(brand => { %>
+                <option value="<%= brand._id %>" <%= product.brandId._id.toString() === brand._id.toString() ? 'selected' : '' %>>
+                  <%= brand.brandName %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-list"></i>
+              Category *
+            </label>
+            <select name="category" class="form-control" required>
+              <option value="">Select Category</option>
+              <% categories.forEach(category => { %>
+                <option value="<%= category._id %>" <%= product.categoryId._id.toString() === category._id.toString() ? 'selected' : '' %>>
+                  <%= category.categoryName %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-rupee-sign"></i>
+              Base Price (₹) *
+            </label>
+            <input type="number" name="price" class="form-control" value="<%= product.baseprice %>" 
+                   placeholder="0.00" min="0" step="0.01" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-percent"></i>
+              Sale Price (₹) *
+            </label>
+            <input type="number" name="discount" class="form-control" value="<%= product.discountPrice %>" 
+                   placeholder="0.00" min="0" step="0.01" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-warehouse"></i>
+              Stock Quantity *
+            </label>
+            <input type="number" name="stock" class="form-control" value="<%= product.stock %>" 
+                   placeholder="0" min="0" required />
+          </div>
+
+          <!-- Enhanced Image Management Section -->
+          <div class="image-management-section">
+            <div class="image-section-header">
+              <h4 class="section-title">
+                <i class="fas fa-images"></i>
+                Product Images
+              </h4>
+              <div class="image-info">
+                Click images to replace • Click X to remove • Maximum 3 images
+              </div>
+            </div>
+            
+            <div class="image-grid" id="imageGrid">
+              <% product.images.forEach((image, index) => { %>
+                <div class="image-slot filled" data-index="<%= index %>">
+                  <img src="<%= image %>" alt="Product Image">
+                  <input type="hidden" name="existingImages[]" value="<%= image %>">
+                  <div class="image-overlay">
+                    <button type="button" class="overlay-btn btn-edit-image" onclick="replaceImage(this)" title="Replace Image">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button" class="overlay-btn btn-remove-image" onclick="removeImage(this)" title="Remove Image">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <input type="file" class="single-image-input" name="images" accept="image/*" 
+                         style="display: none;" onchange="handleSingleImageUpload(this)">
+                </div>
+              <% }) %>
+              
+              <!-- Empty slots for additional images -->
+              <% for (let i = product.images.length; i < 3; i++) { %>
+                <div class="image-slot empty" data-index="<%= i %>">
+                  <div class="upload-placeholder" onclick="triggerUpload(this)">
+                    <i class="fas fa-plus"></i>
+                  </div>
+                  <input type="file" class="single-image-input" name="images" accept="image/*" 
+                         style="display: none;" onchange="handleSingleImageUpload(this)">
+                </div>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group full-width">
+            <label class="form-label">
+              <i class="fas fa-align-left"></i>
+              Product Description *
+            </label>
+            <textarea name="description" class="form-control" rows="5" 
+                      placeholder="Enter detailed product description..." required><%= product.description %></textarea>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <a href="/products" class="btn btn-secondary">
+              <i class="fas fa-times"></i>
+              Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i>
+              Update Product
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <!-- Changes Indicator -->
+  <div class="changes-indicator" id="changesIndicator">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>You have unsaved changes</span>
+  </div>
+
+  <!-- Enhanced Crop Modal -->
+  <div class="modal" id="cropModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="fas fa-crop"></i>
+          Crop Image
+        </h3>
+        <button class="modal-close" onclick="cancelCrop()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="crop-container">
+        <img id="cropImage" style="max-width: 100%;">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="cancelCrop()">
+          <i class="fas fa-times"></i>
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" onclick="applyCrop()">
+          <i class="fas fa-crop"></i>
+          Apply Crop
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let cropper;
+    let currentUploadElement;
+    let currentImageElement;
+    let hasChanges = false;
+    const changesIndicator = document.getElementById('changesIndicator');
+
+    // Track form changes
+    function trackChanges() {
+      hasChanges = true;
+      changesIndicator.classList.add('show');
+    }
+
+    // Add change listeners to form elements
+    document.addEventListener('DOMContentLoaded', function() {
+      const formElements = document.querySelectorAll('input, select, textarea');
+      formElements.forEach(element => {
+        element.addEventListener('change', trackChanges);
+        element.addEventListener('input', trackChanges);
+      });
+
+      // Add loading animation
+      const cards = document.querySelectorAll('.product-info-card, .form-section');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          card.style.transition = 'all 0.6s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
+    });
+
+    // Trigger file input for empty slots
+    function triggerUpload(element) {
+      if (element.parentElement.classList.contains('empty')) {
+        const fileInput = element.parentElement.querySelector('.single-image-input');
+        fileInput.click();
+      }
+    }
+
+    // Handle single image upload and open cropper
+    function handleSingleImageUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        Swal.fire({
+          title: 'Invalid File Type',
+          text: 'Please select a valid image file.',
+          icon: 'error',
+          confirmButtonColor: '#e74c3c'
+        });
+        return;
+      }
+
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        Swal.fire({
+          title: 'File Too Large',
+          text: 'Please select an image smaller than 5MB.',
+          icon: 'error',
+          confirmButtonColor: '#e74c3c'
+        });
+        return;
+      }
+
+      currentUploadElement = input.parentElement;
+      currentImageElement = currentUploadElement.querySelector('img');
+      openCropper(file);
+    }
+
+    // Replace existing image
+    function replaceImage(button) {
+      const imageSlot = button.closest('.image-slot');
+      currentUploadElement = imageSlot;
+      currentImageElement = imageSlot.querySelector('img');
+      const fileInput = imageSlot.querySelector('.single-image-input');
+      fileInput.click();
+    }
+
+    // Remove image
+    function removeImage(button) {
+      const imageSlot = button.closest('.image-slot');
+      const existingImageInput = imageSlot.querySelector('input[name="existingImages[]"]');
+
+      Swal.fire({
+        title: 'Remove Image?',
+        text: 'Are you sure you want to remove this image?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#e74c3c',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, remove it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if (existingImageInput) {
+            // Mark existing image for deletion
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'deletedImages[]';
+            hiddenInput.value = existingImageInput.value;
+            document.getElementById('productForm').appendChild(hiddenInput);
+          }
+
+          // Convert to empty slot
+          imageSlot.innerHTML = `
+            <div class="upload-placeholder" onclick="triggerUpload(this)">
+              <i class="fas fa-plus"></i>
+            </div>
+            <input type="file" class="single-image-input" name="images" accept="image/*" 
+                   style="display: none;" onchange="handleSingleImageUpload(this)">
+          `;
+          imageSlot.classList.remove('filled');
+          imageSlot.classList.add('empty');
+
+          trackChanges();
+
+          Swal.fire({
+            title: 'Image Removed!',
+            text: 'The image has been removed.',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+      });
+    }
+
+    // Open Cropper.js modal
+    function openCropper(file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const cropImage = document.getElementById('cropImage');
+        cropImage.src = e.target.result;
+        document.getElementById('cropModal').style.display = 'flex';
+        cropper = new Cropper(cropImage, {
+          aspectRatio: 1,
+          viewMode: 1,
+          dragMode: 'move',
+          autoCropArea: 0.8,
+          restore: false,
+          guides: false,
+          center: false,
+          highlight: false,
+          cropBoxMovable: true,
+          cropBoxResizable: true,
+          toggleDragModeOnDblclick: false,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Apply cropped image
+    function applyCrop() {
+      const canvas = cropper.getCroppedCanvas({
+        width: 400,
+        height: 400,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: 'high',
+      });
+
+      canvas.toBlob(blob => {
+        const file = new File([blob], `product_${Date.now()}.jpg`, { type: 'image/jpeg' });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        const fileInput = currentUploadElement.querySelector('.single-image-input');
+        fileInput.files = dataTransfer.files;
+
+        // Update UI
+        const newImg = currentImageElement || document.createElement('img');
+        newImg.src = canvas.toDataURL();
+
+        if (!currentImageElement) {
+          // Convert empty slot to filled slot
+          currentUploadElement.innerHTML = `
+            <img src="${newImg.src}" alt="Product Image">
+            <div class="image-overlay">
+              <button type="button" class="overlay-btn btn-edit-image" onclick="replaceImage(this)" title="Replace Image">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button type="button" class="overlay-btn btn-remove-image" onclick="removeImage(this)" title="Remove Image">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            <input type="file" class="single-image-input" name="images" accept="image/*" 
+                   style="display: none;" onchange="handleSingleImageUpload(this)">
+          `;
+          currentUploadElement.classList.remove('empty');
+          currentUploadElement.classList.add('filled');
+        }
+
+        trackChanges();
+        document.getElementById('cropModal').style.display = 'none';
+        cropper.destroy();
+
+        Swal.fire({
+          title: 'Image Updated!',
+          text: 'Product image has been updated successfully.',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }, 'image/jpeg', 0.9);
+    }
+
+    function cancelCrop() {
+      document.getElementById('cropModal').style.display = 'none';
+      cropper.destroy();
+      
+      // Clear the file input
+      const fileInput = currentUploadElement.querySelector('.single-image-input');
+      fileInput.value = '';
+    }
+
+    // Form validation and submission
+    document.getElementById('productForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Basic validation
+      const requiredFields = this.querySelectorAll('[required]');
+      let isValid = true;
+      
+      requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+          isValid = false;
+          field.focus();
+          return false;
+        }
+      });
+      
+      if (!isValid) {
+        Swal.fire({
+          title: 'Missing Information',
+          text: 'Please fill in all required fields.',
+          icon: 'warning',
+          confirmButtonColor: '#e74c3c'
+        });
+        return;
+      }
+      
+      // Price validation
+      const basePrice = parseFloat(this.querySelector('[name="price"]').value);
+      const salePrice = parseFloat(this.querySelector('[name="discount"]').value);
+      
+      if (salePrice > basePrice) {
+        Swal.fire({
+          title: 'Invalid Pricing',
+          text: 'Sale price cannot be higher than base price.',
+          icon: 'error',
+          confirmButtonColor: '#e74c3c'
+        });
+        return;
+      }
+      
+      // Show loading and submit
+      Swal.fire({
+        title: 'Updating Product...',
+        text: 'Please wait while we save your changes.',
+        icon: 'info',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+      
+      hasChanges = false;
+      changesIndicator.classList.remove('show');
+      this.submit();
+    });
+
+    // Warn about unsaved changes when leaving
+    window.addEventListener('beforeunload', function(e) {
+      if (hasChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+
+    // Close modal on escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('cropModal').style.display === 'flex') {
+        cancelCrop();
+      }
+    });
+  </script>
+</body>
+</html>
