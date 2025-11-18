@@ -1213,12 +1213,12 @@
                     }, 1000);
                     
                 } else {
-                    throw new Error(result.message || 'Failed to add to cart');
+                    throw new Error(result.fail || 'Failed to add to cart');
                 }
                 
             } catch (error) {
                 console.error('Cart error:', error);
-                showToast(error.message || 'Please login to add items to cart', 'error');
+                showToast(error.fail || 'Please login to add items to cart', 'error');
                 
                 button.innerHTML = originalContent;
                 button.disabled = false;

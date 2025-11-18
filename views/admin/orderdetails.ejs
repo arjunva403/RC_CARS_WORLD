@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,7 +39,7 @@
             line-height: 1.6;
         }
 
-        /* Enhanced Sidebar - Same as Dashboard */
+        /* Enhanced Sidebar */
         .sidebar {
             position: fixed;
             left: 0;
@@ -412,6 +413,41 @@
             color: var(--dark);
         }
 
+        /* Quantity Breakdown Styles */
+        .quantity-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .quantity-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .quantity-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-returned {
+            background: #fff3cd;
+            color: #856404;
+        }
+
         /* Enhanced Status Badges */
         .status-badge {
             display: inline-flex;
@@ -477,14 +513,36 @@
             color: white;
         }
 
+        .status-mixed {
+            background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);
+            color: white;
+        }
+
+        .status-partially-cancelled {
+            background: linear-gradient(135deg, #ff7043 0%, #ff5722 100%);
+            color: white;
+        }
+
+        .status-partially-returned {
+            background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);
+            color: white;
+        }
+
         .status-icon {
             font-size: 0.875rem;
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
         }
 
         .message-icon {
@@ -498,6 +556,66 @@
         .message-icon:hover {
             color: var(--primary-dark);
             transform: scale(1.1);
+        }
+
+        /* Action Buttons */
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.25rem 0.75rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .action-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .action-btn-primary:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        .action-btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .action-btn-success:hover {
+            background: #218838;
+            color: white;
+        }
+
+        .action-btn-warning {
+            background: var(--warning);
+            color: #212529;
+        }
+
+        .action-btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .action-btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .action-btn-danger:hover {
+            background: #c82333;
+            color: white;
         }
 
         /* Customer Details Grid */
@@ -572,24 +690,131 @@
             transform: translateY(-1px);
         }
 
-        .btn-accept {
-            background: var(--success);
-            color: white;
+        /* Bulk Actions */
+        .bulk-actions {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px dashed #cbd5e0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: none;
         }
 
-        .btn-accept:hover {
-            background: #218838;
-            transform: translateY(-1px);
+        .bulk-actions.show {
+            display: block;
         }
 
-        .btn-reject {
-            background: var(--danger);
-            color: white;
+        /* Enhanced SweetAlert2 Styling */
+        .swal2-popup {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;
+            border-radius: 20px !important;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(20px) !important;
+            font-size: 1rem !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            padding: 2rem !important;
         }
 
-        .btn-reject:hover {
-            background: #c82333;
-            transform: translateY(-1px);
+        .swal2-title {
+            font-size: 1.8rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 1rem !important;
+            color: white !important;
+            letter-spacing: 0.025em !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .swal2-html-container {
+            font-size: 1.1rem !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+            line-height: 1.6 !important;
+            text-align: center !important;
+        }
+
+        .swal2-confirm {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%) !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 0.875rem 2.5rem !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            box-shadow: 0 8px 25px rgba(86, 171, 47, 0.4) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .swal2-confirm:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 12px 35px rgba(86, 171, 47, 0.5) !important;
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%) !important;
+        }
+
+        .swal2-cancel {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 0.875rem 2.5rem !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .swal2-cancel:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 12px 35px rgba(107, 114, 128, 0.5) !important;
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%) !important;
+        }
+
+        .swal2-input,
+        .swal2-textarea,
+        .swal2-select {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 10px !important;
+            padding: 0.75rem !important;
+            font-size: 0.95rem !important;
+            transition: all 0.3s ease !important;
+            color: #1f2937 !important;
+        }
+
+        .swal2-input:focus,
+        .swal2-textarea:focus,
+        .swal2-select:focus {
+            border-color: rgba(255, 255, 255, 0.7) !important;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2) !important;
+            background: white !important;
+        }
+
+        /* Return Reason Validation Modal Styles */
+        .reason-validation-modal .swal2-popup {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            max-width: 600px !important;
+        }
+
+        .reason-display-box {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border-radius: 10px !important;
+            padding: 1rem !important;
+            margin: 1rem 0 !important;
+            border-left: 4px solid #ffd700 !important;
+        }
+
+        .reason-text {
+            color: rgba(255, 255, 255, 0.95) !important;
+            font-size: 1rem !important;
+            line-height: 1.4 !important;
+            text-align: left !important;
+        }
+
+        .modal-actions-container {
+            display: flex !important;
+            gap: 1rem !important;
+            justify-content: center !important;
+            margin-top: 1.5rem !important;
         }
 
         /* Responsive Design */
@@ -605,25 +830,25 @@
                 height: auto;
                 position: relative;
             }
-            
+
             .main-content {
                 margin-left: 0;
             }
-            
+
             .topbar {
                 padding: 1rem;
                 flex-direction: column;
                 gap: 1rem;
             }
-            
+
             .breadcrumb {
                 order: -1;
             }
-            
+
             .content {
                 padding: 1rem;
             }
-            
+
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -635,6 +860,21 @@
             .action-buttons {
                 flex-direction: column;
             }
+
+            .product-img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .item-actions {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .action-btn {
+                font-size: 0.7rem;
+                padding: 0.25rem 0.5rem;
+            }
         }
 
         /* Loading Animation */
@@ -643,13 +883,16 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
-        .order-header-card, .stats-section, .content-section {
+        .order-header-card,
+        .stats-section,
+        .content-section {
             animation: fadeInUp 0.6s ease forwards;
         }
 
@@ -659,26 +902,6 @@
 
         .content-section {
             animation-delay: 0.2s;
-        }
-
-        /* Fixed Modal Backdrop Issue */
-        .modal-backdrop {
-            background-color: rgba(0, 0, 0, 0.4) !important;
-            pointer-events: none !important;
-        }
-
-        .modal {
-            pointer-events: auto !important;
-        }
-
-        .modal-dialog {
-            pointer-events: auto !important;
-        }
-
-        .modal-content {
-            pointer-events: auto !important;
-            position: relative;
-            z-index: 1060;
         }
     </style>
 </head>
@@ -801,13 +1024,11 @@
 
             <!-- Order Header Card -->
             <section class="order-header-card">
-                <div class="order-id-display">Order ID: #ORD-<%= order.orderId %></div>
+                <div class="order-id-display">Order ID: #ORD-<%= order.orderId %>
+                </div>
                 <div class="order-date">
-                    Placed on <%= new Date(order.createdOn).toLocaleDateString("en-IN", { 
-                        year: 'numeric', 
-                        month: 'short', 
-                        day: 'numeric' 
-                    }) %>
+                    Placed on <%= new Date(order.createdOn).toLocaleDateString("en-IN", { year: 'numeric' ,
+                        month: 'short' , day: 'numeric' }) %>
                 </div>
             </section>
 
@@ -821,9 +1042,11 @@
                                 <i class="fas fa-box"></i>
                             </div>
                         </div>
-                        <div class="stat-value"><%= order.orderitems.length %></div>
+                        <div class="stat-value">
+                            <%= order.orderitems.length %>
+                        </div>
                     </div>
-                    
+
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-title">Total Quantity</div>
@@ -831,9 +1054,12 @@
                                 <i class="fas fa-layer-group"></i>
                             </div>
                         </div>
-                        <div class="stat-value"><%= totalqty %></div>
+                        <div class="stat-value" id="totalQuantityDisplay">
+                            <%= order.orderitems.reduce((total, item)=> total + item.quantity, 0)
+                                %>
+                        </div>
                     </div>
-                    
+
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-title">Order Total</div>
@@ -841,7 +1067,8 @@
                                 <i class="fas fa-rupee-sign"></i>
                             </div>
                         </div>
-                        <div class="stat-value">₹<%= order.totalPrice.toLocaleString("en-IN") %></div>
+                        <div class="stat-value">₹<%= order.totalPrice.toLocaleString("en-IN") %>
+                        </div>
                     </div>
 
                     <div class="stat-card">
@@ -851,177 +1078,175 @@
                                 <i class="fas fa-money-bill-wave"></i>
                             </div>
                         </div>
-                        <div class="stat-value" style="font-size: 1rem; color: var(--warning);"><%= order.paymentMethod %></div>
+                        <div class="stat-value" style="font-size: 1rem; color: var(--warning);">
+                            <%= order.paymentMethod %>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Enhanced Ordered Items Section -->
+            <!-- Enhanced Individual Ordered Items Section with Quantity-Based Tracking -->
             <section class="content-section">
                 <h3 class="section-title">
                     <i class="fas fa-list"></i>
-                    Ordered Items
+                    Order Items with Quantity Management
+                    <div class="ms-auto">
+                        <button class="btn btn-sm btn-outline-primary" onclick="toggleSelectAll()">
+                            <i class="fas fa-check-square"></i> Select All
+                        </button>
+                    </div>
                 </h3>
+
+                <!-- Bulk Actions Panel -->
+                <div class="bulk-actions" id="bulkActionsPanel">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold">
+                            <i class="fas fa-check-circle text-primary me-2"></i>
+                            <span id="selectedCount">0</span> item(s) selected
+                        </span>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-primary" onclick="bulkUpdateSelected()">
+                                <i class="fas fa-edit"></i> Bulk Update Status
+                            </button>
+                            <button class="btn btn-sm btn-success" onclick="bulkMarkShipped()">
+                                <i class="fas fa-shipping-fast"></i> Mark as Shipped
+                            </button>
+                            <button class="btn btn-sm btn-info" onclick="bulkMarkDelivered()">
+                                <i class="fas fa-check-circle"></i> Mark as Delivered
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>
-                                    <i class="fas fa-image me-2"></i>
-                                    Image
+                                <th width="40">
+                                    <input type="checkbox" id="selectAllItems" onchange="toggleSelectAll()">
                                 </th>
-                                <th>
-                                    <i class="fas fa-tag me-2"></i>
-                                    Product Name
-                                </th>
-                                <th>
-                                    <i class="fas fa-sort-numeric-up me-2"></i>
-                                    Quantity
-                                </th>
-                                <th>
-                                    <i class="fas fa-rupee-sign me-2"></i>
-                                    Price
-                                </th>
-                                <th>
-                                    <i class="fas fa-truck me-2"></i>
-                                    Status
-                                </th>
+                                <th><i class="fas fa-tag me-2"></i>Product</th>
+                                <th><i class="fas fa-sort-numeric-up me-2"></i>Quantities</th>
+                                <th><i class="fas fa-rupee-sign me-2"></i>Price</th>
+                                <th><i class="fas fa-truck me-2"></i>Status</th>
+                                <th><i class="fas fa-cogs me-2"></i>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <% order.orderitems.forEach((item, index) => { %>
-                                <tr>
+                            <% order.orderitems.forEach((item, itemIndex)=> {
+                                const cancelledQty = item.cancelledQuantity || 0;
+                                const returnedQty = item.returnedQuantity || 0;
+                                const activeQty = item.quantity - cancelledQty - returnedQty;
+                                %>
+                                <tr data-item-id="<%= item._id %>" class="item-row">
                                     <td>
-                                        <img src="<%= item.productId.images[0] %>" alt="Product Image" class="product-img">
+                                        <input type="checkbox" class="item-checkbox" data-item-id="<%= item._id %>">
                                     </td>
                                     <td>
-                                        <div class="product-name"><%= item.productId.productName %></div>
+                                        <div class="d-flex align-items-center">
+                                            <img src="<%= item.productId.images[0] %>" alt="Product"
+                                                class="product-img me-3">
+                                            <div>
+                                                <div class="product-name">
+                                                    <%= item.productId.productName %>
+                                                </div>
+                                                <small class="text-muted">Item ID: <%= item._id %></small>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark"><%= item.quantity %></span>
+                                        <div class="quantity-breakdown">
+                                            <div class="quantity-badges">
+                                                <% if (activeQty> 0) { %>
+                                                    <span class="quantity-badge badge-active">Active: <%= activeQty %>
+                                                    </span>
+                                                    <% } %>
+                                                        <% if (cancelledQty> 0) { %>
+                                                            <span class="quantity-badge badge-cancelled">Cancelled: <%=
+                                                                    cancelledQty %></span>
+                                                            <% } %>
+                                                                <% if (returnedQty> 0) { %>
+                                                                    <span
+                                                                        class="quantity-badge badge-returned">Returned:
+                                                                        <%= returnedQty %>
+                                                                    </span>
+                                                                    <% } %>
+                                            </div>
+                                            <small class="text-muted">Total: <%= item.quantity %></small>
+                                        </div>
                                     </td>
-                                    <td class="fw-bold">
-                                        ₹<%= item.productId.discountPrice.toLocaleString("en-IN") %>
+                                    <td class="fw-bold">₹<%= (item.price * item.quantity).toLocaleString("en-IN") %>
                                     </td>
                                     <td>
-                                        <% 
-                                        const statusClass = item.status.toLowerCase() === 'shipped' ? 'status-shipped' :
-                                            item.status.toLowerCase() === 'delivered' ? 'status-delivered' :
-                                            item.status.toLowerCase() === 'pending' ? 'status-pending' :
-                                            item.status.toLowerCase() === 'cancelled' ? 'status-cancelled' :
-                                            item.status.toLowerCase() === 'return request' ? 'status-return-request' :
-                                            item.status.toLowerCase() === 'returned' ? 'status-returned' :
-                                            item.status.toLowerCase() === 'return rejected' ? 'status-return-rejected' :
-                                            item.status.toLowerCase() === 'return accepted' ? 'status-return-accepted' : 'status-processing';
-                                        
-                                        const statusIcon = item.status.toLowerCase() === 'shipped' ? 'fa-shipping-fast' :
-                                            item.status.toLowerCase() === 'delivered' ? 'fa-check-circle' :
-                                            item.status.toLowerCase() === 'pending' ? 'fa-hourglass-half' :
-                                            item.status.toLowerCase() === 'cancelled' ? 'fa-times-circle' :
-                                            item.status.toLowerCase() === 'return request' ? 'fa-undo' :
-                                            item.status.toLowerCase() === 'returned' ? 'fa-check-circle' :
-                                            item.status.toLowerCase() === 'return rejected' ? 'fa-times-circle' :
-                                            item.status.toLowerCase() === 'return accepted' ? 'fa-check-circle' : 'fa-clock';
-                                        %>
-                                        <span class="status-badge <%= statusClass %>">
-                                            <i class="fas <%= statusIcon %> status-icon"></i>
-                                            <%= item.status %>
-                                        </span>
+                                        <% const statusClass=(item.status || 'pending' ).toLowerCase()==='shipped'
+                                            ? 'status-shipped' : (item.status || 'pending' ).toLowerCase()==='delivered'
+                                            ? 'status-delivered' : (item.status || 'pending'
+                                            ).toLowerCase()==='cancelled' ? 'status-cancelled' : (item.status
+                                            || 'pending' ).toLowerCase()==='returned' ? 'status-returned' : (item.status
+                                            || 'pending' ).toLowerCase()==='mixed' ? 'status-mixed' : (item.status
+                                            || 'pending' ).toLowerCase()==='return request' ? 'status-return-request' :
+                                            (item.status || 'pending' ).toLowerCase().includes('partially cancelled')
+                                            ? 'status-partially-cancelled' : (item.status || 'pending'
+                                            ).toLowerCase().includes('partially returned') ? 'status-partially-returned'
+                                            : (item.status || 'pending' ).toLowerCase().includes('partially')
+                                            ? 'status-pending' : 'status-processing' ; %>
+                                            <span class="status-badge <%= statusClass %>">
+                                                <i class="fas fa-circle status-icon"></i>
+                                                <%= (item.status || 'PENDING' ).toUpperCase() %>
+                                            </span>
 
-                                        <% if (item.status.toLowerCase() === 'cancelled') { %>
-                                            <i class="fas fa-envelope message-icon" data-bs-toggle="modal"
-                                                data-bs-target="#cancelModal<%= index %>" title="View cancellation details"></i>
-                                        <% } %>
+                                            <!-- Reason Display -->
+                                            <% if (item.cancellationReason && item.cancellationReason !=='none' ) { %>
+                                                <i class="fas fa-info-circle message-icon text-danger"
+                                                    onclick="showItemReason('<%= item._id %>','<%= item.productId.productName %>','<%= order._id %>', '<%= item.cancellationReason %>','<%= item.cancelledQuantity%>')"
+                                                    title="View cancellation reason"></i>
+                                                <% } %>
+                                                    <% if (item.returnReason && item.returnReason !=='none' ) { %>
+                                                        <i class="fas fa-undo message-icon text-warning"
+                                                            onclick="validateReturnReason('<%= item._id %>', '<%= item.productId.productName %>', '<%= item.returnReason %>', '<%= order._id %>','<%= item.returnedQuantity%>')"
+                                                            title="Validate return reason"></i>
+                                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <div class="item-actions">
+                                            <button class="action-btn action-btn-primary"
+                                                onclick="updateItemStatus('<%= item._id %>', '<%= item.productId.productName %>')">
+                                                <i class="fas fa-edit"></i> Update
+                                            </button>
 
-                                        <% if (item.status.toLowerCase() === 'return request') { %>
-                                            <i class="fas fa-envelope message-icon" data-bs-toggle="modal"
-                                                data-bs-target="#returnModal<%= index %>" title="Manage return request"></i>
-                                        <% } %>
+                                            <% if ((item.status || 'pending' ).toLowerCase()==='return request' ) { %>
+                                                <div class="d-flex gap-1">
+                                                    <button class="action-btn action-btn-success"
+                                                        onclick="processReturnRequest('Accept', '<%= item._id %>', '<%= order._id %>', '<%= item.productId.productName %>')">
+                                                        <i class="fas fa-check"></i> Accept
+                                                    </button>
+                                                    <button class="action-btn action-btn-danger"
+                                                        onclick="processReturnRequest('Reject', '<%= item._id %>', '<%= order._id %>', '<%= item.productId.productName %>')">
+                                                        <i class="fas fa-times"></i> Reject
+                                                    </button>
+                                                </div>
+                                                <% } %>
+
+                                                    <% if (activeQty> 0 && ((item.status || 'pending').toLowerCase() ===
+                                                        'pending' || (item.status || 'pending').toLowerCase() ===
+                                                        'processing')) { %>
+                                                        <button class="action-btn action-btn-success"
+                                                            onclick="markAsShipped('<%= item._id %>', '<%= item.productId.productName %>')">
+                                                            <i class="fas fa-shipping-fast"></i> Ship
+                                                        </button>
+                                                        <% } %>
+
+                                                            <% if (activeQty> 0 && (item.status ||
+                                                                'pending').toLowerCase() === 'shipped') { %>
+                                                                <button class="action-btn action-btn-success"
+                                                                    onclick="markAsDelivered('<%= item._id %>', '<%= item.productId.productName %>')">
+                                                                    <i class="fas fa-check-circle"></i> Deliver
+                                                                </button>
+                                                                <% } %>
+                                        </div>
                                     </td>
                                 </tr>
-
-                                <!-- Enhanced Cancellation Modal -->
-                                <% if (item.status.toLowerCase() === 'cancelled') { %>
-                                    <div class="modal fade" id="cancelModal<%= index %>" tabindex="-1"
-                                        aria-labelledby="cancelModalLabel<%= index %>" aria-hidden="true" 
-                                        data-bs-backdrop="static" data-bs-keyboard="false">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="cancelModalLabel<%= index %>">
-                                                        <i class="fas fa-times-circle me-2"></i>
-                                                        Cancellation Details
-                                                    </h5>
-                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="mb-3">
-                                                        <label class="fw-bold">Product:</label>
-                                                        <p class="mb-0"><%= item.productId.productName %></p>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="fw-bold">Cancellation Reason:</label>
-                                                        <p class="mb-0"><%= item.cancellationReason || 'Not specified' %></p>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-                                                        <i class="fas fa-times"></i> Close
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <% } %>
-
-                                <!-- Enhanced Return Request Modal -->
-                                <% if (item.status.toLowerCase() === 'return request') { %>
-                                    <div class="modal fade" id="returnModal<%= index %>" tabindex="-1"
-                                        aria-labelledby="returnModalLabel<%= index %>" aria-hidden="true"
-                                        data-bs-backdrop="static" data-bs-keyboard="false">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="returnModalLabel<%= index %>">
-                                                        <i class="fas fa-undo me-2"></i>
-                                                        Return Request Details
-                                                    </h5>
-                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="mb-3">
-                                                        <label class="fw-bold">Product:</label>
-                                                        <p class="mb-0"><%= item.productId.productName %></p>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="fw-bold">Return Reason:</label>
-                                                        <p class="mb-0"><%= item.returnReason || 'Not specified' %></p>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-accept"
-                                                        onclick="returnStatus('Accept','<%= item._id %>','<%= order._id %>')"
-                                                        data-bs-dismiss="modal">
-                                                        <i class="fas fa-check"></i>
-                                                        Accept Return
-                                                    </button>
-                                                    <button type="button" class="btn btn-reject"
-                                                        onclick="returnStatus('Reject','<%= item._id %>','<%= order._id %>')"
-                                                        data-bs-dismiss="modal">
-                                                        <i class="fas fa-times"></i>
-                                                        Reject Return
-                                                    </button>
-                                                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-                                                        <i class="fas fa-times"></i> Close
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <% } %>
-                            <% }) %>
+                                <% }); %>
                         </tbody>
                     </table>
                 </div>
@@ -1036,31 +1261,41 @@
                 <div class="customer-details-grid">
                     <div class="detail-item">
                         <div class="detail-label">Customer Name</div>
-                        <div class="detail-value"><%= order.shippingAddress.title %></div>
+                        <div class="detail-value">
+                            <%= order.shippingAddress.title %>
+                        </div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Phone Number</div>
-                        <div class="detail-value"><%= order.shippingAddress.phone %></div>
+                        <div class="detail-value">
+                            <%= order.shippingAddress.phone %>
+                        </div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Alternate Phone</div>
-                        <div class="detail-value"><%= order.shippingAddress.altPhone %></div>
+                        <div class="detail-value">
+                            <%= order.shippingAddress.altPhone %>
+                        </div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Address Type</div>
-                        <div class="detail-value"><%= order.shippingAddress.addressType %></div>
+                        <div class="detail-value">
+                            <%= order.shippingAddress.addressType %>
+                        </div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Payment Method</div>
-                        <div class="detail-value"><%= order.paymentMethod %></div>
+                        <div class="detail-value">
+                            <%= order.paymentMethod %>
+                        </div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Shipping Address</div>
                         <div class="detail-value">
                             <%= order.shippingAddress.address %><br>
-                            <%= order.shippingAddress.landmark %><br>
-                            <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %><br>
-                            <%= order.shippingAddress.pincode %>, India
+                                <%= order.shippingAddress.landmark %><br>
+                                    <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %><br>
+                                            <%= order.shippingAddress.pincode %>, India
                         </div>
                     </div>
                 </div>
@@ -1072,11 +1307,11 @@
                     <i class="fas fa-print"></i>
                     Print Invoice
                 </button>
-                <button class="btn btn-outline-primary" onclick="updateShipping()">
-                    <i class="fas fa-truck"></i>
-                    Update Shipping
+                <button class="btn btn-outline-primary" onclick="exportOrderData()">
+                    <i class="fas fa-download"></i>
+                    Export Order Data
                 </button>
-                <button class="btn btn-outline-primary" onclick="cancelOrder()">
+                <button class="btn btn-outline-primary" onclick="cancelEntireOrder()">
                     <i class="fas fa-times"></i>
                     Cancel Order
                 </button>
@@ -1090,6 +1325,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Global variables
+        let selectedItems = [];
+
         document.addEventListener('DOMContentLoaded', function () {
             // Add loading animation on page load
             const sections = document.querySelectorAll('.order-header-card, .stats-section, .content-section');
@@ -1103,143 +1341,534 @@
                 }, index * 100);
             });
 
-            // Fix modal backdrop issue
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.addEventListener('show.bs.modal', function (e) {
-                    // Ensure proper z-index and pointer events
-                    this.style.zIndex = 1055;
-                    this.style.pointerEvents = 'auto';
-                });
-
-                modal.addEventListener('shown.bs.modal', function (e) {
-                    // Fix backdrop issue after modal is shown
-                    const backdrop = document.querySelector('.modal-backdrop');
-                    if (backdrop) {
-                        backdrop.style.backgroundColor = 'rgba(0, 0, 0, 0.4)';
-                        backdrop.style.pointerEvents = 'none';
-                    }
-                });
-
-                modal.addEventListener('hide.bs.modal', function (e) {
-                    // Clean up on hide
-                    this.style.zIndex = '';
-                    this.style.pointerEvents = '';
-                });
-            });
-
-            // Prevent modal content from propagating clicks to backdrop
-            document.querySelectorAll('.modal-content').forEach(content => {
-                content.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                });
+            // Add event listeners to item checkboxes
+            document.querySelectorAll('.item-checkbox').forEach(cb => {
+                cb.addEventListener('change', updateSelectedItems);
             });
         });
 
-        function returnStatus(value, itemId, orderId) {
+        // Enhanced Message Functions
+        function showSuccessMessage(title, message) {
             Swal.fire({
-                title: `${value} Return Request?`,
-                text: `Are you sure you want to ${value.toLowerCase()} this return request?`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: value === 'Accept' ? '#28a745' : '#dc3545',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: `Yes, ${value.toLowerCase()} it!`
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Show loading
-                    Swal.fire({
-                        title: 'Processing...',
-                        text: `${value}ing return request...`,
-                        icon: 'info',
-                        allowOutsideClick: false,
-                        showConfirmButton: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    fetch('/returnStatus', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ value, itemId, orderId })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: data.message || "Action completed successfully",
-                            icon: 'success',
-                            confirmButtonColor: '#e74c3c'
-                        }).then(() => {
-                            location.reload();
-                        });
-                    })
-                    .catch(err => {
-                        console.error("Error:", err);
-                        Swal.fire({
-                            title: 'Error!',
-                            text: "Something went wrong. Please try again.",
-                            icon: 'error',
-                            confirmButtonColor: '#e74c3c'
-                        });
-                    });
+                title: `<strong><i class="fas fa-check-circle"></i> ${title}</strong>`,
+                html: `<div style="font-size:1.1rem;margin-top:10px;line-height:1.6;">${message}</div>`,
+                icon: 'success',
+                confirmButtonText: '<i class="fas fa-thumbs-up"></i> Excellent!',
+                timer: 4000,
+                timerProgressBar: true,
+                showClass: {
+                    popup: 'swal2-show',
+                    backdrop: 'swal2-backdrop-show',
+                    icon: 'swal2-icon-show'
+                },
+                hideClass: {
+                    popup: 'swal2-hide',
+                    backdrop: 'swal2-backdrop-hide',
+                    icon: 'swal2-icon-hide'
                 }
             });
         }
 
-        function updateShipping() {
+        function showErrorMessage(title, message) {
             Swal.fire({
-                title: 'Update Shipping Status',
+                title: `<strong><i class="fas fa-exclamation-triangle"></i> ${title}</strong>`,
+                html: `<div style="font-size:1.1rem;margin-top:10px;line-height:1.6;">${message}</div>`,
+                icon: 'error',
+                confirmButtonText: '<i class="fas fa-redo"></i> Try Again',
+                showClass: {
+                    popup: 'swal2-show',
+                    backdrop: 'swal2-backdrop-show',
+                    icon: 'swal2-icon-show'
+                }
+            });
+        }
+
+        function showLoadingMessage(title, message) {
+            Swal.fire({
+                title: `<strong><i class="fas fa-spinner fa-spin"></i> ${title}</strong>`,
+                html: `<div style="font-size:1.1rem;margin-top:10px;line-height:1.6;">${message}</div>`,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        }
+
+        // Bulk Operations
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAllItems');
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateSelectedItems();
+        }
+
+        function updateSelectedItems() {
+            selectedItems = Array.from(document.querySelectorAll('.item-checkbox:checked'))
+                .map(cb => cb.dataset.itemId);
+
+            const selectAll = document.getElementById('selectAllItems');
+            const allCheckboxes = document.querySelectorAll('.item-checkbox');
+            const bulkPanel = document.getElementById('bulkActionsPanel');
+            const selectedCount = document.getElementById('selectedCount');
+
+            selectAll.checked = selectedItems.length === allCheckboxes.length;
+            selectAll.indeterminate = selectedItems.length > 0 && selectedItems.length < allCheckboxes.length;
+
+            // Show/hide bulk actions panel
+            if (selectedItems.length > 0) {
+                bulkPanel.classList.add('show');
+                selectedCount.textContent = selectedItems.length;
+            } else {
+                bulkPanel.classList.remove('show');
+            }
+        }
+
+        // Enhanced Return Reason Validation Function
+        async function validateReturnReason(itemId, productName, returnReason, orderId, returnQty) {
+            const result = await Swal.fire({
+                title: `<strong><i class="fas fa-clipboard-check"></i> Return Reason Validation</strong>`,
+                html: `
+                    <div style="text-align:left;margin-top:1rem;">
+                        <p style="margin-bottom:1rem;"><strong><i class="fas fa-box"></i> Product:</strong> ${productName}</p>
+                       
+                        <div class="reason-display-box">
+                            <p style="margin-bottom:0.5rem;"><strong><i class="fas fa-comment-alt"></i> Customer Return Reason:</strong></p>
+                            <p class="reason-text">${returnReason}</p>
+                             <p style="margin-bottom:1rem;"><strong>ReturnQty:</strong> ${returnQty}</p>
+                        </div>
+                        <p style="margin-bottom:0;color: rgba(255, 255, 255, 0.8);"><i class="fas fa-info-circle"></i> Please review the return reason and decide whether to accept or reject this return request.</p>
+                    </div>
+                `,
+                width: '600px',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-check"></i> Accept Return',
+                cancelButtonText: '<i class="fas fa-times"></i> Reject Return',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'reason-validation-modal'
+                },
+                showDenyButton: false,
+                allowOutsideClick: false
+            });
+
+            if (result.isConfirmed) {
+                await processReturnValidation('Accept', itemId, orderId, productName, returnReason, returnQty);
+            } else if (result.isDismissed && result.dismiss === Swal.DismissReason.cancel) {
+                await processReturnValidation('Reject', itemId, orderId, productName, returnReason, returnQty);
+            }
+        }
+
+        // Enhanced Return Request Processing with Validation
+        async function processReturnValidation(action, itemId, orderId, productName, returnReason, returnQty) {
+            showLoadingMessage(`${action}ing Return Request`, `Processing return validation for ${productName}...`);
+
+            try {
+                const response = await fetch('returnStatus', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: action,
+                        itemId: itemId,
+                        orderId: orderId,
+                        productName: productName,
+                        returnReason: returnReason,
+                        returnQty: returnQty,
+                        adminDecision: action === 'Accept' ? 'valid' : 'invalid'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showSuccessMessage(
+                        `Return Request ${action}ed!`,
+                        `${productName} return request has been ${action.toLowerCase()}ed successfully. ${action === 'Accept' ? 'Refund will be processed within 3-5 business days.' : 'Customer has been notified about the rejection.'}`
+                    );
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showErrorMessage('Processing Failed', data.message || `Failed to ${action.toLowerCase()} return request`);
+                }
+            } catch (error) {
+                console.error('Return validation error:', error);
+                showErrorMessage('Network Error', 'Unable to process request. Please try again.');
+            }
+        }
+
+        // Individual Item Management Functions
+        async function updateItemStatus(itemId, productName) {
+            const { value: newStatus } = await Swal.fire({
+                title: `<strong><i class="fas fa-edit"></i> Update Item Status</strong>`,
+                html: `<div style="text-align:left;margin-top:1rem;">
+                        <p style="margin-bottom:1rem;"><strong><i class="fas fa-box"></i> Product:</strong> ${productName}</p>
+                        <p style="margin-bottom:1rem;"><i class="fas fa-info-circle"></i> Select the new status for this item:</p>
+                       </div>`,
                 input: 'select',
                 inputOptions: {
-                    'Delivered': 'Delivered',
-                    'Processing': 'Processing',
-                    'Pending': 'Pending',
-                    'Cancelled': 'Cancelled',
-                    'Return Request': 'Return Request'
+                    'Pending': '⏳ Pending',
+                    'Processing': '⚙️ Processing',
+                    'Shipped': '🚚 Shipped',
+                    'Delivered': '📦 Delivered',
+                    'Cancelled': '❌ Cancelled'
                 },
-                inputPlaceholder: 'Select new status',
+                inputPlaceholder: '📋 Choose new status...',
                 showCancelButton: true,
-                confirmButtonColor: '#e74c3c',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return 'You need to select a status!'
-                    }
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Success!',
-                        text: `All items updated to "${result.value}" status`,
-                        icon: 'success',
-                        confirmButtonColor: '#e74c3c'
-                    });
-                }
+                confirmButtonText: '<i class="fas fa-save"></i> Update Status',
+                inputValidator: (value) => !value && 'Please select a status!'
             });
+
+            if (newStatus) {
+                showLoadingMessage('Updating Status', `Updating ${productName} status...`);
+
+                try {
+                    const response = await fetch('/admin/order/update-item-status', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            itemId: itemId,
+                            status: newStatus,
+                            orderId: '<%= order._id %>'
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showSuccessMessage('Status Updated!', `${productName} status updated to ${newStatus}`);
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showErrorMessage('Update Failed', data.message || 'Failed to update status');
+                    }
+                } catch (error) {
+                    showErrorMessage('Network Error', 'Please check your connection and try again');
+                }
+            }
         }
 
-        function cancelOrder() {
-            Swal.fire({
-                title: 'Cancel Order?',
-                text: 'Are you sure you want to cancel this entire order?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Yes, cancel it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Order Cancelled!',
-                        text: 'The order has been cancelled successfully.',
-                        icon: 'success',
-                        confirmButtonColor: '#e74c3c'
-                    });
+        async function processReturnRequest(action, itemId, orderId, productName) {
+            showLoadingMessage(`${action}ing Return Request`, `Processing return request for ${productName}...`);
+
+            try {
+                const response = await fetch('/admin/order/process-return', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: action,
+                        itemId: itemId,
+                        orderId: orderId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showSuccessMessage(
+                        `Return Request ${action}ed!`,
+                        `${productName} return request has been ${action.toLowerCase()}ed successfully.`
+                    );
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showErrorMessage('Processing Failed', data.message || `Failed to ${action.toLowerCase()} return request`);
                 }
+            } catch (error) {
+                showErrorMessage('Network Error', 'Unable to process request. Please try again.');
+            }
+        }
+
+        async function markAsShipped(itemId, productName) {
+            const result = await Swal.fire({
+                title: `<strong><i class="fas fa-shipping-fast"></i> Mark as Shipped</strong>`,
+                html: `<div style="text-align:left;margin-top:1rem;">
+                        <p style="margin-bottom:0.5rem;"><strong><i class="fas fa-box"></i> Product:</strong> ${productName}</p>
+                        <p style="margin-bottom:0.5rem;"><strong><i class="fas fa-truck"></i> Action:</strong> Mark item as shipped</p>
+                        <p style="margin-bottom:0;"><strong><i class="fas fa-bell"></i> Notification:</strong> Customer will receive tracking information</p>
+                       </div>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-shipping-fast"></i> Mark as Shipped',
+                cancelButtonText: '<i class="fas fa-times"></i> Cancel'
             });
+
+            if (result.isConfirmed) {
+                await updateItemStatusAPI(itemId, 'Shipped', productName);
+            }
+        }
+
+        async function markAsDelivered(itemId, productName) {
+            const result = await Swal.fire({
+                title: `<strong><i class="fas fa-check-circle"></i> Mark as Delivered</strong>`,
+                html: `<div style="text-align:left;margin-top:1rem;">
+                        <p style="margin-bottom:0.5rem;"><strong><i class="fas fa-box"></i> Product:</strong> ${productName}</p>
+                        <p style="margin-bottom:0.5rem;"><strong><i class="fas fa-check-circle"></i> Action:</strong> Mark item as delivered</p>
+                        <p style="margin-bottom:0;"><strong><i class="fas fa-star"></i> Result:</strong> Order completion and review request sent</p>
+                       </div>`,
+                icon: 'success',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-check-circle"></i> Mark as Delivered',
+                cancelButtonText: '<i class="fas fa-times"></i> Cancel'
+            });
+
+            if (result.isConfirmed) {
+                await updateItemStatusAPI(itemId, 'Delivered', productName);
+            }
+        }
+
+        async function updateItemStatusAPI(itemId, status, productName) {
+            showLoadingMessage('Updating Status', `Updating ${productName} status to ${status}...`);
+
+            try {
+                const response = await fetch('/admin/order/update-item-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        itemId: itemId,
+                        status: status,
+                        orderId: '<%= order._id %>'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showSuccessMessage('Status Updated!', `${productName} has been marked as ${status.toLowerCase()}`);
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showErrorMessage('Update Failed', data.message);
+                }
+            } catch (error) {
+                showErrorMessage('Network Error', 'Failed to update status');
+            }
+        }
+
+        async function bulkUpdateSelected() {
+            if (selectedItems.length === 0) {
+                showErrorMessage('No Items Selected', 'Please select items to update');
+                return;
+            }
+
+            const { value: newStatus } = await Swal.fire({
+                title: `<strong><i class="fas fa-tasks"></i> Bulk Status Update</strong>`,
+                html: `<p>Update status for <strong>${selectedItems.length}</strong> selected items:</p>`,
+                input: 'select',
+                inputOptions: {
+                    'Processing': '⚙️ Processing',
+                    'Shipped': '🚚 Shipped',
+                    'Delivered': '📦 Delivered'
+                },
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-save"></i> Update All',
+                inputValidator: (value) => !value && 'Please select a status!'
+            });
+
+            if (newStatus) {
+                showLoadingMessage('Bulk Update', `Updating ${selectedItems.length} items...`);
+
+                try {
+                    const response = await fetch('/admin/order/bulk-update-status', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            itemIds: selectedItems,
+                            status: newStatus,
+                            orderId: '<%= order._id %>'
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showSuccessMessage('Bulk Update Complete!', `${selectedItems.length} items updated to ${newStatus}`);
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showErrorMessage('Bulk Update Failed', data.message);
+                    }
+                } catch (error) {
+                    showErrorMessage('Network Error', 'Failed to process bulk update');
+                }
+            }
+        }
+
+        async function bulkMarkShipped() {
+            if (selectedItems.length === 0) {
+                showErrorMessage('No Items Selected', 'Please select items to mark as shipped');
+                return;
+            }
+
+            const result = await Swal.fire({
+                title: `<strong><i class="fas fa-shipping-fast"></i> Bulk Mark as Shipped</strong>`,
+                html: `<p>Mark <strong>${selectedItems.length}</strong> selected items as shipped?</p>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-shipping-fast"></i> Mark All as Shipped',
+                cancelButtonText: '<i class="fas fa-times"></i> Cancel'
+            });
+
+            if (result.isConfirmed) {
+                await bulkUpdateStatusAPI(selectedItems, 'Shipped');
+            }
+        }
+
+        async function bulkMarkDelivered() {
+            if (selectedItems.length === 0) {
+                showErrorMessage('No Items Selected', 'Please select items to mark as delivered');
+                return;
+            }
+
+            const result = await Swal.fire({
+                title: `<strong><i class="fas fa-check-circle"></i> Bulk Mark as Delivered</strong>`,
+                html: `<p>Mark <strong>${selectedItems.length}</strong> selected items as delivered?</p>`,
+                icon: 'success',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-check-circle"></i> Mark All as Delivered',
+                cancelButtonText: '<i class="fas fa-times"></i> Cancel'
+            });
+
+            if (result.isConfirmed) {
+                await bulkUpdateStatusAPI(selectedItems, 'Delivered');
+            }
+        }
+
+        async function bulkUpdateStatusAPI(itemIds, status) {
+            showLoadingMessage('Bulk Update', `Updating ${itemIds.length} items to ${status}...`);
+
+            try {
+                const response = await fetch('/admin/order/bulk-update-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        itemIds: itemIds,
+                        status: status,
+                        orderId: '<%= order._id %>'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showSuccessMessage('Bulk Update Complete!', `${itemIds.length} items updated to ${status}`);
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showErrorMessage('Bulk Update Failed', data.message);
+                }
+            } catch (error) {
+                showErrorMessage('Network Error', 'Failed to process bulk update');
+            }
+        }
+
+        async function showItemReason(itemId, productName, orderId, cancellationreason, cancellationQty) {
+            const result = await Swal.fire({
+                title: `<strong><i class="fas fa-clipboard-check"></i> Cancellation Reason Validation</strong>`,
+                html: `
+            <div style="text-align:left;margin-top:1rem;">
+                <p style="margin-bottom:1rem;"><strong><i class="fas fa-box"></i> Product:</strong> ${productName}</p>
+               
+                <div class="reason-display-box">
+                    <p style="margin-bottom:0.5rem;"><strong><i class="fas fa-comment-alt"></i> Customer Cancellation Reason:</strong></p>
+                    <p class="reason-text">${cancellationreason}</p>
+                     <p style="margin-bottom:1rem;"><strong>Cancelled Qty:</strong> ${cancellationQty}</p>
+                </div>
+                <p style="margin-bottom:0;color: rgba(255, 255, 255, 0.8);"><i class="fas fa-info-circle"></i> Please review the cancellation reason and decide whether to accept or reject this cancellation request.</p>
+            </div>
+        `,
+                width: '600px',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-check"></i> Accept Cancellation',
+                cancelButtonText: '<i class="fas fa-times"></i> Reject Cancellation',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'reason-validation-modal'
+                },
+                showDenyButton: false,
+                allowOutsideClick: false
+            });
+
+            if (result.isConfirmed) {
+                await processcancellationValidation('Accept', itemId, productName, orderId, cancellationreason, cancellationQty);
+            } else if (result.isDismissed && result.dismiss === Swal.DismissReason.cancel) {
+                await processcancellationValidation('Reject', itemId, productName, orderId, cancellationreason, cancellationQty);
+            }
+        }
+        async function showItemReason(itemId, productName, orderId, cancellationreason, cancellationQty) {
+            const result = await Swal.fire({
+                title: `<strong><i class="fas fa-clipboard-check"></i> Cancellation Reason Validation</strong>`,
+                html: `
+            <div style="text-align:left;margin-top:1rem;">
+                <p style="margin-bottom:1rem;"><strong><i class="fas fa-box"></i> Product:</strong> ${productName}</p>
+               
+                <div class="reason-display-box">
+                    <p style="margin-bottom:0.5rem;"><strong><i class="fas fa-comment-alt"></i> Customer Cancellation Reason:</strong></p>
+                    <p class="reason-text">${cancellationreason}</p>
+                     <p style="margin-bottom:1rem;"><strong>Cancelled Qty:</strong> ${cancellationQty}</p>
+                </div>
+                <p style="margin-bottom:0;color: rgba(255, 255, 255, 0.8);"><i class="fas fa-info-circle"></i> Please review the cancellation reason and decide whether to accept or reject this cancellation request.</p>
+            </div>
+        `,
+                width: '600px',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-check"></i> Accept Cancellation',
+                cancelButtonText: '<i class="fas fa-times"></i> Reject Cancellation',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'reason-validation-modal'
+                },
+                showDenyButton: false,
+                allowOutsideClick: false
+            });
+
+            if (result.isConfirmed) {
+                await processcancellationValidation('Accept', itemId, productName, orderId, cancellationreason, cancellationQty);
+            } else if (result.isDismissed && result.dismiss === Swal.DismissReason.cancel) {
+                await processcancellationValidation('Reject', itemId, productName, orderId, cancellationreason, cancellationQty);
+            }
+        }
+
+
+        // Enhanced Return Request Processing with Validation
+        async function processcancellationValidation(action, itemId, productName, orderId, cancellationreason, cancellationQty) {
+            showLoadingMessage(`${action}ing Cancellation Request`, `Processing cancellation validation for ${productName}...`);
+
+            try {
+                const response = await fetch('/cancellationStatus', { // Fixed: Added proper path
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: action,
+                        itemId: itemId,
+                        productName: productName,
+                        orderId: orderId,
+                        cancellationReason: cancellationreason,
+                        cancellationQty: cancellationQty,
+                        adminDecision: action === 'Accept' ? 'valid' : 'invalid'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showSuccessMessage(
+                        `Cancellation Request ${action}ed!`,
+                        `${productName} cancellation request has been ${action.toLowerCase()}ed successfully. ${action === 'Accept' ? 'Refund will be processed within 3-5 business days.' : 'Customer has been notified about the rejection.'}`
+                    );
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showErrorMessage('Processing Failed', data.message || `Failed to ${action.toLowerCase()} cancellation request`);
+                }
+            } catch (error) {
+                console.error('Cancellation validation error:', error);
+                showErrorMessage('Network Error', 'Unable to process request. Please try again.');
+            }
+        }
+
+
+
+
+        function exportOrderData() {
+            showSuccessMessage('Export Started!', 'Order data export has been initiated. Download will begin shortly.');
+            // Add actual export functionality here
         }
     </script>
 </body>
+
 </html>

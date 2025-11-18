@@ -12,7 +12,7 @@ router.get("/orderdetails/:id",userAuth.check,orderController.orderDetailsPageLo
 router.post("/orderorderDerailsPost",userAuth.check,orderController.orderDerailsPost)
 router.post("/verifyrazorpay",orderController.verifyPayment)
 router.post("/completerazorpay",orderController.completeRazorpayOrder)
-router.post("/orderCancellation",userAuth.check,orderController.orderCancelletion)
+router.post("/orderCancellation",userAuth.check,orderController.orderCancellation)
 router.post("/orderReturn",userAuth.check,orderController.orderReturn)
 
 

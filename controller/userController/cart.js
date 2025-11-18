@@ -132,15 +132,15 @@ const PostCart = async (req, res) => {
 
 
     if (!userID) {
-      return res.status(401).json({ success: false, message: "Please log in to add items to cart." });
+      return res.status(401).json({ fail: "Please log in to add items to cart." });
     }
 
     const productDetails = await model.productModel.findById(productId);
     if (!productDetails) {
-      return res.status(404).json({ success: false, message: "Product not found." });
+      return res.status(404).json({ fail: "Product not found." });
     }
     if (productDetails.stock === 0) {
-      return res.status(404).json({ success: false, message: "No Stock in there" });
+      return res.status(404).json({ fail: "No Stock in there" });
     }
     const cart = await model.cartModel.findOne({ userId: userID });
 
@@ -148,7 +148,7 @@ const PostCart = async (req, res) => {
       const existingItem = cart.items.find(item => item.productId.equals(productId));
 
       if (existingItem) {
-        return res.status(200).json({ success: false, message: "Product already in cart." });
+        return res.status(200).json({ fail: "Product already in cart." });
       }
 
       cart.items.push({
@@ -175,7 +175,7 @@ const PostCart = async (req, res) => {
 
   } catch (error) {
     console.error(error.message);
-    return res.status(500).json({ success: false, message: "Internal server error." });
+    return res.status(500).json({ fail: "Internal server error." });
   }
 };
 

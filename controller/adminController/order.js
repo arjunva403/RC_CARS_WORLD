@@ -1,5 +1,6 @@
 const { render } = require("express-cookie/lib/response");
 const model = require("../../src/config")
+const helper = require("../../helpers/orderhelper")
 
 const orderMangementPageLoad = async (req, res) => {
     try {
@@ -99,61 +100,62 @@ const orderdetailsPageload = async (req, res) => {
 }
 
 const updateOrderStatus = async (req, res) => {
-  try {
-    const { orderId, status } = req.body;
+    try {
+        const { orderId, status } = req.body;
 
-    if (!orderId || !status) {
-      return res.status(400).json({ message: 'Order ID and status are required' });
+        if (!orderId || !status) {
+            return res.status(400).json({ message: 'Order ID and status are required' });
+        }
+
+        const statusFlow = ['Pending', 'Ordered', 'Shipped', 'Delivered', 'Cancelled'];
+        if (!statusFlow.includes(status)) {
+            return res.status(400).json({ message: 'Invalid status value' });
+        }
+
+        const order = await model.orderModel.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        let updateHappened = false;
+        for (let item of order.orderitems) {
+            if (item.status === 'Cancelled') {
+                continue;
+            }
+
+            const currentIndex = statusFlow.indexOf(item.status);
+            const newIndex = statusFlow.indexOf(status);
+
+            if (newIndex > currentIndex) {
+                item.status = status;
+                updateHappened = true;
+            } else if (newIndex === currentIndex) {
+                continue;
+            } else {
+                return res.status(400).json({ message: `Cannot revert status of item '${item.productName}' from ${item.status} to ${status}` });
+            }
+        }
+
+
+        if (updateHappened) {
+            order.orderStatus = status;
+            order.markModified('orderitems');
+            await order.save();
+            return res.status(200).json({ message: 'Order status updated successfully', order });
+        } else {
+            return res.status(200).json({ message: 'No updates applied. All items already in correct status.', order });
+        }
+    } catch (error) {
+        console.error('Error updating order status:', error.message);
+        res.status(500).json({ message: 'Server error' });
     }
-
-    const statusFlow = ['Pending', 'Ordered', 'Shipped', 'Delivered', 'Cancelled'];
-    if (!statusFlow.includes(status)) {
-      return res.status(400).json({ message: 'Invalid status value' });
-    }
-
-    const order = await model.orderModel.findById(orderId);
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-
-    let updateHappened = false;
-    for (let item of order.orderitems) {
-      if (item.status === 'Cancelled') {
-        continue; 
-      }
-
-      const currentIndex = statusFlow.indexOf(item.status);
-      const newIndex = statusFlow.indexOf(status);
-
-      if (newIndex > currentIndex) {
-        item.status = status;
-        updateHappened = true;
-      } else if (newIndex === currentIndex) {
-        continue; 
-      } else {
-        return res.status(400).json({ message: `Cannot revert status of item '${item.productName}' from ${item.status} to ${status}` });
-      }
-    }
-
-    
-    if (updateHappened) {
-      order.orderStatus = status;
-      order.markModified('orderitems');
-      await order.save();
-      return res.status(200).json({ message: 'Order status updated successfully', order });
-    } else {
-      return res.status(200).json({ message: 'No updates applied. All items already in correct status.', order });
-    }
-  } catch (error) {
-    console.error('Error updating order status:', error.message);
-    res.status(500).json({ message: 'Server error' });
-  }
 };
 
 
 const returnChoesingPost = async (req, res) => {
     try {
         const { value, itemId, orderId } = req.body;
+        console.log(req.body)
 
         const order = await model.orderModel.findById(orderId);
 
@@ -215,6 +217,35 @@ const returnChoesingPost = async (req, res) => {
 };
 
 
+const cancellationChoesingPost = async (req, res) => {
+    try {
+        const { action, itemId, productName, orderId, cancellationReason, cancellationQty, adminDecision } = req.body;
+
+        if (action == "reject") return res.status(200).json({ message: "Cancellation request rejected" });
+
+        const cancellprocess = await helper.ApplyCancel(orderId, productName, itemId, cancellationQty)
+
+        if (!cancellprocess.success) {
+            return res.status(400).json({ message: cancellprocess.message });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: cancellprocess.message,
+            updatedOrder: cancellprocess.updatedOrder,
+            walletRefunded: cancellprocess.walletRefunded
+        });
+
+
+
+
+    } catch (error) {
+        console.error("Return choice error:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+
 
 
 
@@ -224,4 +255,5 @@ module.exports = {
     orderdetailsPageload,
     updateOrderStatus,
     returnChoesingPost,
+    cancellationChoesingPost,
 }

@@ -419,9 +419,7 @@
 
         // Remove from Wishlist Function
         async function removeFromWishlist(productId) {
-            if (!confirm('Are you sure you want to remove this item from your wishlist?')) {
-                return;
-            }
+           
 
             try {
                 const res = await fetch("/remove", {

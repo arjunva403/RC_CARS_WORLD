@@ -701,23 +701,150 @@
                                                 <!-- Address Form (keeping existing form structure) -->
                                                 <div id="addressForm"
                                                     class="address-form hidden mt-4 p-4 bg-rc-light-gray rounded-md border border-rc-border-gray">
-                                                    <!-- ... keeping your existing address form structure ... -->
-                                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <!-- Personal Information Section -->
+                                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                                         <div>
-                                                            <label class="block text-sm font-medium mb-1">Name</label>
+                                                            <label class="block text-sm font-medium mb-1">Name *</label>
                                                             <input type="text" id="formName" placeholder="Full Name"
-                                                                class="w-full p-3 border border-rc-border-gray rounded-md focus:outline-none focus:border-rc-red">
+                                                                class="w-full p-3 border border-rc-border-gray rounded-md focus:outline-none focus:border-rc-red"
+                                                                required>
                                                         </div>
                                                         <div>
-                                                            <label class="block text-sm font-medium mb-1">Phone
-                                                                Number</label>
-                                                            <input type="text" id="formPhone" placeholder="Phone Number"
+                                                            <label class="block text-sm font-medium mb-1">Phone Number
+                                                                *</label>
+                                                            <input type="tel" id="formPhone" placeholder="9876543210"
+                                                                pattern="[0-9]{10}" maxlength="10"
+                                                                class="w-full p-3 border border-rc-border-gray rounded-md focus:outline-none focus:border-rc-red"
+                                                                required>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="grid grid-cols-1 gap-4 mb-4">
+                                                        <div>
+                                                            <label class="block text-sm font-medium mb-1">Alternate
+                                                                Phone</label>
+                                                            <input type="tel" id="formAltPhone" placeholder="9876543211"
+                                                                pattern="[0-9]{10}" maxlength="10"
                                                                 class="w-full p-3 border border-rc-border-gray rounded-md focus:outline-none focus:border-rc-red">
                                                         </div>
-                                                        <!-- ... rest of your existing form fields ... -->
                                                     </div>
-                                                    <!-- ... keeping your existing form buttons ... -->
+
+                                                    <!-- Address Details Section -->
+                                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                                        <div>
+                                                            <label class="block text-sm font-medium mb-1">Pincode
+                                                                *</label>
+                                                            <input type="text" id="formPin" placeholder="400001"
+                                                                pattern="[0-9]{6}" maxlength="6"
+                                                                class="w-full p-3 border border-rc-border-gray rounded-md focus:outline-none focus:border-rc-red"
+                                                                required>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium mb-1">Locality/Area
+                                                                *</label>
+                                                            <input type="text" id="formLocality"
+                                                                placeholder="Andheri West"
+                                                                class="w-full p-3 border border-rc-border-gray rounded-md focus:outline-none focus:border-rc-red"
+                                                                required>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                                        <div>
+                                                            <label class="block text-sm font-medium mb-1">House
+                                                                No/Building *</label>
+                                                            <input type="text" id="formHouseNo"
+                                                                placeholder="Flat 12B, Royal Heights"
+                                                                class="w-full p-3 border border-rc-border-gray rounded-md focus:outline-none focus:border-rc-red"
+                                                                required>
+                                                        </div>
+                                                        <div>
+                                                            <label
+                                                                class="block text-sm font-medium mb-1">Landmark</label>
+                                                            <input type="text" id="formLandMark"
+                                                                placeholder="Near Infinity Mall"
+                                                                class="w-full p-3 border border-rc-border-gray rounded-md focus:outline-none focus:border-rc-red">
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Location Information Section -->
+                                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                                        <div>
+                                                            <label class="block text-sm font-medium mb-1">State
+                                                                *</label>
+                                                            <select id="formState"
+                                                                class="w-full p-3 border border-rc-border-gray rounded-md focus:outline-none focus:border-rc-red"
+                                                                required>
+                                                                <option value="">Select State</option>
+                                                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                                                <option value="Assam">Assam</option>
+                                                                <option value="Bihar">Bihar</option>
+                                                                <option value="Delhi">Delhi</option>
+                                                                <option value="Gujarat">Gujarat</option>
+                                                                <option value="Karnataka">Karnataka</option>
+                                                                <option value="Kerala">Kerala</option>
+                                                                <option value="Maharashtra">Maharashtra</option>
+                                                                <option value="Punjab">Punjab</option>
+                                                                <option value="Rajasthan">Rajasthan</option>
+                                                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                                                <option value="West Bengal">West Bengal</option>
+                                                            </select>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium mb-1">City *</label>
+                                                            <input type="text" id="formCity" placeholder="Mumbai"
+                                                                class="w-full p-3 border border-rc-border-gray rounded-md focus:outline-none focus:border-rc-red"
+                                                                required>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Address Type Section -->
+                                                    <div class="mb-6">
+                                                        <label class="block text-sm font-medium mb-2">Address Type
+                                                            *</label>
+                                                        <div class="grid grid-cols-3 gap-4">
+                                                            <label
+                                                                class="address-type-label flex items-center justify-center p-3 border-2 border-rc-border-gray rounded-lg cursor-pointer hover:border-rc-red hover:bg-rc-red/5 transition-all duration-200">
+                                                                <input type="radio" name="formAddressType" value="home"
+                                                                    class="mr-3" required>
+                                                                <i class="fas fa-home text-xl mr-2 text-rc-gray"></i>
+                                                                <span class="font-medium">Home</span>
+                                                            </label>
+                                                            <label
+                                                                class="address-type-label flex items-center justify-center p-3 border-2 border-rc-border-gray rounded-lg cursor-pointer hover:border-rc-red hover:bg-rc-red/5 transition-all duration-200">
+                                                                <input type="radio" name="formAddressType" value="work"
+                                                                    class="mr-3" required>
+                                                                <i
+                                                                    class="fas fa-briefcase text-xl mr-2 text-rc-gray"></i>
+                                                                <span class="font-medium">Work</span>
+                                                            </label>
+                                                            <label
+                                                                class="address-type-label flex items-center justify-center p-3 border-2 border-rc-border-gray rounded-lg cursor-pointer hover:border-rc-red hover:bg-rc-red/5 transition-all duration-200">
+                                                                <input type="radio" name="formAddressType" value="other"
+                                                                    class="mr-3" required>
+                                                                <i
+                                                                    class="fas fa-ellipsis-h text-xl mr-2 text-rc-gray"></i>
+                                                                <span class="font-medium">Other</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Action Buttons -->
+                                                    <div class="flex flex-col sm:flex-row gap-4">
+                                                        <button type="button" id="saveAddressBtn"
+                                                            class="flex-1 bg-rc-red text-white py-3 px-6 rounded-lg font-semibold hover:bg-rc-red/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                                            <i class="fas fa-save mr-2"></i>
+                                                            Save Address
+                                                        </button>
+                                                        <button type="button" id="cancelAddressBtn"
+                                                            class="bg-rc-light-gray text-rc-gray py-3 px-6 rounded-lg font-semibold hover:bg-rc-border-gray transition-colors">
+                                                            <i class="fas fa-times mr-2"></i>
+                                                            Cancel
+                                                        </button>
+                                                    </div>
                                                 </div>
+
 
                                                 <div class="mt-4">
                                                     <label for="recipientName"
@@ -1062,19 +1189,19 @@
     </footer>
 
     <script>
-
         function selectCoupon(couponCode) {
             document.getElementById('couponInput').value = couponCode;
         }
+
         // Toast Notification
         function showToast(message, type = 'success') {
             const toastContainer = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `flex items-center gap-2 px-5 py-3 mb-3 rounded-lg text-white font-medium shadow-lg opacity-0 transform -translate-y-5 transition-all duration-300 ${type === 'success' ? 'bg-rc-success' : 'bg-rc-error'}`;
             toast.innerHTML = `
-                ${message}
-                <button class="ml-auto text-white text-lg" onclick="this.parentElement.remove()">×</button>
-            `;
+        ${message}
+        <button class="ml-auto text-white text-lg" onclick="this.parentElement.remove()">×</button>
+    `;
             toastContainer.appendChild(toast);
             requestAnimationFrame(() => toast.classList.add('opacity-100', 'translate-y-0'));
             setTimeout(() => {
@@ -1314,12 +1441,9 @@
                 document.getElementById("couponDiv").style.display = "none";
             }
 
-
-
             if (data.fail) {
                 showToast(data.fail, 'error');
             }
-
         }
 
         // Address Management
@@ -1339,19 +1463,84 @@
             }
         }
 
+        // Radio Button Styling for Address Type
+        function setupAddressTypeRadioButtons() {
+            const radioButtons = document.querySelectorAll('input[name="formAddressType"]');
+
+            radioButtons.forEach(input => {
+                input.addEventListener('change', function () {
+                    // Reset all radio button styles
+                    document.querySelectorAll('input[name="formAddressType"]').forEach(radio => {
+                        const label = radio.closest('label');
+                        if (label) {
+                            label.classList.remove('border-rc-red', 'bg-rc-red/5', 'text-rc-red');
+                            label.classList.add('border-rc-border-gray');
+                        }
+                    });
+
+                    // Style selected radio button
+                    if (this.checked) {
+                        const label = this.closest('label');
+                        if (label) {
+                            label.classList.remove('border-rc-border-gray');
+                            label.classList.add('border-rc-red', 'bg-rc-red/5', 'text-rc-red');
+                        }
+                    }
+                });
+            });
+        }
+
+        // Setup input formatting
+        function setupInputFormatting() {
+            // Phone number formatting
+            const phoneInputs = document.querySelectorAll('#formPhone, #formAltPhone');
+            phoneInputs.forEach(input => {
+                input.addEventListener('input', function (e) {
+                    e.target.value = e.target.value.replace(/\D/g, '').substring(0, 10);
+                });
+            });
+
+            // Pincode formatting
+            const pinInput = document.getElementById('formPin');
+            if (pinInput) {
+                pinInput.addEventListener('input', function (e) {
+                    e.target.value = e.target.value.replace(/\D/g, '').substring(0, 6);
+                });
+            }
+        }
+
+        // Reset Address Form
+        function resetAddressForm() {
+            document.getElementById('formName').value = '';
+            document.getElementById('formPhone').value = '';
+            document.getElementById('formAltPhone').value = '';
+            document.getElementById('formPin').value = '';
+            document.getElementById('formLocality').value = '';
+            document.getElementById('formHouseNo').value = '';
+            document.getElementById('formLandMark').value = '';
+            document.getElementById('formCity').value = '';
+            document.getElementById('formState').value = '';
+
+            // Reset radio buttons
+            const radioButtons = document.querySelectorAll('input[name="formAddressType"]');
+            radioButtons.forEach(input => {
+                input.checked = false;
+                const label = input.closest('label');
+                if (label) {
+                    label.classList.remove('border-rc-red', 'bg-rc-red/5', 'text-rc-red');
+                    label.classList.add('border-rc-border-gray');
+                }
+            });
+        }
+
         function showAddAddressForm() {
             document.getElementById('addressForm').classList.remove('hidden');
             currentEditId = null;
-            document.getElementById('formName').value = '';
-            document.getElementById('formPhone').value = '';
-            document.getElementById('formPincode').value = '';
-            document.getElementById('formLocality').value = '';
-            document.getElementById('formAddress').value = '';
-            document.getElementById('formCity').value = '';
-            document.getElementById('formState').value = '';
-            document.getElementById('formLandmark').value = '';
-            document.getElementById('formAltPhone').value = '';
-            document.getElementById('formAddressType').value = 'home';
+            resetAddressForm();
+            // Focus on first input
+            setTimeout(() => {
+                document.getElementById('formName').focus();
+            }, 100);
         }
 
         function editSelectedAddress() {
@@ -1368,35 +1557,107 @@
         function cancelAddressForm() {
             document.getElementById('addressForm').classList.add('hidden');
             currentEditId = null;
+            resetAddressForm();
         }
 
+        // Updated Save Address Function with correct field IDs
         async function saveAddress() {
+            // Get form values with CORRECT IDs matching the HTML
             const name = document.getElementById('formName').value.trim();
             const phoneNumber = document.getElementById('formPhone').value.trim();
-            const pincode = document.getElementById('formPincode').value.trim();
-            const locality = document.getElementById('formLocality').value.trim();
-            const houseNo = document.getElementById('formAddress').value.trim();
-            const city = document.getElementById('formCity').value.trim();
-            const state = document.getElementById('formState').value.trim();
-            const landMark = document.getElementById('formLandmark').value.trim();
             const altPhoneNumber = document.getElementById('formAltPhone').value.trim();
-            const addressType = document.getElementById('formAddressType').value;
+            const pincode = document.getElementById('formPin').value.trim(); // Fixed: was formPincode
+            const locality = document.getElementById('formLocality').value.trim();
+            const houseNo = document.getElementById('formHouseNo').value.trim(); // Fixed: was formAddress
+            const landMark = document.getElementById('formLandMark').value.trim(); // Fixed: was formLandmark
+            const city = document.getElementById('formCity').value.trim();
+            const state = document.getElementById('formState').value;
+            const addressTypeElement = document.querySelector('input[name="formAddressType"]:checked');
 
-            if (!name || !phoneNumber || !pincode || !locality || !houseNo || !city || !state) {
-                showToast('Please fill all required fields', 'error');
+            // Validation
+            if (!name) {
+                showToast('Please enter your name', 'error');
+                document.getElementById('formName').focus();
                 return;
             }
+
+            if (!phoneNumber) {
+                showToast('Please enter your phone number', 'error');
+                document.getElementById('formPhone').focus();
+                return;
+            }
+
+            if (!/^[0-9]{10}$/.test(phoneNumber)) {
+                showToast('Please enter a valid 10-digit phone number', 'error');
+                document.getElementById('formPhone').focus();
+                return;
+            }
+
+            if (altPhoneNumber && !/^[0-9]{10}$/.test(altPhoneNumber)) {
+                showToast('Please enter a valid 10-digit alternate phone number', 'error');
+                document.getElementById('formAltPhone').focus();
+                return;
+            }
+
+            if (!pincode) {
+                showToast('Please enter pincode', 'error');
+                document.getElementById('formPin').focus();
+                return;
+            }
+
+            if (!/^[0-9]{6}$/.test(pincode)) {
+                showToast('Please enter a valid 6-digit pincode', 'error');
+                document.getElementById('formPin').focus();
+                return;
+            }
+
+            if (!locality) {
+                showToast('Please enter locality/area', 'error');
+                document.getElementById('formLocality').focus();
+                return;
+            }
+
+            if (!houseNo) {
+                showToast('Please enter house number/building', 'error');
+                document.getElementById('formHouseNo').focus();
+                return;
+            }
+
+            if (!city) {
+                showToast('Please enter city', 'error');
+                document.getElementById('formCity').focus();
+                return;
+            }
+
+            if (!state) {
+                showToast('Please select a state', 'error');
+                document.getElementById('formState').focus();
+                return;
+            }
+
+            if (!addressTypeElement) {
+                showToast('Please select an address type', 'error');
+                return;
+            }
+
+            const addressType = addressTypeElement.value;
+
+            // Show loading state
+            const saveBtn = document.getElementById('saveAddressBtn');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
 
             const addressData = {
                 name,
                 phoneNumber,
+                altPhoneNumber,
                 pincode,
                 locality,
                 houseNo,
+                landMark,
                 city,
                 state,
-                landMark,
-                altPhoneNumber,
                 addressType
             };
 
@@ -1407,15 +1668,23 @@
                     body: JSON.stringify(addressData)
                 });
                 const data = await response.json();
+
                 if (data.success) {
-                    showToast('Address saved successfully!');
-                    window.location.reload();
+                    showToast('Address saved successfully!', 'success');
+                    cancelAddressForm();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
                 } else {
                     showToast(data.error || 'Failed to save address', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showToast('Something went wrong while saving the address.', 'error');
+                showToast('Network error. Please check your connection and try again.', 'error');
+            } finally {
+                // Reset button state
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
             }
         }
 
@@ -1577,14 +1846,30 @@
             }, { passive: true });
 
             container.addEventListener('touchmove', (e) => {
-                const x = e.touches.pageX - container.offsetLeft;
+                const x = e.touches[0].pageX - container.offsetLeft;
                 const walk = (x - tStartX) * 1.2;
                 container.scrollLeft = tScrollLeft - walk;
             }, { passive: true });
         }
 
         // Initialize on load
-        document.addEventListener('DOMContentLoaded', renderAllCoupons);
+        document.addEventListener('DOMContentLoaded', function () {
+            renderAllCoupons();
+            setupAddressTypeRadioButtons();
+            setupInputFormatting();
+
+            // Setup button event listeners
+            const saveBtn = document.getElementById('saveAddressBtn');
+            const cancelBtn = document.getElementById('cancelAddressBtn');
+
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveAddress);
+            }
+
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', cancelAddressForm);
+            }
+        });
 
         // Optional: when a coupon is applied successfully, highlight it if present
         const originalApplyCoupon = window.applyCoupon;
@@ -1623,6 +1908,7 @@
             const subtotal = document.getElementById('subtotal').dataset.subtotal;
             const Shipping = document.getElementById('ShippingCharge').dataset.shippingcharge;
             const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value;
+            const couponName = document.getElementById('couponInput').value.trim();
             console.log(total)
             if (!paymentMethod) {
                 showToast('Please select a payment method', 'error');
@@ -1648,7 +1934,8 @@
                         discount,
                         total,
                         productId,
-                        orderdperson
+                        orderdperson,
+                        couponName
                     })
                 });
                 const data = await res.json();
@@ -1684,6 +1971,7 @@
                                         total,
                                         productId,
                                         orderdperson,
+                                        couponName,
                                         razorpayPaymentId: response.razorpay_payment_id,
                                         razorpayOrderId: response.razorpay_order_id,
                                         razorpaySignature: response.razorpay_signature
@@ -1693,23 +1981,19 @@
                                 if (orderData.success) {
                                     CarSwal.show({
                                         type: 'success',
-                                        title: ' Success!',
+                                        title: 'Success!',
                                         text: 'Payment successful! Order placed.',
                                         showCancelButton: false,
                                         confirmButtonText: 'OK',
                                         callback: (result) => {
                                             if (result.isConfirmed) {
-                                                showCarAlert('success', 'Payment successful! Order placed.');
                                                 window.location.href = `/orderdetails/${orderData.orderId}`;
-                                            } else {
-                                                showToast(orderData.failed || 'Order creation failed', 'error');
                                             }
                                         }
                                     });
-
-
+                                } else {
+                                    showToast(orderData.failed || 'Order creation failed', 'error');
                                 }
-
                             } else {
                                 showToast('Payment verification failed', 'error');
                             }
@@ -1739,15 +2023,12 @@
                         confirmButtonText: 'OK',
                         callback: (result) => {
                             if (result.isConfirmed) {
-                                showCarAlert('success', 'Success!', 'Order placed successfully.');
                                 window.location.href = `/orderdetails/${data.orderId}`;
-
-                            } else {
-                                showToast(data.failed || 'Something went wrong', 'error');
                             }
                         }
                     });
-
+                } else {
+                    showToast(data.failed || 'Something went wrong', 'error');
                 }
             } catch (error) {
                 console.error('Error placing order:', error);
@@ -1785,50 +2066,53 @@
 
         // Carousel Drag
         const carousel = document.getElementById('recommendCarousel');
-        let isDragging = false;
-        let startX, scrollLeft;
+        if (carousel) {
+            let isDragging = false;
+            let startX, scrollLeft;
 
-        carousel.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            startX = e.pageX - carousel.offsetLeft;
-            scrollLeft = carousel.scrollLeft;
-            carousel.style.cursor = 'grabbing';
-        });
+            carousel.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.pageX - carousel.offsetLeft;
+                scrollLeft = carousel.scrollLeft;
+                carousel.style.cursor = 'grabbing';
+            });
 
-        carousel.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            e.preventDefault();
-            const x = e.pageX - carousel.offsetLeft;
-            const walk = (x - startX) * 1.5;
-            carousel.scrollLeft = scrollLeft - walk;
-        });
+            carousel.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - carousel.offsetLeft;
+                const walk = (x - startX) * 1.5;
+                carousel.scrollLeft = scrollLeft - walk;
+            });
 
-        carousel.addEventListener('mouseup', () => {
-            isDragging = false;
-            carousel.style.cursor = 'grab';
-        });
+            carousel.addEventListener('mouseup', () => {
+                isDragging = false;
+                carousel.style.cursor = 'grab';
+            });
 
-        carousel.addEventListener('mouseleave', () => {
-            isDragging = false;
-            carousel.style.cursor = 'grab';
-        });
+            carousel.addEventListener('mouseleave', () => {
+                isDragging = false;
+                carousel.style.cursor = 'grab';
+            });
 
-        carousel.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            startX = e.touches[0].pageX - carousel.offsetLeft;
-            scrollLeft = carousel.scrollLeft;
-        });
+            carousel.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startX = e.touches[0].pageX - carousel.offsetLeft;
+                scrollLeft = carousel.scrollLeft;
+            });
 
-        carousel.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const x = e.touches[0].pageX - carousel.offsetLeft;
-            const walk = (x - startX) * 1.5;
-            carousel.scrollLeft = scrollLeft - walk;
-        });
+            carousel.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const x = e.touches[0].pageX - carousel.offsetLeft;
+                const walk = (x - startX) * 1.5;
+                carousel.scrollLeft = scrollLeft - walk;
+            });
 
-        carousel.addEventListener('touchend', () => {
-            isDragging = false;
-        });
+            carousel.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+        }
+
         // Close animation function
         function closeCarAnimation() {
             CarSwal.close();
@@ -1849,6 +2133,7 @@
         // Initialize Address Display
         updateSelectedAddress();
     </script>
+
     <style>
         .hide-scrollbar::-webkit-scrollbar {
             display: none;

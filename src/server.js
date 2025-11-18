@@ -2,6 +2,7 @@ const express = require("express")
 const nocache = require('nocache');
 const app = express()
 const session = require("express-session")
+const notExistedPageLoadError = require("../middilewears/404page")
 //userrouters
 const userRouter = require("../routes/user/userRoutes")
 const userproductRouter  = require("../routes/user/productRouts")
@@ -46,5 +47,12 @@ app.use("/",userRouter,userproductRouter,useraddressRouter,usercartRouter,userch
 //admin
 app.use("/",adminRouter,AdminbrandRouter,AdmincatagoryRouter,AdminorderRouter,AdminproductRouter,AdminOfferRouter,AdminCoupenRouter,AdminSalesReportRouter)
 
+app.use(notExistedPageLoadError);
+
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Internal Server Error");
+});
 
 app.listen(PORT,()=>{console.log(`server is runnig on http://localhost:${PORT}`)})

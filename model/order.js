@@ -1,3 +1,4 @@
+const { type } = require("express-cookie/lib/response");
 const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema({
@@ -11,19 +12,23 @@ const orderSchema = new mongoose.Schema({
     required: true,
   },
   orderitems: [{
+ 
   productId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "product",
     required: true
   },
+  
   quantity: { type: Number, required: true },
   price: { type: Number, default: 0 },
   discount: { type: Number, default: 0 },
   status: {
     type: String,
-    enum: ['Pending', 'Ordered', 'Shipped', 'Out For Delivery', 'Delivered', 'Cancelled', 'Return Request', 'Returned', 'Return Rejected', 'Return Accepted'],
+    enum: ['Pending', 'Ordered', 'Shipped', 'Out For Delivery', 'Delivered', 'Cancelled','partially cancelled' ,'Return Request', 'Returned', 'Return Rejected', 'Return Accepted','mixed' ,'partially processed', 'partially returned'],
     default: 'Pending'
   },
+   cancelledQuantity: { type: Number, default: 0 },
+    returnedQuantity: { type: Number, default: 0 },
   cancellationReason: { type: String, default: 'none' },
   returnReason: { type: String, default: 'none' }
 }],
@@ -33,7 +38,7 @@ const orderSchema = new mongoose.Schema({
     enum: [
       'Pending', 'Ordered', 'Cancelled', 'Partially Cancelled',
       'Shipped', 'Out For Delivery', 'Delivered','Partially Return Request',
-      'Return Request', 'Returned', 'Return Accepted', 'Return Rejected'
+      'Return Request', 'Returned', 'Return Accepted', 'Return Rejected', 'partially returned','mixed'  ,'partially processed','partially cancelled'
     ],
     default: 'Pending',
   },
@@ -48,6 +53,9 @@ const orderSchema = new mongoose.Schema({
   discount: {
     type: Number,
     default: 0,
+  },
+  couponName:{
+    type :String,
   },
   GST: {
     type: Number,
