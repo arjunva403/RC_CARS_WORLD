@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -600,7 +601,7 @@
                 flex-direction: column;
                 align-items: stretch;
             }
-            
+
             .search-section {
                 min-width: auto;
             }
@@ -612,19 +613,19 @@
                 height: auto;
                 position: relative;
             }
-            
+
             .main-content {
                 margin-left: 0;
             }
-            
+
             .topbar {
                 padding: 1rem;
             }
-            
+
             .content {
                 padding: 1rem;
             }
-            
+
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -641,13 +642,16 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
-        .stats-section, .controls-section, .table-section {
+        .stats-section,
+        .controls-section,
+        .table-section {
             animation: fadeInUp 0.6s ease forwards;
         }
 
@@ -777,10 +781,10 @@
                                 <i class="fas fa-shopping-cart"></i>
                             </div>
                         </div>
-                        <div class="stat-value">1,247</div>
-                        <div class="stat-change">+12% from last month</div>
+                        <div class="stat-value"><%=countOrders %></div>
+                        
                     </div>
-                    
+
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-title">Total Revenue</div>
@@ -788,10 +792,9 @@
                                 <i class="fas fa-rupee-sign"></i>
                             </div>
                         </div>
-                        <div class="stat-value">₹15,42,553</div>
-                        <div class="stat-change">+8% from last month</div>
+                        <div class="stat-value">₹<%=totalRevenue %></div>
                     </div>
-                    
+
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-title">Delivered</div>
@@ -799,7 +802,7 @@
                                 <i class="fas fa-check-circle"></i>
                             </div>
                         </div>
-                        <div class="stat-value">1,156</div>
+                        <div class="stat-value"><%=deliveredCount %></div>
                         <div class="stat-change">Successfully completed</div>
                     </div>
 
@@ -810,7 +813,7 @@
                                 <i class="fas fa-clock"></i>
                             </div>
                         </div>
-                        <div class="stat-value">91</div>
+                        <div class="stat-value"><%=pendingCount %></div>
                         <div class="stat-change">Awaiting processing</div>
                     </div>
                 </div>
@@ -823,15 +826,12 @@
                         <h4 class="controls-title">Order Management</h4>
                         <p class="text-muted mb-0">Track and manage customer orders</p>
                     </div>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-plus"></i>
-                        New Order
-                    </button>
+
                 </div>
 
                 <div class="search-filter-section">
                     <div class="search-section">
-                        <form action="/admin/ordermanagement" method="GET" class="d-flex w-100">
+                        <form action="/order" method="GET" class="d-flex w-100">
                             <div class="input-group">
                                 <span class="input-group-text">
                                     <i class="fas fa-search"></i>
@@ -840,32 +840,56 @@
                                     placeholder="Search orders, customers..." value="<%= search %>">
                             </div>
                         </form>
-                        <button class="btn btn-outline-primary" onclick="document.querySelector('.search-section form').submit();">
+                        <button class="btn btn-outline-primary"
+                            onclick="document.querySelector('.search-section form').submit();">
                             <i class="fas fa-search"></i>
                             Search
                         </button>
                     </div>
 
                     <div class="filter-section">
-                        <form action="/admin/ordermanagement" method="GET">
+                        <form action="/order" method="GET">
                             <input type="hidden" name="search" value="<%= search %>">
                             <select class="form-select" name="status" onchange="this.form.submit()">
-                                <option value="All Statuses" <%= status === 'All Statuses' ? 'selected' : '' %>>All Statuses</option>
-                                <option value="Delivered" <%= status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
-                                <option value="Shipped" <%= status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
-                                <option value="Processing" <%= status === 'Processing' ? 'selected' : '' %>>Processing</option>
-                                <option value="Pending" <%= status === 'Pending' ? 'selected' : '' %>>Pending</option>
-                                <option value="Cancelled" <%= status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                <option value="All Statuses" <%=status==='All Statuses' ? 'selected' : '' %>>
+                                    All Statuses
+                                </option>
+                                <option value="Pending" <%=status==='Pending' ? 'selected' : '' %>>
+                                    Pending
+                                </option>
+                                <option value="Ordered" <%=status==='Ordered' ? 'selected' : '' %>>
+                                    Ordered
+                                </option>
+                                <option value="Shipped" <%=status==='Shipped' ? 'selected' : '' %>>
+                                    Shipped
+                                </option>
+                                <option value="Out For Delivery" <%=status==='Out For Delivery' ? 'selected' : '' %>>
+                                    Out For Delivery
+                                </option>
+                                <option value="Delivered" <%=status==='Delivered' ? 'selected' : '' %>>
+                                    Delivered
+                                </option>
+                                <option value="partially cancelled" <%=status==='partially cancelled' ? 'selected' : '' %>>
+                                    partially cancelled
+                                </option>
+                                <option value="Cancelled" <%=status==='Cancelled' ? 'selected' : '' %>>
+                                    Cancelled
+                                </option>
                             </select>
                         </form>
-                        <form action="/admin/ordermanagement" method="GET">
+
+                        <form action="/order" method="GET">
                             <input type="hidden" name="search" value="<%= search %>">
                             <input type="hidden" name="status" value="<%= status %>">
                             <select class="form-select" name="sort" onchange="this.form.submit()">
-                                <option value="Newest First" <%= sort === 'Newest First' ? 'selected' : '' %>>Newest First</option>
-                                <option value="Oldest First" <%= sort === 'Oldest First' ? 'selected' : '' %>>Oldest First</option>
-                                <option value="Amount: High to Low" <%= sort === 'Amount: High to Low' ? 'selected' : '' %>>Amount: High to Low</option>
-                                <option value="Amount: Low to High" <%= sort === 'Amount: Low to High' ? 'selected' : '' %>>Amount: Low to High</option>
+                                <option value="Newest First" <%=sort==='Newest First' ? 'selected' : '' %>>Newest First
+                                </option>
+                                <option value="Oldest First" <%=sort==='Oldest First' ? 'selected' : '' %>>Oldest First
+                                </option>
+                                <option value="Amount: High to Low" <%=sort==='Amount: High to Low' ? 'selected' : '' %>
+                                    >Amount: High to Low</option>
+                                <option value="Amount: Low to High" <%=sort==='Amount: Low to High' ? 'selected' : '' %>
+                                    >Amount: Low to High</option>
                             </select>
                         </form>
                         <button class="btn btn-outline-primary">
@@ -921,23 +945,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <% orders.forEach(order => { %>
+                            <% orders.forEach(order=> { %>
                                 <tr>
                                     <td>
                                         <span class="order-id">#ORD-<%= order.orderId %></span>
                                     </td>
                                     <td>
                                         <div class="customer-info">
-                                            <h6><%= order.userId?.firstName || 'Unknown' %></h6>
-                                            <small><%= order.userId?.email || '' %></small>
+                                            <h6>
+                                                <%= order.userId?.firstName || 'Unknown' %>
+                                            </h6>
+                                            <small>
+                                                <%= order.userId?.email || '' %>
+                                            </small>
                                         </div>
                                     </td>
                                     <td>
-                                        <%= new Date(order.createdAt).toLocaleDateString("en-IN", { 
-                                            year: 'numeric', 
-                                            month: 'short', 
-                                            day: 'numeric' 
-                                        }) %>
+                                        <%= new Date(order.createdAt).toLocaleDateString("en-IN", { year: 'numeric' ,
+                                            month: 'short' , day: 'numeric' }) %>
                                     </td>
                                     <td>
                                         <span class="badge bg-light text-dark">
@@ -948,31 +973,26 @@
                                         ₹<%= order.finalAmount.toLocaleString("en-IN") %>
                                     </td>
                                     <td>
-                                        <% if (order.paymentStatus === 'paid') { %>
+                                        <% if (order.paymentStatus==='paid' ) { %>
                                             <span class="status-badge badge-paid">Paid</span>
-                                        <% } else if (order.paymentStatus === 'pending') { %>
-                                            <span class="status-badge badge-payment-pending">Pending</span>
-                                        <% } else if (order.paymentStatus === 'failed') { %>
-                                            <span class="status-badge badge-failed">Failed</span>
-                                        <% } else { %>
-                                            <span class="status-badge badge-refunded">Refunded</span>
-                                        <% } %>
+                                            <% } else if (order.paymentStatus==='pending' ) { %>
+                                                <span class="status-badge badge-payment-pending">Pending</span>
+                                                <% } else if (order.paymentStatus==='failed' ) { %>
+                                                    <span class="status-badge badge-failed">Failed</span>
+                                                    <% } else { %>
+                                                        <span class="status-badge badge-refunded">Refunded</span>
+                                                        <% } %>
                                     </td>
                                     <td>
-                                        <% 
-                                        const statusBadgeMap = {
-                                            'Delivered': 'badge-delivered',
-                                            'Shipped': 'badge-shipped',
-                                            'Pending': 'badge-pending',
-                                            'Cancelled': 'badge-cancelled',
-                                            'Return Request': 'badge-processing',
-                                            'Out For Delivery': 'badge-processing',
-                                            'Ordered': 'badge-processing'
-                                        };
-                                        %>
-                                        <span class="status-badge <%= statusBadgeMap[order.orderStatus] || 'badge-processing' %>">
-                                            <%= order.orderStatus %>
-                                        </span>
+                                        <% const statusBadgeMap={ 'Delivered' : 'badge-delivered' , 'Shipped'
+                                            : 'badge-shipped' , 'Pending' : 'badge-pending' , 'Cancelled'
+                                            : 'badge-cancelled' , 'Return Request' : 'badge-processing'
+                                            , 'Out For Delivery' : 'badge-processing' , 'Ordered' : 'badge-processing'
+                                            }; %>
+                                            <span
+                                                class="status-badge <%= statusBadgeMap[order.orderStatus] || 'badge-processing' %>">
+                                                <%= order.orderStatus %>
+                                            </span>
                                     </td>
                                     <td>
                                         <input type="hidden" class="orderId" value="<%= order._id %>">
@@ -991,12 +1011,14 @@
                                                 <div class="status-option" data-status="Shipped">Shipped</div>
                                                 <div class="status-option" data-status="Ordered">Ordered</div>
                                                 <div class="status-option" data-status="Pending">Pending</div>
+                                                <div class="status-option" data-status="partially cancelled">partially
+                                                    cancelled</div>
                                                 <div class="status-option" data-status="Cancelled">Cancelled</div>
                                             </div>
                                         </div>
                                     </td>
                                 </tr>
-                            <% }) %>
+                                <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -1005,35 +1027,35 @@
                 <div class="pagination-section">
                     <div class="pagination-info">
                         Showing <%= (currentPage - 1) * 10 + 1 %> to <%= Math.min(currentPage * 10, totalOrders) %>
-                        of <%= totalOrders %> results
+                                of <%= totalOrders %> results
                     </div>
                     <nav>
                         <ul class="pagination">
                             <!-- Previous -->
                             <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
                                 <a class="page-link"
-                                    href="/admin/ordermanagement?page=<%= currentPage - 1 %>&search=<%= encodeURIComponent(search) %>&status=<%= encodeURIComponent(status) %>&sort=<%= encodeURIComponent(sort) %>">
+                                    href="/order?page=<%= currentPage - 1 %>&search=<%= encodeURIComponent(search) %>&status=<%= encodeURIComponent(status) %>&sort=<%= encodeURIComponent(sort) %>">
                                     <i class="fas fa-chevron-left"></i> Previous
                                 </a>
                             </li>
 
                             <!-- Page Numbers -->
-                            <% for (let i = 1; i <= totalPages; i++) { %>
+                            <% for (let i=1; i <=totalPages; i++) { %>
                                 <li class="page-item <%= currentPage === i ? 'active' : '' %>">
                                     <a class="page-link"
-                                        href="/admin/ordermanagement?page=<%= i %>&search=<%= encodeURIComponent(search) %>&status=<%= encodeURIComponent(status) %>&sort=<%= encodeURIComponent(sort) %>">
+                                        href="/order?page=<%= i %>&search=<%= encodeURIComponent(search) %>&status=<%= encodeURIComponent(status) %>&sort=<%= encodeURIComponent(sort) %>">
                                         <%= i %>
                                     </a>
                                 </li>
-                            <% } %>
+                                <% } %>
 
-                            <!-- Next -->
-                            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-                                <a class="page-link"
-                                    href="/admin/ordermanagement?page=<%= currentPage + 1 %>&search=<%= encodeURIComponent(search) %>&status=<%= encodeURIComponent(status) %>&sort=<%= encodeURIComponent(sort) %>">
-                                    Next <i class="fas fa-chevron-right"></i>
-                                </a>
-                            </li>
+                                    <!-- Next -->
+                                    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                        <a class="page-link"
+                                            href="/order?page=<%= currentPage + 1 %>&search=<%= encodeURIComponent(search) %>&status=<%= encodeURIComponent(status) %>&sort=<%= encodeURIComponent(sort) %>">
+                                            Next <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </li>
                         </ul>
                     </nav>
                 </div>
@@ -1113,7 +1135,7 @@
                                 'Cancelled': 'badge-cancelled',
                                 'Ordered': 'badge-processing'
                             };
-                            
+
                             statusBadge.className = `status-badge ${statusBadgeMap[newStatus] || 'badge-processing'}`;
                             statusBadge.textContent = statusText;
                             this.closest('.status-dropdown').classList.remove('show');
@@ -1163,4 +1185,5 @@
         });
     </script>
 </body>
+
 </html>

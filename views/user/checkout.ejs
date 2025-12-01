@@ -634,6 +634,12 @@
                                             </div>
                                         </div>
                                         <% } %>
+                                         <div id="couponApplied" class="bg-green-50 border border-blue-200 rounded-lg p-3 mt-4" style="display: none;">
+                                            <div class="flex items-center text-blue-800">
+                                                <i class="fas fa-check-circle mr-2"></i>
+                                                <span class="font-medium">"You have used a coupon on this order. Please note that returning or cancelling items may void or reduce your coupon benefits; therefore, these options may not be available once a coupon has been applied."</span>
+                                            </div>
+                                        </div>
                 </div>
 
                 <!-- Delivery Address -->
@@ -951,6 +957,7 @@
                         </div>
                         <% } %>
 
+
                             <div class="mt-6">
                                 <h4 class="text-base font-medium mb-2">Apply Coupon</h4>
                                 <div class="flex">
@@ -960,8 +967,16 @@
                                     <button
                                         class="coupenButton bg-rc-red text-white px-4 py-3 rounded-r-md font-semibold hover:bg-rc-dark-red transition-colors"
                                         onclick="applyCoupon()" aria-label="Apply coupon">Apply</button>
+
                                 </div>
-                                <small id="couponMessage" class="text-rc-gray mt-2 block"></small>
+                                <button id="removeCouponBtn"
+                                    class="px-4 py-2 ml-36 bg-white-600 text-black font-semibold mt-4 rounded-md shadow hover:bg-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
+                                    style="margin-left: 9rem;display:none;">
+                                    Remove Coupon
+                                </button>
+
+
+                                <small id="couponMessage" class="text-rc-gray mt-2  block"></small>
                             </div>
 
                             <!-- Enhanced Coupons Display -->
@@ -1189,6 +1204,9 @@
     </footer>
 
     <script>
+
+     let couponBoolen= false
+        
         function selectCoupon(couponCode) {
             document.getElementById('couponInput').value = couponCode;
         }
@@ -1422,7 +1440,9 @@
             if (data.success) {
                 // show the div only when success
                 document.getElementById("couponDiv").style.display = "flex";
-
+                document.getElementById("removeCouponBtn").style.display = "flex";
+                 document.getElementById("couponApplied").style.display = "flex";
+                 couponBoolen =true
                 showToast(data.success, 'success');
 
                 const el = document.getElementById('total-price');
@@ -1439,12 +1459,57 @@
             } else {
                 // keep hidden if not success
                 document.getElementById("couponDiv").style.display = "none";
+                document.getElementById("removeCouponBtn").style.display = "none";
+                couponBoolen =false
             }
 
             if (data.fail) {
                 showToast(data.fail, 'error');
+                couponBoolen = false
             }
         }
+
+        document.getElementById('removeCouponBtn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/removeCoupen', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Hide coupon applied div
+                    document.getElementById('couponDiv').style.display = 'none';
+                    couponBoolen = false
+                    // Reset the total price display - fetch original total price or reload checkout
+                    const el = document.getElementById('total-price');
+                    el.dataset.total = el.dataset.originalTotal || el.dataset.total; // Restore original total if stored
+                    el.textContent = "₹" + Number(el.dataset.total).toLocaleString("en-IN");
+
+                    // Reset coupon applied text
+                    document.getElementById("coupenAppled").innerHTML = "";
+
+                    // Enable the coupon apply button again
+                    const btn = document.querySelector(".coupenButton");
+                    btn.disabled = false;
+                    btn.textContent = "Apply Coupon";
+
+                    // Show success toast or message
+                    showToast(data.message || 'Coupon removed', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    },1000);
+                    
+                } else {
+                    showToast(data.error || 'Failed to remove coupon', 'error');
+                }
+            } catch (error) {
+                console.error('Error removing coupon:', error);
+                showToast('Server error removing coupon', 'error');
+            }
+        });
+
 
         // Address Management
         let currentEditId = null;
@@ -1935,7 +2000,8 @@
                         total,
                         productId,
                         orderdperson,
-                        couponName
+                        couponName,
+                        couponBoolen,
                     })
                 });
                 const data = await res.json();
@@ -1972,6 +2038,7 @@
                                         productId,
                                         orderdperson,
                                         couponName,
+                                        couponBoolen,
                                         razorpayPaymentId: response.razorpay_payment_id,
                                         razorpayOrderId: response.razorpay_order_id,
                                         razorpaySignature: response.razorpay_signature

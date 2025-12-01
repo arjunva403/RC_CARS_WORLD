@@ -798,10 +798,10 @@
                 <i class="fas fa-chart-line"></i>
               </div>
             </div>
-            <div class="stat-value">₹1,25,000</div>
+            <div class="stat-value">₹ <%=totalSales %>
+            </div>
             <div class="stat-change positive">
               <i class="fas fa-arrow-up"></i>
-              <span>+12.5% from last month</span>
             </div>
           </div>
 
@@ -812,10 +812,12 @@
                 <i class="fas fa-shopping-cart"></i>
               </div>
             </div>
-            <div class="stat-value">215</div>
+            <div class="stat-value">
+              <%=allorders %>
+            </div>
             <div class="stat-change positive">
               <i class="fas fa-arrow-up"></i>
-              <span>+8.3% from last month</span>
+
             </div>
           </div>
 
@@ -826,10 +828,11 @@
                 <i class="fas fa-rupee-sign"></i>
               </div>
             </div>
-            <div class="stat-value">₹2,40,500</div>
+            <div class="stat-value">₹ <%=totalRevenue %>
+            </div>
             <div class="stat-change positive">
               <i class="fas fa-arrow-up"></i>
-              <span>+15.2% from last month</span>
+
             </div>
           </div>
 
@@ -840,10 +843,11 @@
                 <i class="fas fa-calculator"></i>
               </div>
             </div>
-            <div class="stat-value">₹1,119</div>
+            <div class="stat-value">₹ <%=averageOrder %>
+            </div>
             <div class="stat-change positive">
               <i class="fas fa-arrow-up"></i>
-              <span>+6.8% from last month</span>
+
             </div>
           </div>
         </div>
@@ -868,63 +872,58 @@
       </section>
 
       <!-- Enhanced Controls Section -->
-      <section class="controls-section">
-        <div class="controls-header">
-          <h3 class="controls-title">
-            <i class="fas fa-filter"></i>
-            Filter & Export Options
-          </h3>
-        </div>
-
+      <form id="filterForm" action="/saleReport" method="GET">
         <div class="filter-section">
           <div class="filter-group">
-            <label class="filter-label">Date Range</label>
-            <input type="date" class="filter-input" id="startDate">
+            <label class="filter-label" for="startDate">Date Range</label>
+            <input type="date" id="startDate" name="startDate" class="filter-input"
+              value="<%= filters?.startDate || '' %>">
           </div>
           <div class="filter-group">
-            <label class="filter-label">To Date</label>
-            <input type="date" class="filter-input" id="endDate">
+            <label class="filter-label" for="endDate">To Date</label>
+            <input type="date" id="endDate" name="endDate" class="filter-input" value="<%= filters?.endDate || '' %>">
           </div>
           <div class="filter-group">
-            <label class="filter-label">Category</label>
-            <select class="filter-input">
+            <label class="filter-label" for="category">Category</label>
+            <select id="category" name="category" class="filter-input">
               <option value="">All Categories</option>
-              <option value="cars">RC Cars</option>
-              <option value="drones">RC Drones</option>
-              <option value="boats">RC Boats</option>
-              <option value="helicopters">RC Helicopters</option>
+              <option value="cars" <%=filters?.category==='cars' ? 'selected' : '' %>>RC Cars</option>
+              <option value="drones" <%=filters?.category==='drones' ? 'selected' : '' %>>RC Drones</option>
+              <option value="boats" <%=filters?.category==='boats' ? 'selected' : '' %>>RC Boats</option>
+              <option value="helicopters" <%=filters?.category==='helicopters' ? 'selected' : '' %>>RC Helicopters
+              </option>
             </select>
           </div>
           <div class="filter-group">
-            <label class="filter-label">Status</label>
-            <select class="filter-input">
+            <label class="filter-label" for="status">Status</label>
+            <select id="status" name="status" class="filter-input">
               <option value="">All Status</option>
-              <option value="completed">Completed</option>
-              <option value="pending">Pending</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="Completed" <%=filters?.status==='Completed' ? 'selected' : '' %>>Completed</option>
+              <option value="Pending" <%=filters?.status==='Pending' ? 'selected' : '' %>>Pending</option>
+              <option value="Cancelled" <%=filters?.status==='Cancelled' ? 'selected' : '' %>>Cancelled</option>
             </select>
           </div>
           <div class="filter-group">
-            <label class="filter-label">Search</label>
-            <input type="text" class="filter-input" placeholder="Product, Customer, Order ID...">
+            <label class="filter-label" for="search">Search</label>
+            <input type="text" id="search" name="search" placeholder="Product, Customer, Order ID..."
+              class="filter-input" value="<%= filters?.search || '' %>">
           </div>
         </div>
 
         <div class="action-buttons">
-          <button class="btn btn-primary" onclick="applyFilters()">
-            <i class="fas fa-search"></i>
-            Apply Filters
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search"></i> Apply Filters
           </button>
-          <button class="btn btn-outline-primary" onclick="clearFilters()">
-            <i class="fas fa-times"></i>
-            Clear Filters
+          <button type="button" class="btn btn-outline-primary" onclick="clearFilters()">
+            <i class="fas fa-times"></i> Clear Filters
           </button>
-          <button class="btn btn-success" onclick="exportReport()">
-            <i class="fas fa-download"></i>
-            Export Report
+          <button type="button" class="btn btn-success" onclick="exportReport()">
+            <i class="fas fa-download"></i> Export Report
           </button>
         </div>
-      </section>
+      </form>
+
+
 
       <!-- Enhanced Table Section -->
       <section class="table-section">
@@ -1044,27 +1043,36 @@
 
         <div class="pagination-section">
           <div class="pagination">
-            <button class="page-btn" disabled>
+            <a href="/saleReport?page=<%= currentPage - 1 %>&startDate=<%= filters.startDate || '' %>&endDate=<%= filters.endDate || '' %>&category=<%= filters.category || '' %>&status=<%= filters.status || '' %>&search=<%= encodeURIComponent(filters.search || '') %>"
+              class="page-btn <%= currentPage === 1 ? 'disabled' : '' %>">
               <i class="fas fa-chevron-left"></i> Previous
-            </button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <button class="page-btn">
-              Next <i class="fas fa-chevron-right"></i>
-            </button>
+            </a>
+
+            <% for(let i=1; i <=totalPages; i++) { %>
+              <a href="/saleReport?page=<%= i %>&startDate=<%= filters.startDate || '' %>&endDate=<%= filters.endDate || '' %>&category=<%= filters.category || '' %>&status=<%= filters.status || '' %>&search=<%= encodeURIComponent(filters.search || '') %>"
+                class="page-btn <%= currentPage === i ? 'active' : '' %>">
+                <%= i %>
+              </a>
+              <% } %>
+
+                <a href="/saleReport?page=<%= currentPage + 1 %>&startDate=<%= filters.startDate || '' %>&endDate=<%= filters.endDate || '' %>&category=<%= filters.category || '' %>&status=<%= filters.status || '' %>&search=<%= encodeURIComponent(filters.search || '') %>"
+                  class="page-btn <%= currentPage === totalPages ? 'disabled' : '' %>">
+                  Next <i class="fas fa-chevron-right"></i>
+                </a>
           </div>
         </div>
+
+
       </section>
     </div>
   </main>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      // Initialize Chart
       initializeSalesChart();
+      loadChartData('monthly'); // Load default data on page load
 
-      // Add loading animation on page load
+      // Loading animation (your current code)
       const sections = document.querySelectorAll('.stats-section, .chart-section, .controls-section, .table-section');
       sections.forEach((section, index) => {
         section.style.opacity = '0';
@@ -1082,7 +1090,7 @@
         tab.addEventListener('click', function () {
           chartTabs.forEach(t => t.classList.remove('active'));
           this.classList.add('active');
-          updateChart(this.dataset.period);
+          loadChartData(this.dataset.period);
         });
       });
     });
@@ -1091,21 +1099,20 @@
 
     function initializeSalesChart() {
       const ctx = document.getElementById('salesChart').getContext('2d');
-
       salesChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          labels: [], // Start empty
           datasets: [{
             label: 'Sales (₹)',
-            data: [45000, 52000, 48000, 61000, 55000, 67000],
+            data: [],
             borderColor: '#e74c3c',
             backgroundColor: 'rgba(231, 76, 60, 0.1)',
             tension: 0.4,
             fill: true
           }, {
             label: 'Orders',
-            data: [45, 52, 48, 61, 55, 67],
+            data: [],
             borderColor: '#28a745',
             backgroundColor: 'rgba(40, 167, 69, 0.1)',
             tension: 0.4,
@@ -1144,25 +1151,25 @@
       });
     }
 
-    function updateChart(period) {
-      let newData, newLabels;
+    // Fetch data from backend API and update chart
+    async function loadChartData(period) {
+      try {
+        const res = await fetch(`/api/sales-data?period=${period}`);
+        if (!res.ok) {
+          throw new Error('Failed to fetch chart data');
+        }
+        const data = await res.json();
 
-      if (period === 'daily') {
-        newLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        newData = [[8000, 12000, 9500, 14000, 11000, 16000, 13000], [8, 12, 9, 14, 11, 16, 13]];
-      } else if (period === 'weekly') {
-        newLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-        newData = [[45000, 52000, 48000, 61000], [45, 52, 48, 61]];
-      } else {
-        newLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-        newData = [[45000, 52000, 48000, 61000, 55000, 67000], [45, 52, 48, 61, 55, 67]];
+        salesChart.data.labels = data.labels;
+        salesChart.data.datasets[0].data = data.salesData;
+        salesChart.data.datasets[1].data = data.ordersData;
+        salesChart.update();
+      } catch (error) {
+        console.error('Error loading sales data:', error);
+        // Optionally, show a user-friendly message or fallback data here
       }
-
-      salesChart.data.labels = newLabels;
-      salesChart.data.datasets[0].data = newData[0];
-      salesChart.data.datasets[1].data = newData[1];
-      salesChart.update();
     }
+
 
     function applyFilters() {
       Swal.fire({
@@ -1187,24 +1194,15 @@
     }
 
     function clearFilters() {
-      document.querySelectorAll('.filter-input').forEach(input => {
-        input.value = '';
-      });
-
-      Swal.fire({
-        title: 'Filters Cleared!',
-        text: 'All filters have been reset.',
-        icon: 'success',
-        confirmButtonColor: '#e74c3c',
-        timer: 1500,
-        showConfirmButton: false
-      });
+      const form = document.getElementById("filterForm");
+      form.reset();
+      window.location.href = "/saleReport";
     }
 
     function exportReport() {
       Swal.fire({
-        title: 'Export Format',
-        text: 'Choose your preferred export format:',
+        title: 'Choose Export Format',
+        text: 'Select format to export your sales report.',
         icon: 'question',
         showCancelButton: true,
         showDenyButton: true,
@@ -1214,22 +1212,28 @@
         confirmButtonColor: '#28a745',
         denyButtonColor: '#dc3545'
       }).then((result) => {
+        // Collect filter parameters from form inputs dynamically for export URL
+        const form = document.getElementById("filterForm");
+        const params = new URLSearchParams(new FormData(form)).toString();
+
         if (result.isConfirmed) {
           Swal.fire({
             title: 'Exporting to Excel...',
-            text: 'Your report is being prepared.',
             icon: 'info',
             timer: 2000,
             showConfirmButton: false
           });
+          // Redirect to export Excel endpoint with current filters
+          window.location.href = `/saleReport/export/excel?${params}`;
         } else if (result.isDenied) {
           Swal.fire({
             title: 'Exporting to PDF...',
-            text: 'Your report is being prepared.',
             icon: 'info',
             timer: 2000,
             showConfirmButton: false
           });
+          // Redirect to export PDF endpoint with current filters
+          window.location.href = `/saleReport/export/pdf?${params}`;
         }
       });
     }
