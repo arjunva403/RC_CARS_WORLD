@@ -1091,9 +1091,7 @@
                     <i class="fas fa-list"></i>
                     Order Items with Quantity Management
                     <div class="ms-auto">
-                        <button class="btn btn-sm btn-outline-primary" onclick="toggleSelectAll()">
-                            <i class="fas fa-check-square"></i> Select All
-                        </button>
+              
                     </div>
                 </h3>
 
@@ -1123,13 +1121,13 @@
                         <thead>
                             <tr>
                                 <th width="40">
-                                    <input type="checkbox" id="selectAllItems" onchange="toggleSelectAll()">
+                                
                                 </th>
                                 <th><i class="fas fa-tag me-2"></i>Product</th>
                                 <th><i class="fas fa-sort-numeric-up me-2"></i>Quantities</th>
                                 <th><i class="fas fa-rupee-sign me-2"></i>Price</th>
                                 <th><i class="fas fa-truck me-2"></i>Status</th>
-                                <th><i class="fas fa-cogs me-2"></i>Actions</th>
+                              
                             </tr>
                         </thead>
                         <tbody>
@@ -1202,49 +1200,16 @@
                                                     title="View cancellation reason"></i>
                                                 <% } %>
                                                     <% if (item.returnReason && item.returnReason !=='none' ) { %>
-                                                        <i class="fas fa-undo message-icon text-warning"
-                                                            onclick="validateReturnReason('<%= item._id %>', '<%= item.productId.productName %>', '<%= item.returnReason %>', '<%= order._id %>','<%= item.returnedQuantity%>')"
-                                                            title="Validate return reason"></i>
-                                                        <% } %>
-                                    </td>
-                                    <td>
-                                        <div class="item-actions">
-                                            <button class="action-btn action-btn-primary"
-                                                onclick="updateItemStatus('<%= item._id %>', '<%= item.productId.productName %>')">
-                                                <i class="fas fa-edit"></i> Update
-                                            </button>
-
-                                            <% if ((item.status || 'pending' ).toLowerCase()==='return request' ) { %>
-                                                <div class="d-flex gap-1">
-                                                    <button class="action-btn action-btn-success"
-                                                        onclick="processReturnRequest('Accept', '<%= item._id %>', '<%= order._id %>', '<%= item.productId.productName %>')">
-                                                        <i class="fas fa-check"></i> Accept
-                                                    </button>
-                                                    <button class="action-btn action-btn-danger"
-                                                        onclick="processReturnRequest('Reject', '<%= item._id %>', '<%= order._id %>', '<%= item.productId.productName %>')">
-                                                        <i class="fas fa-times"></i> Reject
-                                                    </button>
-                                                </div>
-                                                <% } %>
-
-                                                    <% if (activeQty> 0 && ((item.status || 'pending').toLowerCase() ===
-                                                        'pending' || (item.status || 'pending').toLowerCase() ===
-                                                        'processing')) { %>
-                                                        <button class="action-btn action-btn-success"
-                                                            onclick="markAsShipped('<%= item._id %>', '<%= item.productId.productName %>')">
-                                                            <i class="fas fa-shipping-fast"></i> Ship
-                                                        </button>
-                                                        <% } %>
-
-                                                            <% if (activeQty> 0 && (item.status ||
-                                                                'pending').toLowerCase() === 'shipped') { %>
-                                                                <button class="action-btn action-btn-success"
-                                                                    onclick="markAsDelivered('<%= item._id %>', '<%= item.productId.productName %>')">
-                                                                    <i class="fas fa-check-circle"></i> Deliver
-                                                                </button>
+                                                        <% if (item.status !=='Returned' && item.status
+                                                            !=='Return Rejected' ) { %>
+                                                            <i class="fas fa-undo message-icon text-warning"
+                                                                onclick="validateReturnReason('<%= item._id %>', '<%= item.productId.productName %>', '<%= item.returnReason %>', '<%= order._id %>', '<%= item.returnedQuantity %>')"
+                                                                title="Validate return reason"></i>
+                                                            <% } %>
                                                                 <% } %>
-                                        </div>
+
                                     </td>
+                                    
                                 </tr>
                                 <% }); %>
                         </tbody>
@@ -1311,10 +1276,6 @@
                     <i class="fas fa-download"></i>
                     Export Order Data
                 </button>
-                <button class="btn btn-outline-primary" onclick="cancelEntireOrder()">
-                    <i class="fas fa-times"></i>
-                    Cancel Order
-                </button>
                 <button class="btn btn-outline-primary" onclick="window.history.back()">
                     <i class="fas fa-arrow-left"></i>
                     Back to Orders
@@ -1322,7 +1283,7 @@
             </div>
         </div>
     </main>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -1467,7 +1428,7 @@
             showLoadingMessage(`${action}ing Return Request`, `Processing return validation for ${productName}...`);
 
             try {
-                const response = await fetch('returnStatus', {
+                const response = await fetch('/returnStatus', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1477,7 +1438,7 @@
                         productName: productName,
                         returnReason: returnReason,
                         returnQty: returnQty,
-                        adminDecision: action === 'Accept' ? 'valid' : 'invalid'
+                        adminDecision: action
                     })
                 });
 
@@ -1498,55 +1459,6 @@
             }
         }
 
-        // Individual Item Management Functions
-        async function updateItemStatus(itemId, productName) {
-            const { value: newStatus } = await Swal.fire({
-                title: `<strong><i class="fas fa-edit"></i> Update Item Status</strong>`,
-                html: `<div style="text-align:left;margin-top:1rem;">
-                        <p style="margin-bottom:1rem;"><strong><i class="fas fa-box"></i> Product:</strong> ${productName}</p>
-                        <p style="margin-bottom:1rem;"><i class="fas fa-info-circle"></i> Select the new status for this item:</p>
-                       </div>`,
-                input: 'select',
-                inputOptions: {
-                    'Pending': '⏳ Pending',
-                    'Processing': '⚙️ Processing',
-                    'Shipped': '🚚 Shipped',
-                    'Delivered': '📦 Delivered',
-                    'Cancelled': '❌ Cancelled'
-                },
-                inputPlaceholder: '📋 Choose new status...',
-                showCancelButton: true,
-                confirmButtonText: '<i class="fas fa-save"></i> Update Status',
-                inputValidator: (value) => !value && 'Please select a status!'
-            });
-
-            if (newStatus) {
-                showLoadingMessage('Updating Status', `Updating ${productName} status...`);
-
-                try {
-                    const response = await fetch('/updateStatus', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            itemId: itemId,
-                            status: newStatus,
-                            orderId: '<%= order._id %>'
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        showSuccessMessage('Status Updated!', `${productName} status updated to ${newStatus}`);
-                        setTimeout(() => location.reload(), 2000);
-                    } else {
-                        showErrorMessage('Update Failed', data.message || 'Failed to update status');
-                    }
-                } catch (error) {
-                    showErrorMessage('Network Error', 'Please check your connection and try again');
-                }
-            }
-        }
 
         async function processReturnRequest(action, itemId, orderId, productName) {
             showLoadingMessage(`${action}ing Return Request`, `Processing return request for ${productName}...`);
@@ -1770,101 +1682,16 @@
                     <p class="reason-text">${cancellationreason}</p>
                      <p style="margin-bottom:1rem;"><strong>Cancelled Qty:</strong> ${cancellationQty}</p>
                 </div>
-                <p style="margin-bottom:0;color: rgba(255, 255, 255, 0.8);"><i class="fas fa-info-circle"></i> Please review the cancellation reason and decide whether to accept or reject this cancellation request.</p>
-            </div>
-        `,
-                width: '600px',
-                showCancelButton: true,
-                confirmButtonText: '<i class="fas fa-check"></i> Accept Cancellation',
-                cancelButtonText: '<i class="fas fa-times"></i> Reject Cancellation',
-                reverseButtons: true,
-                customClass: {
-                    popup: 'reason-validation-modal'
-                },
-                showDenyButton: false,
-                allowOutsideClick: false
-            });
-
-            if (result.isConfirmed) {
-                await processcancellationValidation('Accept', itemId, productName, orderId, cancellationreason, cancellationQty);
-            } else if (result.isDismissed && result.dismiss === Swal.DismissReason.cancel) {
-                await processcancellationValidation('Reject', itemId, productName, orderId, cancellationreason, cancellationQty);
-            }
-        }
-        async function showItemReason(itemId, productName, orderId, cancellationreason, cancellationQty) {
-            const result = await Swal.fire({
-                title: `<strong><i class="fas fa-clipboard-check"></i> Cancellation Reason Validation</strong>`,
-                html: `
-            <div style="text-align:left;margin-top:1rem;">
-                <p style="margin-bottom:1rem;"><strong><i class="fas fa-box"></i> Product:</strong> ${productName}</p>
                
-                <div class="reason-display-box">
-                    <p style="margin-bottom:0.5rem;"><strong><i class="fas fa-comment-alt"></i> Customer Cancellation Reason:</strong></p>
-                    <p class="reason-text">${cancellationreason}</p>
-                     <p style="margin-bottom:1rem;"><strong>Cancelled Qty:</strong> ${cancellationQty}</p>
-                </div>
-                <p style="margin-bottom:0;color: rgba(255, 255, 255, 0.8);"><i class="fas fa-info-circle"></i> Please review the cancellation reason and decide whether to accept or reject this cancellation request.</p>
             </div>
         `,
                 width: '600px',
-                showCancelButton: true,
-                confirmButtonText: '<i class="fas fa-check"></i> Accept Cancellation',
-                cancelButtonText: '<i class="fas fa-times"></i> Reject Cancellation',
-                reverseButtons: true,
-                customClass: {
-                    popup: 'reason-validation-modal'
-                },
-                showDenyButton: false,
-                allowOutsideClick: false
+
             });
 
-            if (result.isConfirmed) {
-                await processcancellationValidation('Accept', itemId, productName, orderId, cancellationreason, cancellationQty);
-            } else if (result.isDismissed && result.dismiss === Swal.DismissReason.cancel) {
-                await processcancellationValidation('Reject', itemId, productName, orderId, cancellationreason, cancellationQty);
-            }
+           
         }
-
-
-        // Enhanced Return Request Processing with Validation
-        async function processcancellationValidation(action, itemId, productName, orderId, cancellationreason, cancellationQty) {
-            showLoadingMessage(`${action}ing Cancellation Request`, `Processing cancellation validation for ${productName}...`);
-
-            try {
-                const response = await fetch('/cancellationStatus', { // Fixed: Added proper path
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: action,
-                        itemId: itemId,
-                        productName: productName,
-                        orderId: orderId,
-                        cancellationReason: cancellationreason,
-                        cancellationQty: cancellationQty,
-                        adminDecision: action === 'Accept' ? 'valid' : 'invalid'
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showSuccessMessage(
-                        `Cancellation Request ${action}ed!`,
-                        `${productName} cancellation request has been ${action.toLowerCase()}ed successfully. ${action === 'Accept' ? 'Refund will be processed within 3-5 business days.' : 'Customer has been notified about the rejection.'}`
-                    );
-                    setTimeout(() => location.reload(), 2000);
-                } else {
-                    showErrorMessage('Processing Failed', data.message || `Failed to ${action.toLowerCase()} cancellation request`);
-                }
-            } catch (error) {
-                console.error('Cancellation validation error:', error);
-                showErrorMessage('Network Error', 'Unable to process request. Please try again.');
-            }
-        }
-
-
-
-
+       
         function exportOrderData() {
             showSuccessMessage('Export Started!', 'Order data export has been initiated. Download will begin shortly.');
             // Add actual export functionality here

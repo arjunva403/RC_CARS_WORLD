@@ -3,7 +3,7 @@ function check(req, res, next) {
        if(req.session.admin) {
            return next()
        }
-        res.redirect("/")
+        res.redirect("/admin")
     }catch(error){
        console.error(error.message)
         res.status(500).send("Server Error");

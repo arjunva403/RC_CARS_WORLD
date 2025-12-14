@@ -1008,11 +1008,10 @@
                                             </button>
                                             <div class="status-dropdown">
                                                 <div class="status-option" data-status="Delivered">Delivered</div>
+                                                <div class="status-option" data-status='Out For Delivery'>Out For Delivery</div>
                                                 <div class="status-option" data-status="Shipped">Shipped</div>
                                                 <div class="status-option" data-status="Ordered">Ordered</div>
                                                 <div class="status-option" data-status="Pending">Pending</div>
-                                                <div class="status-option" data-status="partially cancelled">partially
-                                                    cancelled</div>
                                                 <div class="status-option" data-status="Cancelled">Cancelled</div>
                                             </div>
                                         </div>
@@ -1130,6 +1129,7 @@
                             // Update UI
                             const statusBadgeMap = {
                                 'Delivered': 'badge-delivered',
+                                'Out For Delivery':'Out For Delivery',
                                 'Shipped': 'badge-shipped',
                                 'Pending': 'badge-pending',
                                 'Cancelled': 'badge-cancelled',

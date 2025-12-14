@@ -121,10 +121,10 @@
         <!-- Left Sidebar -->
         <aside class="w-full lg:w-1/4 bg-white shadow-md rounded-lg p-6">
             <div class="flex items-center p-4 mb-6 bg-rc-light-gray rounded-lg">
-                <div class="w-16 h-16 bg-rc-red rounded-full flex items-center justify-center text-white text-xl font-bold mr-4">A</div>
+                <div class="w-16 h-16 bg-rc-red rounded-full flex items-center justify-center text-white text-xl font-bold mr-4">  <%= users.firstName ? users.firstName.charAt(0).toUpperCase() : 'U' %></div>
                 <div>
                     <p class="text-rc-gray">Hello,</p>
-                    <p class="font-semibold text-lg font-aldrich">Arjun</p>
+                    <p class="font-semibold text-lg font-aldrich"><%= users.firstName %></p>
                 </div>
             </div>
             <nav>
@@ -455,7 +455,7 @@
             </div>
 
             <!-- Delivery Status Tracker -->
-            <div class="bg-rc-light-gray rounded-lg p-6 mb-8">
+            <div id="orderTracker" class="bg-rc-light-gray rounded-lg p-6 mb-8">
                 <h3 class="text-lg font-semibold mb-6 flex items-center">
                     <i class="fas fa-truck text-rc-red mr-2"></i>
                     Delivery Status
@@ -522,6 +522,73 @@
                 </div>
                 <% } %>
             </div>
+
+            <!-- Return Status Tracker -->
+<div id="returnTracker" class="bg-rc-light-gray rounded-lg p-6 mb-8" style="display: none;">
+  <h3 class="text-lg font-semibold mb-6 flex items-center">
+    <i class="fas fa-undo text-rc-red mr-2"></i>
+    Return Status
+  </h3>
+  <div class="relative return-tracker">
+    <div class="progress-line"></div>
+    <div class="flex justify-between relative">
+      <%
+        // Mapping return related statuses to steps
+        const returnStatusMap = {
+          'pending': 0,
+          'return request': 1,
+          'partially returned': 2,
+          'returned': 3,
+          'return rejected': -1
+        };
+        const currentReturnStatus = (order.orderStatus || '').toLowerCase();
+        const currentReturnStep = returnStatusMap[currentReturnStatus] ?? 0;
+        const returnSteps = [
+          { name: 'No Return', icon: 'fas fa-box' },
+          { name: 'Return Requested', icon: 'fas fa-clipboard-list' },
+          { name: 'Return Processing', icon: 'fas fa-warehouse' },
+          { name: 'Returned', icon: 'fas fa-check-circle' }
+        ];
+      %>
+      <% returnSteps.forEach((step, index) => {
+          let stepClass = '';
+          if (currentReturnStep === -1) {
+            stepClass = '';
+          } else if (index < currentReturnStep) {
+            stepClass = 'completed';
+          } else if (index === currentReturnStep) {
+            stepClass = 'active';
+          }
+      %>
+      <div class="progress-step flex flex-col items-center text-center <%= stepClass %>">
+        <div class="w-12 h-12 rounded-full flex items-center justify-center text-white mb-2 <%= stepClass === 'completed' ? 'bg-green-600' : stepClass === 'active' ? 'bg-rc-red' : 'bg-rc-gray' %>">
+          <i class="<%= step.icon %>"></i>
+        </div>
+        <div class="text-sm font-medium <%= stepClass ? 'text-black' : 'text-rc-gray' %>">
+          <%= step.name %>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <% if (currentReturnStatus === 'return rejected') { %>
+  <div class="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+    <p class="text-red-700 font-semibold">
+      <i class="fas fa-exclamation-triangle mr-2"></i>
+      Your return request has been rejected.
+    </p>
+  </div>
+  <% } else if (currentReturnStatus === 'returned' || currentReturnStatus === 'partially returned') { %>
+  <div class="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+    <p class="text-green-700 text-sm">
+      <i class="fas fa-info-circle mr-2"></i>
+      Refund is being processed or completed as per policy.
+    </p>
+  </div>
+  <% } %>
+</div>
+
 
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-4">
@@ -788,354 +855,330 @@
     </footer>
 
     <!-- JavaScript Functions -->
-    <script>
-        // Global variables
-        let selectedItemData = null;
+  <script>
+    // Global variables
+    let selectedItemData = null;
+    const currentOrderStatus = '<%= (order.orderStatus || "").toLowerCase() %>';
 
-        // Toast Notification Function
-        function showToast(message, type = 'success') {
-            const toastContainer = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `flex items-center gap-2 px-5 py-3 mb-3 rounded-lg text-white font-medium shadow-lg opacity-0 transform -translate-y-5 transition-all duration-300 ${type === 'success' ? 'bg-rc-success' : 'bg-rc-error'}`;
-            toast.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-                ${message}
-                <button class="ml-auto text-white text-lg" onclick="this.parentElement.remove()">×</button>
-            `;
-            toastContainer.appendChild(toast);
-            requestAnimationFrame(() => toast.classList.add('opacity-100', 'translate-y-0'));
-            setTimeout(() => {
-                toast.classList.remove('opacity-100', 'translate-y-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+    // Toast Notification Function
+    function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `flex items-center gap-2 px-5 py-3 mb-3 rounded-lg text-white font-medium shadow-lg opacity-0 transform -translate-y-5 transition-all duration-300 ${type === 'success' ? 'bg-rc-success' : 'bg-rc-error'}`;
+        toast.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+            ${message}
+            <button class="ml-auto text-white text-lg" onclick="this.parentElement.remove()">×</button>
+        `;
+        toastContainer.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add('opacity-100', 'translate-y-0'));
+        setTimeout(() => {
+            toast.classList.remove('opacity-100', 'translate-y-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
+    // Toggle visibility between delivery and return trackers
+    function toggleTrackers() {
+        const orderTracker = document.getElementById('orderTracker');
+        const returnTracker = document.getElementById('returnTracker');
+
+        if (!orderTracker || !returnTracker) return;
+
+        const showReturnStatuses = [
+            'return request', 'partially returned', 'returned',
+            'return rejected', 'return accepted', 'partially return request'
+        ];
+
+        if (showReturnStatuses.includes(currentOrderStatus)) {
+            orderTracker.style.display = 'none';
+            returnTracker.style.display = 'block';
+        } else {
+            orderTracker.style.display = 'block';
+            returnTracker.style.display = 'none';
+        }
+    }
+
+    // Modal functions with quantity setup
+    function openReturnModal(itemId, maxQuantity) {
+        selectedItemData = { itemId, maxQuantity, type: 'individual' };
+        const quantityInput = document.getElementById('returnQuantity');
+        const maxQtySpan = document.getElementById('maxReturnQty');
+        quantityInput.max = maxQuantity;
+        quantityInput.value = Math.min(1, maxQuantity);
+        maxQtySpan.textContent = maxQuantity;
+
+        const modal = document.getElementById('returnModal');
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => document.getElementById('returnReason').focus(), 300);
+    }
+
+    function openCancelModal(itemId, maxQuantity) {
+        selectedItemData = { itemId, maxQuantity, type: 'individual' };
+        const quantityInput = document.getElementById('cancelQuantity');
+        const maxQtySpan = document.getElementById('maxCancelQty');
+        quantityInput.max = maxQuantity;
+        quantityInput.value = Math.min(1, maxQuantity);
+        maxQtySpan.textContent = maxQuantity;
+
+        const modal = document.getElementById('cancelModal');
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => document.getElementById('cancelReason').focus(), 300);
+    }
+
+    function openBulkReturnModal() {
+        selectedItemData = { type: 'bulk' };
+        const modal = document.getElementById('bulkReturnModal');
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => document.getElementById('bulkReturnReason').focus(), 300);
+    }
+
+    function openBulkCancelModal() {
+        selectedItemData = { type: 'bulk' };
+        const modal = document.getElementById('bulkCancelModal');
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => document.getElementById('bulkCancelReason').focus(), 300);
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+
+        if (modalId === 'returnModal') {
+            document.getElementById('returnReason').value = '';
+            document.getElementById('returnQuantity').value = '1';
+        } else if (modalId === 'cancelModal') {
+            document.getElementById('cancelReason').value = '';
+            document.getElementById('cancelQuantity').value = '1';
+        } else if (modalId === 'bulkReturnModal') {
+            document.getElementById('bulkReturnReason').value = '';
+        } else if (modalId === 'bulkCancelModal') {
+            document.getElementById('bulkCancelReason').value = '';
+        }
+        selectedItemData = null;
+    }
+
+    // Submit functions with validation & ajax
+    async function submitReturn() {
+        if (!selectedItemData) {
+            showToast('No item selected for return', 'error');
+            return;
         }
 
-        // Modal Functions with Quantity Support
-        function openReturnModal(itemId, maxQuantity) {
-            selectedItemData = {
-                itemId: itemId,
-                maxQuantity: maxQuantity,
-                type: 'individual'
-            };
-            
-            // Set up quantity input
-            const quantityInput = document.getElementById('returnQuantity');
-            const maxQtySpan = document.getElementById('maxReturnQty');
-            quantityInput.max = maxQuantity;
-            quantityInput.value = Math.min(1, maxQuantity);
-            maxQtySpan.textContent = maxQuantity;
-            
-            const modal = document.getElementById('returnModal');
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            setTimeout(() => document.getElementById('returnReason').focus(), 300);
+        const reason = document.getElementById('returnReason').value.trim();
+        if (reason.length < 10) {
+            showToast('Please provide a more detailed reason (minimum 10 characters)', 'error');
+            return;
         }
 
-        function openCancelModal(itemId, maxQuantity) {
-            selectedItemData = {
-                itemId: itemId,
-                maxQuantity: maxQuantity,
-                type: 'individual'
-            };
-            
-            // Set up quantity input
-            const quantityInput = document.getElementById('cancelQuantity');
-            const maxQtySpan = document.getElementById('maxCancelQty');
-            quantityInput.max = maxQuantity;
-            quantityInput.value = Math.min(1, maxQuantity);
-            maxQtySpan.textContent = maxQuantity;
-            
-            const modal = document.getElementById('cancelModal');
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            setTimeout(() => document.getElementById('cancelReason').focus(), 300);
-        }
+        let requestData = { orderId: '<%= order._id %>', reason, type: selectedItemData.type };
 
-        function openBulkReturnModal() {
-            selectedItemData = { type: 'bulk' };
-            const modal = document.getElementById('bulkReturnModal');
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            setTimeout(() => document.getElementById('bulkReturnReason').focus(), 300);
-        }
-
-        function openBulkCancelModal() {
-            selectedItemData = { type: 'bulk' };
-            const modal = document.getElementById('bulkCancelModal');
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            setTimeout(() => document.getElementById('bulkCancelReason').focus(), 300);
-        }
-
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-
-            // Clear form data
-            if (modalId === 'returnModal') {
-                document.getElementById('returnReason').value = '';
-                document.getElementById('returnQuantity').value = '1';
-            } else if (modalId === 'cancelModal') {
-                document.getElementById('cancelReason').value = '';
-                document.getElementById('cancelQuantity').value = '1';
-            } else if (modalId === 'bulkReturnModal') {
-                document.getElementById('bulkReturnReason').value = '';
-            } else if (modalId === 'bulkCancelModal') {
-                document.getElementById('bulkCancelReason').value = '';
-            }
-            
-            selectedItemData = null;
-        }
-
-        // Submit Functions with Enhanced Validation
-        async function submitReturn() {
-            if (!selectedItemData) {
-                showToast('No item selected for return', 'error');
+        if (selectedItemData.type === 'individual') {
+            const returnQuantity = parseInt(document.getElementById('returnQuantity').value) || 1;
+            if (returnQuantity <= 0 || returnQuantity > selectedItemData.maxQuantity) {
+                showToast(`Invalid quantity. Enter between 1 and ${selectedItemData.maxQuantity}`, 'error');
                 return;
             }
-
-            const reason = document.getElementById('returnReason').value.trim();
-            
-            if (reason === '') {
-                showToast('Please provide a reason for return', 'error');
-                return;
-            }
-            if (reason.length < 10) {
-                showToast('Please provide a more detailed reason (minimum 10 characters)', 'error');
-                return;
-            }
-
-            let requestData = {
-                orderId: '<%= order._id %>',
-                reason: reason,
-                type: selectedItemData.type
-            };
-
-            if (selectedItemData.type === 'individual') {
-                const returnQuantity = parseInt(document.getElementById('returnQuantity').value) || 1;
-                
-                if (returnQuantity <= 0 || returnQuantity > selectedItemData.maxQuantity) {
-                    showToast(`Invalid quantity. Please enter between 1 and ${selectedItemData.maxQuantity}`, 'error');
-                    return;
-                }
-
-                requestData.itemId = selectedItemData.itemId;
-                requestData.returnQuantity = returnQuantity;
-            }
-
-            try {
-                const response = await fetch('/orderReturn', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestData)
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    showToast(data.message || 'Return request submitted successfully!', 'success');
-                    setTimeout(() => location.reload(), 2000);
-                } else {
-                    showToast(data.message || 'Something went wrong while submitting the return request', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('Network error. Please check your connection and try again.', 'error');
-            }
-
-            closeModal('returnModal');
+            requestData.itemId = selectedItemData.itemId;
+            requestData.returnQuantity = returnQuantity;
         }
 
-        async function submitCancel() {
-            if (!selectedItemData) {
-                showToast('No item selected for cancellation', 'error');
-                return;
+        try {
+            showToast('Submitting return request...', 'success');
+            const response = await fetch('/orderReturn', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestData)
+            });
+            const data = await response.json();
+            if (data.success) {
+                showToast(data.message || 'Return request submitted successfully!', 'success');
+                toggleTrackers();
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showToast(data.message || 'Failed to submit return request', 'error');
             }
-
-            const reason = document.getElementById('cancelReason').value.trim();
-            
-            if (reason === '') {
-                showToast('Please provide a reason for cancellation', 'error');
-                return;
-            }
-            if (reason.length < 10) {
-                showToast('Please provide a more detailed reason (minimum 10 characters)', 'error');
-                return;
-            }
-
-            let requestData = {
-                orderId: '<%= order._id %>',
-                reason: reason,
-                type: selectedItemData.type
-            };
-
-            if (selectedItemData.type === 'individual') {
-                const cancelQuantity = parseInt(document.getElementById('cancelQuantity').value) || 1;
-                
-                if (cancelQuantity <= 0 || cancelQuantity > selectedItemData.maxQuantity) {
-                    showToast(`Invalid quantity. Please enter between 1 and ${selectedItemData.maxQuantity}`, 'error');
-                    return;
-                }
-
-                requestData.itemId = selectedItemData.itemId;
-                requestData.cancelQuantity = cancelQuantity;
-            }
-
-            try {
-                const response = await fetch('/orderCancellation', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestData)
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    showToast(data.message || 'Cancellation request submitted successfully!', 'success');
-                    setTimeout(() => location.reload(), 2000);
-                } else {
-                    showToast(data.message || 'Something went wrong while submitting the cancellation request', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('Network error. Please check your connection and try again.', 'error');
-            }
-
-            closeModal('cancelModal');
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('Network error. Please check your connection and try again.', 'error');
         }
 
-        async function submitBulkReturn() {
-            const reason = document.getElementById('bulkReturnReason').value.trim();
-            if (reason === '') {
-                showToast('Please provide a reason for bulk return', 'error');
-                return;
-            }
-            if (reason.length < 10) {
-                showToast('Please provide a more detailed reason (minimum 10 characters)', 'error');
-                return;
-            }
+        closeModal('returnModal');
+    }
 
-            try {
-                const response = await fetch('/orderReturn', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        orderId: '<%= order._id %>',
-                        reason: reason,
-                        type: 'bulk'
-                    })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    showToast(data.message || 'Bulk return request submitted successfully!', 'success');
-                    setTimeout(() => location.reload(), 2000);
-                } else {
-                    showToast(data.message || 'Something went wrong while submitting the bulk return request', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('Network error. Please check your connection and try again.', 'error');
-            }
-
-            closeModal('bulkReturnModal');
+    async function submitCancel() {
+        if (!selectedItemData) {
+            showToast('No item selected for cancellation', 'error');
+            return;
         }
 
-        async function submitBulkCancel() {
-            const reason = document.getElementById('bulkCancelReason').value.trim();
-            if (reason === '') {
-                showToast('Please provide a reason for bulk cancellation', 'error');
-                return;
-            }
-            if (reason.length < 10) {
-                showToast('Please provide a more detailed reason (minimum 10 characters)', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch('/orderCancellation', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        orderId: '<%= order._id %>',
-                        reason: reason,
-                        type: 'bulk'
-                    })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    showToast(data.message || 'Bulk cancellation request submitted successfully!', 'success');
-                    setTimeout(() => location.reload(), 2000);
-                } else {
-                    showToast(data.message || 'Something went wrong while submitting the bulk cancellation request', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('Network error. Please check your connection and try again.', 'error');
-            }
-
-            closeModal('bulkCancelModal');
+        const reason = document.getElementById('cancelReason').value.trim();
+        if (reason.length < 10) {
+            showToast('Please provide a more detailed reason (minimum 10 characters)', 'error');
+            return;
         }
 
-        function downloadInvoice() {
-            showToast('Invoice download started!', 'success');
-            // Add actual download functionality here
-            setTimeout(() => showToast('Invoice downloaded successfully!', 'success'), 2000);
+        let requestData = { orderId: '<%= order._id %>', reason, type: selectedItemData.type };
+
+        if (selectedItemData.type === 'individual') {
+            const cancelQuantity = parseInt(document.getElementById('cancelQuantity').value) || 1;
+            if (cancelQuantity <= 0 || cancelQuantity > selectedItemData.maxQuantity) {
+                showToast(`Invalid quantity. Enter between 1 and ${selectedItemData.maxQuantity}`, 'error');
+                return;
+            }
+            requestData.itemId = selectedItemData.itemId;
+            requestData.cancelQuantity = cancelQuantity;
         }
 
-        // Event Listeners
-        document.addEventListener('click', function(event) {
-            if (event.target.classList.contains('modal')) {
-                const modalId = event.target.id;
-                if (['returnModal', 'cancelModal', 'bulkReturnModal', 'bulkCancelModal'].includes(modalId)) {
+        try {
+            showToast('Submitting cancellation request...', 'success');
+            const response = await fetch('/orderCancellation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestData)
+            });
+            const data = await response.json();
+            if (data.success) {
+                showToast(data.message || 'Cancellation request submitted successfully!', 'success');
+                toggleTrackers();
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showToast(data.message || 'Failed to submit cancellation request', 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('Network error. Please check your connection and try again.', 'error');
+        }
+
+        closeModal('cancelModal');
+    }
+
+    async function submitBulkReturn() {
+        const reason = document.getElementById('bulkReturnReason').value.trim();
+        if (reason.length < 10) {
+            showToast('Please provide a more detailed reason (minimum 10 characters)', 'error');
+            return;
+        }
+
+        try {
+            showToast('Submitting bulk return request...', 'success');
+            const response = await fetch('/orderReturn', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: '<%= order._id %>', reason, type: 'bulk' })
+            });
+            const data = await response.json();
+            if (data.success) {
+                showToast(data.message || 'Bulk return request submitted successfully!', 'success');
+                toggleTrackers();
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showToast(data.message || 'Failed to submit bulk return request', 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('Network error. Please check your connection and try again.', 'error');
+        }
+
+        closeModal('bulkReturnModal');
+    }
+
+    async function submitBulkCancel() {
+        const reason = document.getElementById('bulkCancelReason').value.trim();
+        if (reason.length < 10) {
+            showToast('Please provide a more detailed reason (minimum 10 characters)', 'error');
+            return;
+        }
+
+        try {
+            showToast('Submitting bulk cancellation request...', 'success');
+            const response = await fetch('/orderCancellation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: '<%= order._id %>', reason, type: 'bulk' })
+            });
+            const data = await response.json();
+            if (data.success) {
+                showToast(data.message || 'Bulk cancellation request submitted successfully!', 'success');
+                toggleTrackers();
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showToast(data.message || 'Failed to submit bulk cancellation request', 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('Network error. Please check your connection and try again.', 'error');
+        }
+
+        closeModal('bulkCancelModal');
+    }
+
+    function downloadInvoice() {
+        showToast('Invoice download started!', 'success');
+        setTimeout(() => showToast('Invoice downloaded successfully!', 'success'), 2000);
+    }
+
+    // Event listeners for closing modals on click outside or ESC key
+    document.addEventListener('click', e => {
+        if (e.target.classList.contains('modal')) {
+            closeModal(e.target.id);
+        }
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            ['returnModal', 'cancelModal', 'bulkReturnModal', 'bulkCancelModal'].forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (modal && !modal.classList.contains('hidden')) {
                     closeModal(modalId);
                 }
-            }
-        });
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const modals = ['returnModal', 'cancelModal', 'bulkReturnModal', 'bulkCancelModal'];
-                for (const modalId of modals) {
-                    const modal = document.getElementById(modalId);
-                    if (!modal.classList.contains('hidden')) {
-                        closeModal(modalId);
-                        break;
-                    }
-                }
-            }
-        });
-
-        // Initialize page animations
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate product groups
-            const productGroups = document.querySelectorAll('.product-group');
-            productGroups.forEach((group, index) => {
-                setTimeout(() => {
-                    group.style.opacity = '0';
-                    group.style.transform = 'translateY(20px)';
-                    group.style.transition = 'all 0.5s ease';
-                    requestAnimationFrame(() => {
-                        group.style.opacity = '1';
-                        group.style.transform = 'translateY(0)';
-                    });
-                }, index * 100);
             });
+        }
+    });
 
-            // Animate progress steps
-            const progressSteps = document.querySelectorAll('.progress-step');
-            progressSteps.forEach((step, index) => {
-                setTimeout(() => {
-                    step.style.opacity = '0';
-                    step.style.transform = 'scale(0.8)';
-                    step.style.transition = 'all 0.5s ease';
-                    requestAnimationFrame(() => {
-                        step.style.opacity = '1';
-                        step.style.transform = 'scale(1)';
-                    });
-                }, 500 + (index * 100));
-            });
+    // On page load initialize trackers & animate
+    document.addEventListener('DOMContentLoaded', () => {
+        toggleTrackers();
+
+        const productGroups = document.querySelectorAll('.product-group');
+        productGroups.forEach((group, index) => {
+            setTimeout(() => {
+                group.style.opacity = '0';
+                group.style.transform = 'translateY(20px)';
+                group.style.transition = 'all 0.5s ease';
+                requestAnimationFrame(() => {
+                    group.style.opacity = '1';
+                    group.style.transform = 'translateY(0)';
+                });
+            }, index * 100);
         });
-    </script>
+
+        const progressSteps = document.querySelectorAll('.progress-step');
+        progressSteps.forEach((step, index) => {
+            setTimeout(() => {
+                step.style.opacity = '0';
+                step.style.transform = 'scale(0.8)';
+                step.style.transition = 'all 0.5s ease';
+                requestAnimationFrame(() => {
+                    step.style.opacity = '1';
+                    step.style.transform = 'scale(1)';
+                });
+            }, 500 + (index * 100));
+        });
+
+        console.log('Current Order Status:', currentOrderStatus);
+        console.log('Trackers toggled successfully');
+    });
+
+    // Expose toggleTrackers globally
+    window.toggleTrackers = toggleTrackers;
+</script>
+
+
 </body>
 </html>

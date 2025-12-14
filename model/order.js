@@ -12,35 +12,62 @@ const orderSchema = new mongoose.Schema({
     required: true,
   },
   orderitems: [{
- 
-  productId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "product",
-    required: true
-  },
-  
-  quantity: { type: Number, required: true },
-  price: { type: Number, default: 0 },
-  discount: { type: Number, default: 0 },
-  status: {
-    type: String,
-    enum: ['Pending', 'Ordered', 'Shipped', 'Out For Delivery', 'Delivered', 'Cancelled','partially cancelled' ,'Return Request', 'Returned', 'Return Rejected', 'Return Accepted','mixed' ,'partially processed', 'partially returned'],
-    default: 'Pending'
-  },
-   cancelledQuantity: { type: Number, default: 0 },
+
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "product",
+      required: true
+    },
+
+    quantity: { type: Number, required: true },
+    price: { type: Number, default: 0 },
+    discount: { type: Number, default: 0 },
+    status: {
+      type: String,
+      enum: [
+        'Pending',
+        'Ordered',
+        'Shipped',
+        'Out For Delivery',
+        'Delivered',
+        'Cancelled',
+        'Partially Cancelled',
+        'Return Request',
+        'Returned',
+        'Return Rejected',
+        'Return Accepted',
+        'Mixed',
+        'Partially Processed',
+        'Partially Returned'
+      ],
+      default: 'Pending'
+    },
+    cancelledQuantity: { type: Number, default: 0 },
     returnedQuantity: { type: Number, default: 0 },
-  cancellationReason: { type: String, default: 'none' },
-  returnReason: { type: String, default: 'none' }
-}],
+    cancellationReason: { type: String, default: 'none' },
+    returnReason: { type: String, default: 'none' }
+  }],
 
   orderStatus: {
     type: String,
     enum: [
-      'Pending', 'Ordered', 'Cancelled', 'Partially Cancelled',
-      'Shipped', 'Out For Delivery', 'Delivered','Partially Return Request',
-      'Return Request', 'Returned', 'Return Accepted', 'Return Rejected', 'partially returned','mixed'  ,'partially processed','partially cancelled'
+      'Pending',
+      'Ordered',
+      'Cancelled',
+      'Partially Cancelled',
+      'Shipped',
+      'Out For Delivery',
+      'Delivered',
+      'Partially Return Request',
+      'Return Request',
+      'Returned',
+      'Return Accepted',
+      'Return Rejected',
+      'Partially Returned',
+      'Mixed',
+      'Partially Processed'
     ],
-    default: 'Pending',
+    default: 'Pending'
   },
   orderStatusUpdatedAt: {
     type: Date,
@@ -54,8 +81,8 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  couponName:{
-    type :String,
+  couponName: {
+    type: String,
   },
   GST: {
     type: Number,

@@ -572,11 +572,11 @@
             <div class="flex items-center p-4 mb-6 bg-rc-light-gray rounded-lg">
                 <div
                     class="w-16 h-16 bg-rc-red rounded-full flex items-center justify-center text-white text-xl font-bold mr-4">
-                    A
+                      <%= users.firstName ? users.firstName.charAt(0).toUpperCase() : 'U' %>
                 </div>
                 <div>
                     <p class="text-rc-gray">Hello,</p>
-                    <p class="font-semibold text-lg font-aldrich">Arjun</p>
+                    <p class="font-semibold text-lg font-aldrich"><%= users.firstName %></p>
                 </div>
             </div>
 
@@ -732,8 +732,8 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            <% if (wallet?.transactions && wallet.transactions.length> 0) { %>
-                                <% wallet.transactions.slice().reverse().forEach((element, index)=> { %>
+                            <% if (transactions && transactions.length> 0) { %>
+                                <% transactions.forEach((element, index)=> { %>
                                     <tr class="transaction-row">
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm font-medium text-gray-900">
@@ -755,16 +755,20 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= element.type === 'credit' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                   <%= element.type === 'credit'
+                         ? 'bg-green-100 text-green-800'
+                         : 'bg-red-100 text-red-800' %>">
                                                 <i
                                                     class="fas fa-<%= element.type === 'credit' ? 'plus' : 'minus' %> mr-1"></i>
                                                 <%= element.type.toUpperCase() %>
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div
-                                                class="text-sm font-bold <%= element.type === 'credit' ? 'text-green-600' : 'text-red-600' %>">
+                                            <div class="text-sm font-bold
+                   <%= element.type === 'credit'
+                         ? 'text-green-600'
+                         : 'text-red-600' %>">
                                                 <%= element.type==='credit' ? '+' : '-' %> ₹<%=
                                                         element.amount.toLocaleString() %>
                                             </div>
@@ -776,10 +780,13 @@
                                                 <td colspan="4" class="px-6 py-12 text-center">
                                                     <div class="flex flex-col items-center">
                                                         <i class="fas fa-receipt text-4xl text-rc-gray mb-4"></i>
-                                                        <h3 class="text-lg font-semibold text-rc-gray mb-2">No
-                                                            Transactions Yet</h3>
-                                                        <p class="text-rc-gray mb-4">Your transaction history will
-                                                            appear here once you start using your wallet.</p>
+                                                        <h3 class="text-lg font-semibold text-rc-gray mb-2">
+                                                            No Transactions Yet
+                                                        </h3>
+                                                        <p class="text-rc-gray mb-4">
+                                                            Your transaction history will appear here once you start
+                                                            using your wallet.
+                                                        </p>
                                                         <button
                                                             class="bg-rc-red text-white py-2 px-4 rounded-md font-semibold hover:bg-rc-red/90 transition-colors"
                                                             onclick="document.getElementById('addMoneyBtn').click()">
@@ -790,8 +797,43 @@
                                             </tr>
                                             <% } %>
                         </tbody>
+
                     </table>
+                    <% if (totalPages> 1) { %>
+                        <div class="px-6 py-4 border-t border-rc-border-gray flex justify-center">
+                            <nav class="inline-flex items-center gap-1" aria-label="Wallet pagination">
+                                <!-- Prev -->
+                                <a href="/wallet?page=<%= currentPage > 1 ? currentPage - 1 : 1 %>" class="px-3 py-1 rounded-md border text-sm
+               <%= currentPage === 1
+                     ? 'text-rc-gray border-rc-border-gray cursor-not-allowed'
+                     : 'text-black border-rc-gray hover:bg-rc-light-gray' %>">
+                                    Prev
+                                </a>
+
+                                <!-- Page numbers -->
+                                <% for (let p=1; p <=totalPages; p++) { %>
+                                    <a href="/wallet?page=<%= p %>" class="px-3 py-1 rounded-md border text-sm
+                 <%= p === currentPage
+                       ? 'bg-rc-red text-white border-rc-red'
+                       : 'text-black border-rc-gray hover:bg-rc-light-gray' %>">
+                                        <%= p %>
+                                    </a>
+                                    <% } %>
+
+                                        <!-- Next -->
+                                        <a href="/wallet?page=<%= currentPage < totalPages ? currentPage + 1 : totalPages %>"
+                                            class="px-3 py-1 rounded-md border text-sm
+               <%= currentPage === totalPages
+                     ? 'text-rc-gray border-rc-border-gray cursor-not-allowed'
+                     : 'text-black border-rc-gray hover:bg-rc-light-gray' %>">
+                                            Next
+                                        </a>
+                            </nav>
+                        </div>
+                        <% } %>
+
                 </div>
+
             </div>
         </section>
     </main>
@@ -1298,14 +1340,14 @@
                                         type: 'success',
                                         title: 'Success!',
                                         text: `Successfully added ₹${amount} to your wallet!`,
-                                        showConfirmButton: true, 
+                                        showConfirmButton: true,
                                         confirmButtonText: 'OK',
                                         callback: (result) => {
                                             if (result.isConfirmed) {
-                                          
+
                                                 setTimeout(() => {
                                                     window.location.reload();
-                                                }, 500); 
+                                                }, 500);
                                             }
                                         }
                                     });

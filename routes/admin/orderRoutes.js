@@ -8,6 +8,5 @@ router.get("/order", adminAuth.check, orderController.orderMangementPageLoad);
 router.get("/orderdetails", adminAuth.check, orderController.orderdetailsPageload);
 router.post("/updateStatus", adminAuth.check, orderController.updateOrderStatus);
 router.post("/returnStatus", adminAuth.check, orderController.returnChoesingPost);
-router.post("/cancellationStatus", adminAuth.check, orderController.cancellationChoesingPost);
 
 module.exports = router;

@@ -3,8 +3,10 @@ const model = require("../../src/config")
 
 const wishlistPageLoad = async (req, res) => {
   try {
+     const userId = req.session.user?._id
+    const users = await model.usersModel.findById({_id:userId})
    const wishlist = await model.wishlistModel.find({ userId: req.session.user._id }).populate("products.productId");
-    res.render("user/wishlist", { wishlist });
+    res.render("user/wishlist", { wishlist,users });
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");

@@ -139,7 +139,6 @@
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                         </svg>
-                   
                         <span>LOGOUT</span>
                     </a>
                 </div>
@@ -153,7 +152,6 @@
                             <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
                         </svg>
                         <span class="absolute -top-2 -right-2 bg-white text-rc-red text-xs font-semibold w-5 h-5 rounded-full flex items-center justify-center cart-badge">
-                          
                         </span>
                     </a>
                     <span class="text-sm">MY CART</span>
@@ -187,11 +185,11 @@
         <aside class="w-full lg:w-1/4 bg-white shadow-md rounded-lg p-6">
             <div class="flex items-center p-4 mb-6 bg-rc-light-gray rounded-lg">
                 <div class="w-16 h-16 bg-rc-red rounded-full flex items-center justify-center text-white text-xl font-bold mr-4">
-                    A
+                      <%= users.firstName ? users.firstName.charAt(0).toUpperCase() : 'U' %>
                 </div>
                 <div>
                     <p class="text-rc-gray">Hello,</p>
-                    <p class="font-semibold text-lg font-aldrich">Arjun</p>
+                    <p class="font-semibold text-lg font-aldrich"><%= users.firstName %></p>
                 </div>
             </div>
             
@@ -236,7 +234,11 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
                 <h2 class="text-2xl font-bold font-aldrich mb-4 md:mb-0">My Orders</h2>
                 <div class="flex items-center space-x-4 text-sm text-rc-gray">
-                    <span><i class="fas fa-clock mr-1"></i>Total Orders: <%= orders ? orders.length : 0 %></span>
+                    <span>
+                        <i class="fas fa-clock mr-1"></i>
+                        Total Orders:
+                        <%= typeof totalOrders !== 'undefined' ? totalOrders : (orders ? orders.length : 0) %>
+                    </span>
                 </div>
             </div>
 
@@ -268,7 +270,8 @@
                                 </div>
                                 <div class="text-sm text-rc-gray">
                                     <i class="fas fa-calendar mr-1"></i>
-                                    Placed on: <%= new Date(order.invoiceDate).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                                    Placed on:
+                                    <%= new Date(order.invoiceDate).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' }) %>
                                 </div>
                             </div>
 
@@ -331,8 +334,9 @@
                                         <i class="fas fa-download mr-1"></i>
                                         Invoice
                                     </button>
-                                    <button class="bg-rc-red text-white py-2 px-4 rounded-md font-semibold hover:bg-rc-red/90 transition-colors" 
-                                            onclick="window.location.href='/orderdetails/<%= order._id %>'">
+                                    <button
+                                        class="bg-rc-red text-white py-2 px-4 rounded-md font-semibold hover:bg-rc-red/90 transition-colors"
+                                        onclick="window.location.href='/orderdetails/<%= order._id %>'">
                                         <i class="fas fa-eye mr-1"></i>
                                         View Details
                                     </button>
@@ -341,6 +345,45 @@
                         </div>
                     <% }) %>
                 </div>
+
+                <!-- Pagination -->
+                <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+                    <div class="mt-8 flex justify-center">
+                        <nav class="inline-flex items-center gap-1" aria-label="Orders pagination">
+                            <!-- Prev -->
+                            <a
+                              href="/myorders?page=<%= currentPage > 1 ? currentPage - 1 : 1 %>"
+                              class="px-3 py-1 rounded-md border text-sm
+                                     <%= currentPage === 1
+                                           ? 'text-rc-gray border-rc-border-gray cursor-not-allowed'
+                                           : 'text-black border-rc-gray hover:bg-rc-light-gray' %>">
+                              Prev
+                            </a>
+
+                            <!-- Page numbers -->
+                            <% for (let p = 1; p <= totalPages; p++) { %>
+                                <a
+                                  href="/myorders?page=<%= p %>"
+                                  class="px-3 py-1 rounded-md border text-sm
+                                         <%= p === currentPage
+                                               ? 'bg-rc-red text-white border-rc-red'
+                                               : 'text-black border-rc-gray hover:bg-rc-light-gray' %>">
+                                  <%= p %>
+                                </a>
+                            <% } %>
+
+                            <!-- Next -->
+                            <a
+                              href="/myorders?page=<%= currentPage < totalPages ? currentPage + 1 : totalPages %>"
+                              class="px-3 py-1 rounded-md border text-sm
+                                     <%= currentPage === totalPages
+                                           ? 'text-rc-gray border-rc-border-gray cursor-not-allowed'
+                                           : 'text-black border-rc-gray hover:bg-rc-light-gray' %>">
+                              Next
+                            </a>
+                        </nav>
+                    </div>
+                <% } %>
             <% } %>
         </section>
     </main>
@@ -442,7 +485,6 @@
 
         // Add smooth animations and interactions
         document.addEventListener('DOMContentLoaded', function() {
-            // Add hover effects to order cards
             const orderCards = document.querySelectorAll('.border.border-rc-border-gray');
             orderCards.forEach(card => {
                 card.addEventListener('mouseenter', function() {

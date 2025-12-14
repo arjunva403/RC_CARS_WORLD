@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +33,8 @@
         }
     </script>
 </head>
-<body  class="bg-rc-light-gray font-aldrich text-gray-900">
+
+<body class="bg-rc-light-gray font-aldrich text-gray-900">
     <!-- Toast Container -->
     <div id="toastContainer" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[10000]"></div>
 
@@ -43,14 +44,15 @@
             <div class="flex items-center justify-between py-4">
                 <div class="flex items-center">
                     <a href="/login" class="ml-2 text-base font-aldrich hover:text-rc-light-gray transition-colors">
-                    
-                            <div class="flex items-center gap-2">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                                </svg>
-                                <span class="hidden sm:inline">PROFILE</span>
-                            </div>
-                        
+
+                        <div class="flex items-center gap-2">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                            </svg>
+                            <span class="hidden sm:inline">PROFILE</span>
+                        </div>
+
                     </a>
                 </div>
                 <div class="text-center">
@@ -58,11 +60,14 @@
                     <p class="text-sm">small wheels, big thrills</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <a href="/cart" class="relative text-white hover:text-rc-light-gray transition-colors group" aria-label="Shopping Cart">
-                        <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                    <a href="/cart" class="relative text-white hover:text-rc-light-gray transition-colors group"
+                        aria-label="Shopping Cart">
+                        <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor"
+                            viewBox="0 0 24 24">
+                            <path
+                                d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
                         </svg>
-                       
+
                     </a>
                     <span class="text-sm hidden sm:inline">MY CART</span>
                 </div>
@@ -94,149 +99,182 @@
     </div>
 
     <!-- Cart Section -->
-   <main class="container mx-auto px-4 py-8">
-    <h2 class="text-2xl font-semibold mb-8">Your Cart</h2>
-    <% if (!cart || cart.items.length === 0) { %>
-        <div class="bg-white p-12 text-center rounded-lg shadow-md">
-            <i class="fas fa-shopping-cart text-5xl text-rc-gray mb-4"></i>
-            <h3 class="text-xl font-semibold mb-2">Your cart is empty</h3>
-            <p class="text-rc-gray mb-6">Looks like you haven't added anything to your cart yet</p>
-            <a href="/product">
-                <button class="bg-rc-red text-white py-3 px-6 rounded-md font-semibold hover:bg-rc-dark-red transition-colors">Continue Shopping</button>
-            </a>
-        </div>
-    <% } else { %>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Cart Items -->
-            <div class="lg:col-span-2 space-y-4">
-                <% cart.items.forEach(element => { %>
-                    <div class="cart-item bg-white p-4 flex items-center rounded-lg shadow-md">
-                        <img src="<%= element.productId.images[0] %>" alt="<%= element.productId.productName %>" class="w-24 h-24 object-cover rounded-md mr-4">
-                        <div class="flex-1">
-                            <h4 class="text-lg font-medium mb-2"><%= element.productId.productName %></h4>
-                            
-                            <!-- Enhanced Price Display with Offers -->
-                            <div class="price-info mb-2">
-                                <% if (element.applyOffer) { %>
-                                    <!-- Show offer information -->
-                                    <div class="offer-badge bg-red-500 text-white text-xs px-2 py-1 rounded-full inline-block mb-1">
-                                        <i class="fas fa-fire mr-1"></i><%= element.offerTitle %>
+    <main class="container mx-auto px-4 py-8">
+        <h2 class="text-2xl font-semibold mb-8">Your Cart</h2>
+        <% if (!cart || cart.items.length===0) { %>
+            <div class="bg-white p-12 text-center rounded-lg shadow-md">
+                <i class="fas fa-shopping-cart text-5xl text-rc-gray mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">Your cart is empty</h3>
+                <p class="text-rc-gray mb-6">Looks like you haven't added anything to your cart yet</p>
+                <a href="/product">
+                    <button
+                        class="bg-rc-red text-white py-3 px-6 rounded-md font-semibold hover:bg-rc-dark-red transition-colors">Continue
+                        Shopping</button>
+                </a>
+            </div>
+            <% } else { %>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Cart Items -->
+                    <div class="lg:col-span-2 space-y-4">
+                        <% cart.items.forEach(element=> { %>
+                            <div class="cart-item bg-white p-4 flex items-center rounded-lg shadow-md">
+                                <img src="<%= element.productId.images[0] %>" alt="<%= element.productId.productName %>"
+                                    class="w-24 h-24 object-cover rounded-md mr-4">
+                                <div class="flex-1">
+                                    <h4 class="text-lg font-medium mb-2">
+                                        <%= element.productId.productName %>
+                                    </h4>
+
+                                    <!-- Enhanced Price Display with Offers -->
+                                    <div class="price-info mb-2">
+                                        <% if (element.applyOffer) { %>
+                                            <!-- Show offer information -->
+                                            <div
+                                                class="offer-badge bg-red-500 text-white text-xs px-2 py-1 rounded-full inline-block mb-1">
+                                                <i class="fas fa-fire mr-1"></i>
+                                                <%= element.offerTitle %>
+                                            </div>
+                                            <div class="price-display flex items-center gap-2">
+                                                <span class="text-lg font-bold text-red-600">₹<%=
+                                                        element.finalPrice.toLocaleString() %></span>
+                                                <span class="text-sm text-gray-500 line-through">₹<%=
+                                                        element.originalPrice.toLocaleString() %></span>
+                                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                                                    Save ₹<%= (element.originalPrice -
+                                                        element.finalPrice).toLocaleString() %>
+                                                </span>
+                                            </div>
+                                            <p class="text-xs text-green-600 mt-1">
+                                                <i class="fas fa-tag mr-1"></i>
+                                                <%= element.discountPercentage %>% off with <%= element.offerSource %>
+                                                        offer!
+                                            </p>
+                                            <% } else { %>
+                                                <!-- No offer, show regular price -->
+                                                <p class="text-sm text-rc-gray mb-2">Price: ₹<%=
+                                                        element.productId.discountPrice.toLocaleString() %>
+                                                </p>
+                                                <% } %>
                                     </div>
-                                    <div class="price-display flex items-center gap-2">
-                                        <span class="text-lg font-bold text-red-600">₹<%= element.finalPrice.toLocaleString() %></span>
-                                        <span class="text-sm text-gray-500 line-through">₹<%= element.originalPrice.toLocaleString() %></span>
-                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                                            Save ₹<%= (element.originalPrice - element.finalPrice).toLocaleString() %>
+
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <button
+                                            class="bg-rc-red text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-rc-dark-red transition-colors"
+                                            onclick="qtyupdated(-1, '<%= element.productId._id %>')">-</button>
+                                        <span class="text-sm font-medium">
+                                            <%= element.quantity %>
                                         </span>
+                                        <button
+                                            class="bg-rc-red text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-rc-dark-red transition-colors"
+                                            onclick="qtyupdated(1, '<%= element.productId._id %>')">+</button>
+                                        <span class="text-sm text-rc-error"
+                                            id="err-<%= element.productId._id %>"></span>
                                     </div>
-                                    <p class="text-xs text-green-600 mt-1">
-                                        <i class="fas fa-tag mr-1"></i><%= element.discountPercentage %>% off with <%= element.offerSource %> offer!
+                                    <p class="text-sm text-rc-success">Stock: <%= element.productId.stock %>
                                     </p>
-                                <% } else { %>
-                                    <!-- No offer, show regular price -->
-                                    <p class="text-sm text-rc-gray mb-2">Price: ₹<%= element.productId.discountPrice.toLocaleString() %></p>
-                                <% } %>
-                            </div>
-                            
-                            <div class="flex items-center gap-2 mb-2">
-                                <button class="bg-rc-red text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-rc-dark-red transition-colors" onclick="qtyupdated(-1, '<%= element.productId._id %>')">-</button>
-                                <span class="text-sm font-medium"><%= element.quantity %></span>
-                                <button class="bg-rc-red text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-rc-dark-red transition-colors" onclick="qtyupdated(1, '<%= element.productId._id %>')">+</button>
-                                <span class="text-sm text-rc-error" id="err-<%= element.productId._id %>"></span>
-                            </div>
-                            <p class="text-sm text-rc-success">Stock: <%= element.productId.stock %></p>
-                            <button class="flex items-center gap-1 mt-2 bg-white border border-rc-red text-rc-red py-2 px-3 rounded-md font-medium hover:bg-rc-red hover:text-white transition-colors" onclick="removeFromCart('<%= element.productId._id %>')">
-                                <i class="fa fa-trash"></i> Remove
-                            </button>
-                        </div>
-                        
-                        <!-- Enhanced Total Display -->
-                        <div class="text-right">
-                            <% if (element.applyOffer) { %>
-                                <!-- Show savings in item total -->
-                                <div class="text-lg font-bold text-red-600">₹<%= element.finalItemTotal.toLocaleString() %></div>
-                                <div class="text-sm text-gray-500 line-through">₹<%= element.originalItemTotal.toLocaleString() %></div>
-                                <div class="text-xs text-green-600 font-medium">
-                                    You Save: ₹<%= element.itemSavings.toLocaleString() %>
+                                    <button
+                                        class="flex items-center gap-1 mt-2 bg-white border border-rc-red text-rc-red py-2 px-3 rounded-md font-medium hover:bg-rc-red hover:text-white transition-colors"
+                                        onclick="removeFromCart('<%= element.productId._id %>')">
+                                        <i class="fa fa-trash"></i> Remove
+                                    </button>
                                 </div>
-                            <% } else { %>
-                                <!-- No offer, show regular total -->
-                                <div class="text-lg font-bold">₹<%= (element.productId.discountPrice * element.quantity).toLocaleString() %></div>
-                            <% } %>
-                        </div>
+
+                                <!-- Enhanced Total Display -->
+                                <div class="text-right">
+                                    <% if (element.applyOffer) { %>
+                                        <!-- Show savings in item total -->
+                                        <div class="text-lg font-bold text-red-600">₹<%=
+                                                element.finalItemTotal.toLocaleString() %>
+                                        </div>
+                                        <div class="text-sm text-gray-500 line-through">₹<%=
+                                                element.originalItemTotal.toLocaleString() %>
+                                        </div>
+                                        <div class="text-xs text-green-600 font-medium">
+                                            You Save: ₹<%= element.itemSavings.toLocaleString() %>
+                                        </div>
+                                        <% } else { %>
+                                            <!-- No offer, show regular total -->
+                                            <div class="text-lg font-bold">₹<%= (element.productId.discountPrice *
+                                                    element.quantity).toLocaleString() %>
+                                            </div>
+                                            <% } %>
+                                </div>
+                            </div>
+                            <% }) %>
                     </div>
-                <% }) %>
-            </div>
-            
-            <!-- Cart Summary Section -->
-            <div class="lg:col-span-1">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-lg font-semibold mb-4">Order Summary</h3>
-                    
-                    <!-- Enhanced Summary with Offer Information -->
-                    <div class="space-y-3 mb-4">
-                        <% if (typeof subtotalOriginal !== 'undefined' && subtotalOriginal > subtotal) { %>
-                            <!-- Show original subtotal if offers are applied -->
-                            <div class="flex justify-between text-sm">
-                                <span>Original Subtotal:</span>
-                                <span class="line-through text-gray-500">₹<%= subtotalOriginal.toLocaleString() %></span>
+
+                    <!-- Cart Summary Section -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg font-semibold mb-4">Order Summary</h3>
+
+                            <!-- Enhanced Summary with Offer Information -->
+                            <div class="space-y-3 mb-4">
+                                <% if (typeof subtotalOriginal !=='undefined' && subtotalOriginal> subtotal) { %>
+                                    <!-- Show original subtotal if offers are applied -->
+                                    <div class="flex justify-between text-sm">
+                                        <span>Original Subtotal:</span>
+                                        <span class="line-through text-gray-500">₹<%= subtotalOriginal.toLocaleString()
+                                                %></span>
+                                    </div>
+                                    <div class="flex justify-between text-sm text-green-600 font-medium">
+                                        <span>Offer Savings:</span>
+                                        <span>-₹<%= totalSavings.toLocaleString() %></span>
+                                    </div>
+                                    <% } %>
+
+                                        <div class="flex justify-between">
+                                            <span>Subtotal (<%= totalItems %> items):</span>
+                                            <span class="font-medium">₹<%= subtotal.toLocaleString() %></span>
+                                        </div>
+
+                                        <div class="flex justify-between">
+                                            <span>Delivery Charge:</span>
+                                            <span class="<%= deliveryCharge === 0 ? 'text-green-600' : '' %>">
+                                                <% if (deliveryCharge===0) { %>
+                                                    FREE
+                                                    <% } else { %>
+                                                        ₹<%= deliveryCharge %>
+                                                            <% } %>
+                                            </span>
+                                        </div>
+
+                                        <% if (discountAmount> 0) { %>
+                                            <div class="flex justify-between text-green-600">
+                                                <span>Additional Discount:</span>
+                                                <span>-₹<%= discountAmount.toLocaleString() %></span>
+                                            </div>
+                                            <% } %>
                             </div>
-                            <div class="flex justify-between text-sm text-green-600 font-medium">
-                                <span>Offer Savings:</span>
-                                <span>-₹<%= totalSavings.toLocaleString() %></span>
+
+                            <hr class="mb-4">
+
+                            <div class="flex justify-between text-xl font-bold mb-6">
+                                <span>Total:</span>
+                                <span class="text-red-600">₹<%= finalTotal.toLocaleString() %></span>
                             </div>
-                        <% } %>
-                        
-                        <div class="flex justify-between">
-                            <span>Subtotal (<%= totalItems %> items):</span>
-                            <span class="font-medium">₹<%= subtotal.toLocaleString() %></span>
-                        </div>
-                        
-                        <div class="flex justify-between">
-                            <span>Delivery Charge:</span>
-                            <span class="<%= deliveryCharge === 0 ? 'text-green-600' : '' %>">
-                                <% if (deliveryCharge === 0) { %>
-                                    FREE
-                                <% } else { %>
-                                    ₹<%= deliveryCharge %>
+
+                            <!-- Total Savings Summary -->
+                            <% if (typeof totalSavings !=='undefined' && totalSavings> 0) { %>
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                                    <div class="flex items-center text-green-800">
+                                        <i class="fas fa-check-circle mr-2"></i>
+                                        <span class="font-medium">You're saving ₹<%= totalSavings.toLocaleString() %>
+                                                with offers!</span>
+                                    </div>
+                                </div>
                                 <% } %>
-                            </span>
+                                    <a href="/checkout">
+                                        <button
+                                            class="w-full bg-rc-red text-white py-3 rounded-md font-semibold hover:bg-rc-dark-red transition-colors">
+                                            Proceed to Checkout
+                                        </button>
+                                    </a>
                         </div>
-                        
-                        <% if (discountAmount > 0) { %>
-                            <div class="flex justify-between text-green-600">
-                                <span>Additional Discount:</span>
-                                <span>-₹<%= discountAmount.toLocaleString() %></span>
-                            </div>
-                        <% } %>
                     </div>
-                    
-                    <hr class="mb-4">
-                    
-                    <div class="flex justify-between text-xl font-bold mb-6">
-                        <span>Total:</span>
-                        <span class="text-red-600">₹<%= finalTotal.toLocaleString() %></span>
-                    </div>
-                    
-                    <!-- Total Savings Summary -->
-                    <% if (typeof totalSavings !== 'undefined' && totalSavings > 0) { %>
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-                            <div class="flex items-center text-green-800">
-                                <i class="fas fa-check-circle mr-2"></i>
-                                <span class="font-medium">You're saving ₹<%= totalSavings.toLocaleString() %> with offers!</span>
-                            </div>
-                        </div>
-                    <% } %>
-                    <a href="/checkout">
-                              <button class="w-full bg-rc-red text-white py-3 rounded-md font-semibold hover:bg-rc-dark-red transition-colors">
-                        Proceed to Checkout
-                    </button>
-                        </a>
                 </div>
-            </div>
-        </div>
-    <% } %>
-</main>
+                <% } %>
+    </main>
 
 
     <!-- Recommended Products Section -->
@@ -245,31 +283,43 @@
         <div class="relative">
             <div class="flex overflow-x-auto gap-6 pb-4 hide-scrollbar" id="recommendCarousel">
                 <% if (product) { %>
-                    <% product.forEach(products => { %>
-                        <div class="flex-shrink-0 w-64 bg-white border border-rc-border-gray rounded-lg shadow-sm p-4 text-center hover:-translate-y-1 hover:shadow-lg transition-all">
+                    <% product.forEach(products=> { %>
+                        <div
+                            class="flex-shrink-0 w-64 bg-white border border-rc-border-gray rounded-lg shadow-sm p-4 text-center hover:-translate-y-1 hover:shadow-lg transition-all">
                             <a href="/details/<%= products._id %>">
-                                <img src="<%= products.images[0] %>" alt="<%= products.productName %>" class="w-full h-40 object-contain mb-4">
+                                <img src="<%= products.images[0] %>" alt="<%= products.productName %>"
+                                    class="w-full h-40 object-contain mb-4">
                             </a>
-                            <h3 class="font-medium text-sm mb-2 font-aldrich"><%= products.productName %></h3>
+                            <h3 class="font-medium text-sm mb-2 font-aldrich">
+                                <%= products.productName %>
+                            </h3>
                             <div class="star-rating flex justify-center gap-1 mb-2">
-                                <% for(let i = 0; i < 5; i++) { %>
-                                    <span class="text-rc-star-<%= i < Math.floor(products.rating || 4) ? 'filled' : 'empty' %> text-lg">★</span>
-                                <% } %>
+                                <% for(let i=0; i < 5; i++) { %>
+                                    <span
+                                        class="text-rc-star-<%= i < Math.floor(products.rating || 4) ? 'filled' : 'empty' %> text-lg">★</span>
+                                    <% } %>
                             </div>
-                            <p class="text-lg font-bold mb-4">₹<%= products.discountPrice.toLocaleString() %></p>
-                            <button class="bg-rc-cyan text-white py-2 px-4 rounded-md text-sm font-semibold hover:bg-rc-cyan/90 transition-colors" onclick="addToCart('<%= products._id %>')" aria-label="Add to cart">ADD TO CART</button>
+                            <p class="text-lg font-bold mb-4">₹<%= products.discountPrice.toLocaleString() %>
+                            </p>
+                            <button
+                                class="bg-rc-cyan text-white py-2 px-4 rounded-md text-sm font-semibold hover:bg-rc-cyan/90 transition-colors"
+                                onclick="addToCart('<%= products._id %>')" aria-label="Add to cart">ADD TO CART</button>
                         </div>
-                    <% }) %>
-                <% } %>
+                        <% }) %>
+                            <% } %>
             </div>
-            <button class="carousel-control absolute left-[-25px] top-1/2 -translate-y-1/2 bg-rc-red/70 text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-rc-red/90 hover:scale-110 transition-all z-30 prev" onclick="scrollCarousel('recommendCarousel', -300)" aria-label="Previous product">
+            <button
+                class="carousel-control absolute left-[-25px] top-1/2 -translate-y-1/2 bg-rc-red/70 text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-rc-red/90 hover:scale-110 transition-all z-30 prev"
+                onclick="scrollCarousel('recommendCarousel', -300)" aria-label="Previous product">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
             </button>
-            <button class="carousel-control absolute right-[-25px] top-1/2 -translate-y-1/2 bg-rc-red/70 text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-rc-red/90 hover:scale-110 transition-all z-30 next" onclick="scrollCarousel('recommendCarousel', 300)" aria-label="Next product">
+            <button
+                class="carousel-control absolute right-[-25px] top-1/2 -translate-y-1/2 bg-rc-red/70 text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-rc-red/90 hover:scale-110 transition-all z-30 next"
+                onclick="scrollCarousel('recommendCarousel', 300)" aria-label="Next product">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
             </button>
         </div>
@@ -282,7 +332,8 @@
                 <div class="flex items-center gap-6">
                     <div class="w-20 h-20 bg-rc-light-gray rounded-lg flex items-center justify-center">
                         <svg class="w-10 h-10 text-rc-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                     <div>
@@ -293,7 +344,8 @@
                 <div class="flex items-center gap-6">
                     <div class="w-20 h-20 bg-rc-light-gray rounded-lg flex items-center justify-center">
                         <svg class="w-10 h-10 text-rc-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                         </svg>
                     </div>
                     <div>
@@ -304,7 +356,8 @@
                 <div class="flex items-center gap-6">
                     <div class="w-20 h-20 bg-rc-light-gray rounded-lg flex items-center justify-center">
                         <svg class="w-10 h-10 text-rc-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
                     </div>
                     <div>
@@ -343,17 +396,20 @@
                     <div class="flex gap-4">
                         <a href="#" class="text-rc-gray hover:text-black transition-colors" aria-label="Pinterest">
                             <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.097.118.112.221.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001.012.001z"/>
+                                <path
+                                    d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.097.118.112.221.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001.012.001z" />
                             </svg>
                         </a>
                         <a href="#" class="text-rc-gray hover:text-black transition-colors" aria-label="Twitter">
                             <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                                <path
+                                    d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
                             </svg>
                         </a>
                         <a href="#" class="text-rc-gray hover:text-black transition-colors" aria-label="LinkedIn">
                             <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                <path
+                                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                             </svg>
                         </a>
                     </div>
@@ -363,20 +419,23 @@
                     <div class="space-y-3 text-rc-gray">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                <path
+                                    d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
                             </svg>
                             <span>(+91) 95551 76147</span>
                         </div>
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                <path
+                                    d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
                             </svg>
                             <span>info@email.com</span>
                         </div>
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
-                                <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                                <path
+                                    d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
+                                <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
                             </svg>
                             <span>8:00 - 21:00</span>
                         </div>
@@ -391,8 +450,11 @@
             </div>
         </div>
     </footer>
+    <!-- In your wallet.ejs head section -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+
         // Toast Notification
         function showToast(message, type = 'success') {
             const toastContainer = document.getElementById('toastContainer');
@@ -410,7 +472,7 @@
             }, 2500);
         }
 
-      
+
         // Quantity Update
         async function qtyupdated(qty, productId) {
             try {
@@ -434,7 +496,24 @@
 
         // Remove from Cart
         async function removeFromCart(productId) {
-            if (confirm('Are you sure you want to remove this item from cart?')) {
+            const result = await Swal.fire({
+                title: 'Remove from Cart?',
+                text: 'This item will be removed from your cart.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444', // rc-red
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="mr-2">🛒</i>Remove Item',
+                cancelButtonText: '<i class="mr-2">✖</i>Keep in Cart',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn-rc-red px-6 py-2 text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200',
+                    cancelButton: 'px-6 py-2 text-sm font-semibold rounded-lg border border-gray-300 hover:bg-gray-50 transition-all duration-200 mr-2'
+                },
+                reverseButtons: true
+            });
+
+            if (result.isConfirmed) {
                 try {
                     const res = await fetch('/removecartitem', {
                         method: 'POST',
@@ -534,10 +613,12 @@
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
+
         .hide-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
     </style>
 </body>
+
 </html>

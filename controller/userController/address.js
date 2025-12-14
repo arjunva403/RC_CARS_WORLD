@@ -4,8 +4,9 @@ const model = require("../../src/config")
 const manageAddressPageLoad = async (req, res) => {
   try {
     const userId = req.session.user?._id
+    const users = await model.usersModel.findById({_id:userId})
     const address = await model.addressModel.find({ userId })
-    res.render("user/manageaddress", { address })
+    res.render("user/manageaddress", { address,users })
   } catch (error) {
     console.error(error.message)
     res.status(500).send("Server Error");
@@ -14,7 +15,9 @@ const manageAddressPageLoad = async (req, res) => {
 
 const addAddresspageLoad = async (req, res) => {
   try {
-    res.render("user/AddAddress")
+     const userId = req.session.user?._id
+    const users = await model.usersModel.findById({_id:userId})
+    res.render("user/AddAddress",{users})
   } catch (error) {
     console.error(error.message)
     res.status(500).send("Server Error");
@@ -94,11 +97,12 @@ const addAddressPostMethord = async (req, res) => {
 const editaddressPageLoad = async (req, res) => {
   try {
     const addressId = req.params.id;
-    const user = req.session.user?._id;
+     const userId = req.session.user?._id
+    const users = await model.usersModel.findById({_id:userId})
 
 
     const addressData = await model.addressModel.findOne(
-      { userId: user, "address._id": addressId },
+      { userId: userId, "address._id": addressId },
       { "address.$": 1 }
     );
 
@@ -107,7 +111,7 @@ const editaddressPageLoad = async (req, res) => {
     }
 
     const address = addressData.address[0];
-    res.render("user/editeaddress", { address });
+    res.render("user/editeaddress", { address,users });
 
   } catch (err) {
     console.error(err);

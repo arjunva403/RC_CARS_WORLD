@@ -93,19 +93,40 @@ const updateOrderStatus = async (req, res) => {
       return res.status(400).json({ message: "Order ID and status are required" });
     }
 
-    const statusFlow = ["Pending", "Ordered", "Shipped", "Delivered", "Cancelled"];
+    // Main shipping flow only
+    const statusFlow = ["Pending", "Ordered", "Shipped",'Out For Delivery', "Delivered", "Cancelled"];
     if (!statusFlow.includes(status)) {
       return res.status(400).json({ message: "Invalid status value" });
     }
 
     const order = await model.orderModel.findById(orderId);
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
 
+    const newIndex = statusFlow.indexOf(status);
     let updateHappened = false;
-    for (let item of order.orderitems) {
-      if (item.status === "Cancelled") continue; // Skip cancelled items
-      const currentIndex = statusFlow.indexOf(item.status);
-      const newIndex = statusFlow.indexOf(status);
+
+    for (const item of order.orderitems) {
+      // Skip items that are cancelled/returned or in a pure return flow
+      if (
+        item.status === "Cancelled" ||
+        item.status === "Returned" ||
+        item.status === "Return Request" ||
+        item.status === "Return Rejected"
+      ) {
+        continue;
+      }
+
+      // If item.status is not in the flow (e.g. "Out For Delivery"), treat as closest step
+      let currentIndex = statusFlow.indexOf(item.status);
+      if (currentIndex === -1) {
+        if (item.status === "Out For Delivery") {
+          currentIndex = statusFlow.indexOf("Shipped");
+        } else {
+          currentIndex = statusFlow.indexOf("Pending");
+        }
+      }
 
       if (newIndex > currentIndex) {
         item.status = status;
@@ -119,35 +140,63 @@ const updateOrderStatus = async (req, res) => {
 
     if (updateHappened) {
       order.orderStatus = status;
+      order.orderStatusUpdatedAt = new Date();
       order.markModified("orderitems");
       await order.save();
-      return res.status(200).json({ message: "Order status updated successfully", order });
+      return res
+        .status(200)
+        .json({ message: "Order status updated successfully", order });
     }
-    return res.status(200).json({ message: "No updates applied. All items already in correct status.", order });
+
+    return res.status(200).json({
+      message: "No updates applied. All items already in correct status.",
+      order,
+    });
   } catch (error) {
     console.error("updateOrderStatus error:", error);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
+
 const returnChoesingPost = async (req, res) => {
   try {
-    const { value, itemId, orderId } = req.body;
-    if (!value || !itemId || !orderId) return res.status(400).json({ message: "Missing required fields" });
+    const { itemId, orderId, adminDecision, returnQty } = req.body;
 
-    const order = await model.orderModel.findById(orderId);
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (!adminDecision || !itemId || !orderId || returnQty == null) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const order = await model.orderModel
+      .findById(orderId)
+      .populate("orderitems.productId");
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
 
     const item = order.orderitems.id(itemId);
-    if (!item) return res.status(404).json({ message: "Item not found in order" });
+    if (!item) {
+      return res.status(404).json({ message: "Item not found in order" });
+    }
 
     const userId = order.userId;
 
-    if (value === "Accept") {
-      item.status = "Return Accepted";
+    let acceptedQty = 0;
+    if (adminDecision === "Accept") {
+      const maxAvailable = item.quantity - (item.cancelledQuantity || 0);
+      acceptedQty = Math.min(returnQty, maxAvailable);
+      
+      if (acceptedQty <= 0) {
+        return res.status(400).json({ message: "No quantity left to return" });
+      }
 
+      item.returnedQuantity =acceptedQty;
+      item.status = item.returnedQuantity === item.quantity ? "Returned" : "Return Accepted";
+
+      // Wallet refund
       let wallet = await model.walletModel.findOne({ customerId: userId });
-      const creditAmount = item.price || 0;
+      const creditAmount = (item.price || 0) * acceptedQty;
+      const remark = `Return Accepted for ${item.productId?.productName || "Product"} (Qty: ${acceptedQty})`;
 
       if (!wallet) {
         wallet = new model.walletModel({
@@ -155,69 +204,57 @@ const returnChoesingPost = async (req, res) => {
           credited: creditAmount,
           debited: 0,
           totalBalance: creditAmount,
-          transactions: [
-            {
-              type: "credit",
-              amount: creditAmount,
-              remark: `Return Accepted for product: ${item.productId?.productName || "Product"}`,
-            },
-          ],
+          transactions: [{ type: "credit", amount: creditAmount, remark }],
         });
       } else {
         wallet.credited += creditAmount;
         wallet.totalBalance += creditAmount;
-        wallet.transactions.push({
-          type: "credit",
-          amount: creditAmount,
-          remark: `Return Accepted for product: ${item.productId?.productName || "Product"}`,
-        });
+        wallet.transactions.push({ type: "credit", amount: creditAmount, remark });
       }
       await wallet.save();
-    } else if (value === "Reject") {
+    } else if (adminDecision === "Reject") {
       item.status = "Return Rejected";
     } else {
       return res.status(400).json({ message: "Invalid action" });
     }
 
+    // ✅ REPLACE updateOrderStatus(order) with this logic:
+    const hasPendingItems = order.orderitems.some(oi => 
+      ['Return Request', 'Cancel Request'].includes(oi.status)
+    );
+    const hasReturnedItems = order.orderitems.some(oi => oi.status === 'Returned');
+    const allReturned = order.orderitems.every(oi => oi.status === 'Returned');
+
+    if (allReturned) {
+      order.orderStatus = 'Returned';
+    } else if (hasReturnedItems) {
+      order.orderStatus = 'Partially Returned';
+    } else if (hasPendingItems) {
+      order.orderStatus = 'Return Request';
+    }
+
     await order.save();
-    return res.status(200).json({ message: `Return ${value.toLowerCase()}ed successfully` });
+
+    return res.status(200).json({ 
+      success: `Return ${adminDecision.toLowerCase()}ed successfully`,
+      acceptedQty 
+    });
   } catch (error) {
     console.error("returnChoesingPost error:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
-const cancellationChoesingPost = async (req, res) => {
-  try {
-    const { action, itemId, productName, orderId, cancellationReason, cancellationQty } = req.body;
-    if (!action || !orderId || !itemId) return res.status(400).json({ message: "Missing required fields" });
 
-    if (action === "reject") {
-      return res.status(200).json({ message: "Cancellation request rejected" });
-    }
 
-    const cancellprocess = await helper.ApplyCancel(orderId, productName, itemId, cancellationQty);
 
-    if (!cancellprocess.success) {
-      return res.status(400).json({ message: cancellprocess.message });
-    }
 
-    return res.status(200).json({
-      success: true,
-      message: cancellprocess.message,
-      updatedOrder: cancellprocess.updatedOrder,
-      walletRefunded: cancellprocess.walletRefunded,
-    });
-  } catch (error) {
-    console.error("cancellationChoesingPost error:", error);
-    return res.status(500).json({ message: "Server error" });
-  }
-};
+
 
 module.exports = {
   orderMangementPageLoad,
   orderdetailsPageload,
   updateOrderStatus,
   returnChoesingPost,
-  cancellationChoesingPost,
+
 };

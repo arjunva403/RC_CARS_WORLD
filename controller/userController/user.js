@@ -111,8 +111,9 @@ const profilePageLoad = async (req, res) => {
 
 const chengePasswordPageLoad = async (req, res) => {
     try {
-
-        res.render("user/chengepass")
+         const userId = req.session.user?._id
+    const users = await model.usersModel.findById({_id:userId})
+        res.render("user/chengepass",{users})
     } catch (error) {
         console.error(error.message)
         res.status(500).send("Server Error");
@@ -409,7 +410,9 @@ const updatedProfilePageLoad = async (req, res) => {
 
 const changeEmailPageLoad = async (req, res) => {
     try {
-        res.render("user/chengeemail")
+         const userId = req.session.user?._id
+    const users = await model.usersModel.findById({_id:userId})
+        res.render("user/chengeemail",{users})
 
     } catch (error) {
         console.error(error.message)
@@ -513,8 +516,9 @@ const ChengeEmail = async (req, res) => {
 
 const verifiyEmailOTP = async (req, res) => {
     try {
+        
         const { enterotp } = req.body
-
+        
         const orginalOTP = req.session.otp
 
         if (!enterotp) {

@@ -1218,7 +1218,7 @@
                 
             } catch (error) {
                 console.error('Cart error:', error);
-                showToast(error.fail || 'Please login to add items to cart', 'error');
+                showToast(error.fail || 'Out Of Stock', 'error');
                 
                 button.innerHTML = originalContent;
                 button.disabled = false;
